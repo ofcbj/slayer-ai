@@ -1,0 +1,822 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #0f0f23, #1a0033);
+    color: white;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+#gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 상단 UI */
+.top-ui {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+}
+
+.player-stats, .enemy-stats {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-item.clickable {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stat-item.clickable:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* 전투 필드 */
+.battlefield {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 40px;
+}
+
+.enemy-area {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.enemy {
+    background: linear-gradient(145deg, #2d1b69, #5d2a8a);
+    border: 3px solid #8b5cf6;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    min-width: 180px;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.enemy-image {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #7c2d12, #dc2626);
+    border-radius: 12px;
+    margin: 0 auto 15px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.enemy-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 60%);
+}
+
+.enemy:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.4);
+    border-color: #a855f7;
+}
+
+.enemy.targeted {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.6);
+}
+
+.enemy-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #e879f9;
+}
+
+.enemy-hp {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ef4444;
+}
+
+.enemy-intent {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #fbbf24;
+    opacity: 0.8;
+}
+
+.damage-indicator {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff6b6b;
+    pointer-events: none;
+    opacity: 0;
+    animation: damageFloat 1.5s ease-out forwards;
+}
+
+@keyframes damageFloat {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-40px); }
+}
+
+/* 카드 핸드 */
+.hand-area {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    overflow-x: auto;
+    min-height: 200px;
+}
+
+.card {
+    background: linear-gradient(145deg, #1e293b, #334155);
+    border: 2px solid #475569;
+    border-radius: 12px;
+    width: 160px;
+    height: 220px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1), transparent 70%);
+}
+
+.card:hover {
+    transform: translateY(-20px) scale(1.05);
+    border-color: #60a5fa;
+    box-shadow: 0 8px 25px rgba(96, 165, 250, 0.3);
+}
+
+.card.selected {
+    transform: translateY(-15px);
+    border-color: #22c55e;
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.card.unusable {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.card-cost {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    border: 2px solid white;
+}
+
+.card-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+.card-type {
+    font-size: 10px;
+    color: #94a3b8;
+    text-align: center;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.card-description {
+    font-size: 11px;
+    color: #cbd5e1;
+    line-height: 1.3;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.card-damage {
+    color: #ef4444;
+    font-weight: bold;
+}
+
+.card-block {
+    color: #06b6d4;
+    font-weight: bold;
+}
+
+.card-energy {
+    color: #8b5cf6;
+    font-weight: bold;
+}
+
+/* 컨트롤 버튼 */
+.controls {
+    position: absolute;
+    bottom: 220px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 게임 오버 모달 */
+.game-over-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #1e293b, #334155);
+    padding: 40px;
+    border-radius: 20px;
+    border: 2px solid #475569;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+}
+
+.modal-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.victory { color: #22c55e; }
+.defeat { color: #ef4444; }
+
+/* 카드 보상 선택 */
+.reward-cards {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.reward-card {
+    background: linear-gradient(145deg, #1e293b, #334155);
+    border: 3px solid #22c55e;
+    border-radius: 12px;
+    width: 160px;
+    height: 220px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    overflow: hidden;
+}
+
+.reward-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    border-color: #16a34a;
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
+}
+
+.reward-card .card-image {
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(135deg, #059669, #10b981);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.reward-card .card-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.2), transparent 70%);
+}
+
+.reward-message {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #22c55e;
+}
+
+/* 카드 리스트 모달 */
+.card-list-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.card-list-content {
+    background: linear-gradient(145deg, #1e293b, #334155);
+    padding: 30px;
+    border-radius: 20px;
+    border: 2px solid #475569;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    max-width: 80vw;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.card-list-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #e2e8f0;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card-preview {
+    background: linear-gradient(145deg, #1e293b, #334155);
+    border: 2px solid #475569;
+    border-radius: 12px;
+    width: 140px;
+    height: 180px;
+    padding: 10px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.card-preview .card-image {
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.card-preview .card-cost {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    border: 2px solid white;
+}
+
+.card-preview .card-name {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+.card-preview .card-type {
+    font-size: 9px;
+    color: #94a3b8;
+    text-align: center;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.card-preview .card-description {
+    font-size: 9px;
+    color: #cbd5e1;
+    line-height: 1.2;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.close-modal-btn {
+    background: linear-gradient(45deg, #ef4444, #dc2626);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+}
+
+.close-modal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+}
+
+/* 카드와 적에 호버 효과 강화 */
+.card:hover .card-image {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    transform: scale(1.05);
+}
+
+.enemy:hover .enemy-image {
+    background: linear-gradient(135deg, #991b1b, #ef4444);
+    transform: scale(1.05);
+}
+
+.card.selected .card-image {
+    background: linear-gradient(135deg, #059669, #10b981);
+    animation: cardGlow 1s ease-in-out infinite alternate;
+}
+
+.enemy.targeted .enemy-image {
+    background: linear-gradient(135deg, #dc2626, #f87171);
+    animation: enemyGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes cardGlow {
+    0% { box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
+    100% { box-shadow: inset 0 2px 10px rgba(0,0,0,0.3), 0 0 15px rgba(16, 185, 129, 0.5); }
+}
+
+@keyframes enemyGlow {
+    0% { box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
+    100% { box-shadow: inset 0 2px 10px rgba(0,0,0,0.3), 0 0 15px rgba(220, 38, 38, 0.5); }
+}
+
+/* 몬스터 공격 애니메이션 */
+@keyframes enemyAttack {
+    0% { transform: translateX(0) scale(1); }
+    20% { transform: translateX(-10px) scale(1.1); }
+    40% { transform: translateX(30px) scale(1.15); }
+    60% { transform: translateX(25px) scale(1.15); }
+    80% { transform: translateX(-5px) scale(1.05); }
+    100% { transform: translateX(0) scale(1); }
+}
+
+.enemy.attacking {
+    animation: enemyAttack 1s ease-in-out;
+    z-index: 10;
+}
+
+.enemy.attacking .enemy-image {
+    background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+    animation: attackFlash 1s ease-in-out;
+}
+
+@keyframes attackFlash {
+    0%, 100% { filter: brightness(1); }
+    25%, 75% { filter: brightness(1.5) drop-shadow(0 0 20px #ff4444); }
+    50% { filter: brightness(2) drop-shadow(0 0 30px #ff0000); }
+}
+
+/* 플레이어 피격 효과 */
+@keyframes playerHit {
+    0% { background: rgba(0, 0, 0, 0.7); }
+    25% { background: rgba(255, 0, 0, 0.3); }
+    50% { background: rgba(255, 0, 0, 0.5); }
+    75% { background: rgba(255, 0, 0, 0.3); }
+    100% { background: rgba(0, 0, 0, 0.7); }
+}
+
+.top-ui.hit {
+    animation: playerHit 1s ease-in-out;
+}
+
+/* 플레이어 체력 변화 애니메이션 */
+.player-damage {
+    position: absolute;
+    top: -30px;
+    right: 50%;
+    transform: translateX(50%);
+    font-size: 28px;
+    font-weight: bold;
+    color: #ff4444;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    pointer-events: none;
+    opacity: 0;
+    animation: playerDamageFloat 2s ease-out forwards;
+    z-index: 200;
+}
+
+@keyframes playerDamageFloat {
+    0% { 
+        opacity: 1; 
+        transform: translateX(50%) translateY(0) scale(1);
+    }
+    20% { 
+        transform: translateX(50%) translateY(-10px) scale(1.2);
+    }
+    100% { 
+        opacity: 0; 
+        transform: translateX(50%) translateY(-50px) scale(0.8);
+    }
+}
+
+/* 화면 흔들림 효과 */
+@keyframes screenShake {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-5px); }
+    20% { transform: translateX(5px); }
+    30% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    50% { transform: translateX(-2px); }
+    60% { transform: translateX(2px); }
+    70% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+    90% { transform: translateX(0); }
+}
+
+.battlefield.shake {
+    animation: screenShake 0.8s ease-in-out;
+}
+
+/* 스테이지 선택 모달 */
+.stage-select-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.stage-select-content {
+    background: linear-gradient(145deg, #1e293b, #334155);
+    padding: 30px;
+    border-radius: 20px;
+    border: 2px solid #475569;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.stage-select-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #e2e8f0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.stage-map {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+    position: relative;
+    min-height: 400px;
+}
+
+.stage-node {
+    background: linear-gradient(145deg, #2d1b69, #5d2a8a);
+    border: 3px solid #8b5cf6;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.stage-node.available {
+    border-color: #22c55e;
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+}
+
+.stage-node.available:hover {
+    transform: translateY(-5px) scale(1.05);
+    border-color: #16a34a;
+    box-shadow: 0 12px 30px rgba(34, 197, 94, 0.6);
+}
+
+.stage-node.completed {
+    border-color: #fbbf24;
+    background: linear-gradient(145deg, #451a03, #92400e);
+    box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+}
+
+.stage-node.locked {
+    border-color: #6b7280;
+    background: linear-gradient(145deg, #374151, #4b5563);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.stage-node.일반 {
+    border-color: #3b82f6;
+}
+
+.stage-node.중보스 {
+    border-color: #ef4444;
+    background: linear-gradient(145deg, #7c2d12, #dc2626);
+}
+
+.stage-node.보스 {
+    border-color: #fbbf24;
+    background: linear-gradient(145deg, #451a03, #92400e);
+    animation: bossGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes bossGlow {
+    0% { box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4); }
+    100% { box-shadow: 0 8px 25px rgba(251, 191, 36, 0.8), 0 0 20px rgba(251, 191, 36, 0.6); }
+}
+
+.stage-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.stage-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #e2e8f0;
+}
+
+.stage-description {
+    font-size: 10px;
+    color: #94a3b8;
+    line-height: 1.2;
+}
+
+.stage-connections {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.connection-line {
+    stroke: #8b5cf6;
+    stroke-width: 3;
+    stroke-dasharray: 5,5;
+    opacity: 0.7;
+    animation: connectionFlow 3s linear infinite;
+}
+
+@keyframes connectionFlow {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 20; }
+}
+
+.close-stage-modal-btn {
+    background: linear-gradient(45deg, #ef4444, #dc2626);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.close-stage-modal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
