@@ -676,8 +676,10 @@ body {
     border-radius: 20px;
     border: 2px solid #475569;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-    max-width: 90vw;
-    max-height: 90vh;
+    max-width: 95vw;
+    max-height: 95vh;
+    width: 1000px;
+    height: 700px;
     overflow-y: auto;
     position: relative;
 }
@@ -693,11 +695,21 @@ body {
 
 .stage-map {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
+    grid-template-rows: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 40px;
     margin-bottom: 30px;
     position: relative;
-    min-height: 400px;
+    min-height: 600px;
+    padding: 20px;
+}
+
+.stage-level {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    position: relative;
 }
 
 .stage-node {
@@ -711,6 +723,7 @@ body {
     position: relative;
     z-index: 2;
     min-height: 120px;
+    min-width: 180px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -791,15 +804,16 @@ body {
 
 .connection-line {
     stroke: #8b5cf6;
-    stroke-width: 3;
-    stroke-dasharray: 5,5;
-    opacity: 0.7;
+    stroke-width: 4;
+    stroke-dasharray: 8,4;
+    opacity: 0.8;
     animation: connectionFlow 3s linear infinite;
+    filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.5));
 }
 
 @keyframes connectionFlow {
     0% { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: 20; }
+    100% { stroke-dashoffset: 24; }
 }
 
 .close-stage-modal-btn {

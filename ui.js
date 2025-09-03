@@ -286,51 +286,103 @@ class UIManager {
         const stageMap = document.getElementById('stageMap');
         stageMap.innerHTML = '';
         
-        // 스테이지들을 그리드로 배치
-        const stages = Object.keys(stageData).map(id => ({ id: parseInt(id), ...stageData[id] }));
-        stages.sort((a, b) => a.id - b.id);
+        // 스테이지 계층 구조 생성
+        const stageTree = this.buildStageTree(stageData);
         
-        stages.forEach(stage => {
-            const stageEl = document.createElement('div');
-            stageEl.className = 'stage-node';
-            stageEl.dataset.stageId = stage.id;
+        // 각 레벨별로 스테이지 렌더링
+        stageTree.forEach((level, levelIndex) => {
+            const levelContainer = document.createElement('div');
+            levelContainer.className = 'stage-level';
+            levelContainer.style.gridRow = levelIndex + 1;
             
-            // 스테이지 상태에 따른 클래스 추가
-            if (completedStages.has(stage.id)) {
-                stageEl.classList.add('completed');
-            } else if (availableStages.has(stage.id)) {
-                stageEl.classList.add('available');
-            } else {
-                stageEl.classList.add('locked');
-            }
+            level.forEach(stage => {
+                const stageEl = document.createElement('div');
+                stageEl.className = 'stage-node';
+                stageEl.dataset.stageId = stage.id;
+                
+                // 스테이지 상태에 따른 클래스 추가
+                if (completedStages.has(stage.id)) {
+                    stageEl.classList.add('completed');
+                } else if (availableStages.has(stage.id)) {
+                    stageEl.classList.add('available');
+                } else {
+                    stageEl.classList.add('locked');
+                }
+                
+                // 스테이지 타입에 따른 클래스 추가
+                stageEl.classList.add(stage.type);
+                
+                stageEl.innerHTML = `
+                    <div class="stage-icon">${this.getStageIcon(stage.type)}</div>
+                    <div class="stage-name">${stage.name}</div>
+                    <div class="stage-description">${stage.description}</div>
+                `;
+                
+                // 클릭 이벤트 추가
+                if (availableStages.has(stage.id)) {
+                    stageEl.onclick = () => {
+                        onStageSelect(stage.id);
+                        document.querySelector('.stage-select-modal').remove();
+                        // 게임 화면 다시 표시
+                        const gameContainer = document.getElementById('gameContainer');
+                        if (gameContainer) {
+                            gameContainer.style.display = 'flex';
+                        }
+                    };
+                }
+                
+                levelContainer.appendChild(stageEl);
+            });
             
-            // 스테이지 타입에 따른 클래스 추가
-            stageEl.classList.add(stage.type);
-            
-            stageEl.innerHTML = `
-                <div class="stage-icon">${this.getStageIcon(stage.type)}</div>
-                <div class="stage-name">${stage.name}</div>
-                <div class="stage-description">${stage.description}</div>
-            `;
-            
-            // 클릭 이벤트 추가
-            if (availableStages.has(stage.id)) {
-                stageEl.onclick = () => {
-                    onStageSelect(stage.id);
-                    document.querySelector('.stage-select-modal').remove();
-                    // 게임 화면 다시 표시
-                    const gameContainer = document.getElementById('gameContainer');
-                    if (gameContainer) {
-                        gameContainer.style.display = 'flex';
-                    }
-                };
-            }
-            
-            stageMap.appendChild(stageEl);
+            stageMap.appendChild(levelContainer);
         });
         
         // 연결선 그리기
         this.drawStageConnections(stageData);
+    }
+    
+    buildStageTree(stageData) {
+        // 스테이지 ID를 숫자로 변환하고 정렬
+        const stages = Object.keys(stageData).map(id => ({ id: parseInt(id), ...stageData[id] }));
+        
+        // 각 스테이지의 깊이 계산
+        const stageDepths = new Map();
+        const visited = new Set();
+        
+        // 깊이 우선 탐색으로 각 스테이지의 깊이 계산
+        const calculateDepth = (stageId, depth = 0) => {
+            if (visited.has(stageId)) return;
+            visited.add(stageId);
+            
+            const stage = stageData[stageId];
+            if (!stage) return;
+            
+            stageDepths.set(stageId, depth);
+            
+            // 다음 스테이지들의 깊이 계산
+            if (stage.nextStages) {
+                stage.nextStages.forEach(nextStageId => {
+                    calculateDepth(nextStageId, depth + 1);
+                });
+            }
+        };
+        
+        // 시작 스테이지(1번)부터 깊이 계산
+        calculateDepth(1);
+        
+        // 최대 깊이 찾기
+        const maxDepth = Math.max(...stageDepths.values());
+        
+        // 깊이별로 스테이지 그룹화 (보스가 위에 오도록 역순으로)
+        const stageTree = [];
+        for (let depth = maxDepth; depth >= 0; depth--) {
+            const levelStages = stages.filter(stage => stageDepths.get(stage.id) === depth);
+            if (levelStages.length > 0) {
+                stageTree.push(levelStages);
+            }
+        }
+        
+        return stageTree;
     }
 
     getStageIcon(type) {
@@ -354,6 +406,24 @@ class UIManager {
         svg.style.pointerEvents = 'none';
         svg.style.zIndex = '1';
         
+        // 화살표 마커 정의
+        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+        marker.setAttribute('id', 'arrowhead');
+        marker.setAttribute('markerWidth', '10');
+        marker.setAttribute('markerHeight', '7');
+        marker.setAttribute('refX', '9');
+        marker.setAttribute('refY', '3.5');
+        marker.setAttribute('orient', 'auto');
+        
+        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
+        polygon.setAttribute('fill', '#8b5cf6');
+        
+        marker.appendChild(polygon);
+        defs.appendChild(marker);
+        svg.appendChild(defs);
+        
         Object.keys(stageData).forEach(stageId => {
             const stage = stageData[stageId];
             if (stage.nextStages) {
@@ -364,8 +434,9 @@ class UIManager {
                     line.setAttribute('x2', '50%');
                     line.setAttribute('y2', '50%');
                     line.setAttribute('stroke', '#8b5cf6');
-                    line.setAttribute('stroke-width', '3');
-                    line.setAttribute('stroke-dasharray', '5,5');
+                    line.setAttribute('stroke-width', '4');
+                    line.setAttribute('stroke-dasharray', '8,4');
+                    line.setAttribute('marker-end', 'url(#arrowhead)');
                     line.setAttribute('class', 'connection-line');
                     line.setAttribute('data-from', stageId);
                     line.setAttribute('data-to', nextStageId);
@@ -391,10 +462,13 @@ class UIManager {
                 const toRect = toStage.getBoundingClientRect();
                 const mapRect = document.getElementById('stageMap').getBoundingClientRect();
                 
+                // 아래 스테이지의 위쪽 면 중앙에서 시작
                 const fromX = (fromRect.left + fromRect.width / 2 - mapRect.left) / mapRect.width * 100;
-                const fromY = (fromRect.top + fromRect.height / 2 - mapRect.top) / mapRect.height * 100;
+                const fromY = (fromRect.top - mapRect.top) / mapRect.height * 100;
+                
+                // 위쪽 스테이지의 아래쪽 면 중앙으로 연결
                 const toX = (toRect.left + toRect.width / 2 - mapRect.left) / mapRect.width * 100;
-                const toY = (toRect.top + toRect.height / 2 - mapRect.top) / mapRect.height * 100;
+                const toY = (toRect.bottom - mapRect.top) / mapRect.height * 100;
                 
                 line.setAttribute('x1', fromX + '%');
                 line.setAttribute('y1', fromY + '%');
