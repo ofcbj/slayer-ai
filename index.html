@@ -54,9 +54,9 @@
         
         <!-- 컨트롤 버튼 -->
         <div class="controls">
-            <button class="btn" id="endTurnBtn" onclick="gameEngine.endTurn()">턴 종료</button>
-            <button class="btn" onclick="gameEngine.showStageSelect()">스테이지 선택</button>
-            <button class="btn" onclick="gameEngine.restartGame()">새 게임</button>
+            <button class="btn" id="endTurnBtn" onclick="window.gameEngine && window.gameEngine.endTurn()">턴 종료</button>
+            <button class="btn" onclick="window.gameEngine && window.gameEngine.showStageSelect()">스테이지 선택</button>
+            <button class="btn" onclick="window.gameEngine && window.gameEngine.restartGame()">새 게임</button>
         </div>
         
         <!-- 게임 오버 모달 -->
@@ -91,10 +91,6 @@
         // 게임 엔진 초기화
         const gameEngine = new GameEngine();
         window.gameEngine = gameEngine;
-        
-        // UI 매니저의 selectCard와 selectEnemy 메서드를 게임 엔진과 연결
-        gameEngine.uiManager.selectCard = (index) => gameEngine.selectCard(index);
-        gameEngine.uiManager.selectEnemy = (index) => gameEngine.selectEnemy(index);
     </script>
 </body>
 </html>

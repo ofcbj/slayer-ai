@@ -3,6 +3,11 @@ class UIManager {
     constructor() {
         this.selectedCard = null;
         this.selectedEnemy = null;
+        this.gameEngine = null; // 게임 엔진 참조를 저장할 변수
+    }
+    
+    setGameEngine(gameEngine) {
+        this.gameEngine = gameEngine;
     }
 
     updateUI(player, deck, discardPile, stage) {
@@ -23,7 +28,11 @@ class UIManager {
             
             const enemyEl = document.createElement('div');
             enemyEl.className = 'enemy';
-            enemyEl.onclick = () => this.selectEnemy(index);
+            enemyEl.onclick = () => {
+                if (this.gameEngine) {
+                    this.gameEngine.selectEnemy(index);
+                }
+            };
             
             enemyEl.innerHTML = `
                 <div class="enemy-image">${enemy.image}</div>
@@ -47,7 +56,11 @@ class UIManager {
                 cardEl.classList.add('unusable');
             }
             
-            cardEl.onclick = () => this.selectCard(index);
+            cardEl.onclick = () => {
+                if (this.gameEngine) {
+                    this.gameEngine.selectCard(index);
+                }
+            };
             
             cardEl.innerHTML = `
                 <div class="card-cost">${card.cost}</div>
@@ -246,6 +259,12 @@ class UIManager {
     }
 
     showStageSelectModal(stageData, availableStages, completedStages, onStageSelect) {
+        // 게임 화면 숨기기
+        const gameContainer = document.getElementById('gameContainer');
+        if (gameContainer) {
+            gameContainer.style.display = 'none';
+        }
+        
         // 스테이지 선택 모달 생성
         const modal = document.createElement('div');
         modal.className = 'stage-select-modal';
@@ -253,7 +272,7 @@ class UIManager {
             <div class="stage-select-content">
                 <div class="stage-select-title">스테이지 선택</div>
                 <div class="stage-map" id="stageMap"></div>
-                <button class="close-stage-modal-btn" onclick="this.parentElement.parentElement.remove()">닫기</button>
+                <button class="close-stage-modal-btn" onclick="this.parentElement.parentElement.remove(); document.getElementById('gameContainer').style.display = 'flex';">닫기</button>
             </div>
         `;
         
@@ -299,6 +318,11 @@ class UIManager {
                 stageEl.onclick = () => {
                     onStageSelect(stage.id);
                     document.querySelector('.stage-select-modal').remove();
+                    // 게임 화면 다시 표시
+                    const gameContainer = document.getElementById('gameContainer');
+                    if (gameContainer) {
+                        gameContainer.style.display = 'flex';
+                    }
                 };
             }
             
@@ -321,7 +345,7 @@ class UIManager {
     drawStageConnections(stageData) {
         const stageMap = document.getElementById('stageMap');
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.className = 'stage-connections';
+        svg.setAttribute('class', 'stage-connections');
         svg.style.position = 'absolute';
         svg.style.top = '0';
         svg.style.left = '0';
@@ -342,9 +366,9 @@ class UIManager {
                     line.setAttribute('stroke', '#8b5cf6');
                     line.setAttribute('stroke-width', '3');
                     line.setAttribute('stroke-dasharray', '5,5');
-                    line.classList.add('connection-line');
-                    line.dataset.from = stageId;
-                    line.dataset.to = nextStageId;
+                    line.setAttribute('class', 'connection-line');
+                    line.setAttribute('data-from', stageId);
+                    line.setAttribute('data-to', nextStageId);
                     svg.appendChild(line);
                 });
             }
@@ -359,8 +383,8 @@ class UIManager {
     updateConnectionPositions() {
         const connections = document.querySelectorAll('.connection-line');
         connections.forEach(line => {
-            const fromStage = document.querySelector(`[data-stage-id="${line.dataset.from}"]`);
-            const toStage = document.querySelector(`[data-stage-id="${line.dataset.to}"]`);
+            const fromStage = document.querySelector(`[data-stage-id="${line.getAttribute('data-from')}"]`);
+            const toStage = document.querySelector(`[data-stage-id="${line.getAttribute('data-to')}"]`);
             
             if (fromStage && toStage) {
                 const fromRect = fromStage.getBoundingClientRect();

@@ -21,6 +21,7 @@ class GameEngine {
         // 매니저들 초기화
         this.cardManager = new CardManager();
         this.uiManager = new UIManager();
+        this.uiManager.setGameEngine(this); // UI 매니저에 게임 엔진 참조 설정
         
         this.initStageData();
         this.initCards();
@@ -147,7 +148,7 @@ class GameEngine {
     }
     
     selectCard(index) {
-        if (this.hand[index].cost > this.player.energy || this.gameOver) return;
+        if (!this.hand || !this.hand[index] || this.hand[index].cost > this.player.energy || this.gameOver) return;
         
         this.uiManager.clearSelections();
         
@@ -174,7 +175,7 @@ class GameEngine {
     }
     
     playCard() {
-        if (this.uiManager.selectedCard === null) return;
+        if (this.uiManager.selectedCard === null || !this.hand || !this.hand[this.uiManager.selectedCard]) return;
         
         const card = this.hand[this.uiManager.selectedCard];
         
