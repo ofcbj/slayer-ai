@@ -17,7 +17,7 @@ export default class MenuScene extends Phaser.Scene {
       fontSize: '72px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ffffff',
+      color: '#ffffff',
       stroke: '#ff6b6b',
       strokeThickness: 6
     });
@@ -52,7 +52,7 @@ export default class MenuScene extends Phaser.Scene {
       {
         fontSize: '20px',
         fontFamily: 'Arial, sans-serif',
-        fill: '#aaaaaa'
+        color: '#aaaaaa'
       }
     );
     description.setOrigin(0.5);
@@ -78,7 +78,7 @@ export default class MenuScene extends Phaser.Scene {
       fontSize: '28px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ffffff'
+      color: '#ffffff'
     });
     btnText.setOrigin(0.5);
 

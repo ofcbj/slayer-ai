@@ -21,7 +21,7 @@ export default class BootScene extends Phaser.Scene {
       text: 'Loading...',
       style: {
         font: '20px monospace',
-        fill: '#ffffff'
+        color: '#ffffff'
       }
     });
     loadingText.setOrigin(0.5, 0.5);
@@ -32,7 +32,7 @@ export default class BootScene extends Phaser.Scene {
       text: '0%',
       style: {
         font: '18px monospace',
-        fill: '#ffffff'
+        color: '#ffffff'
       }
     });
     percentText.setOrigin(0.5, 0.5);

@@ -25,6 +25,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
   intentIcon!: Phaser.GameObjects.Text;
   intentValue!: Phaser.GameObjects.Text;
   hpBarWidth!: number;
+  defenseText!: Phaser.GameObjects.Text;
 
   constructor(
     scene: Phaser.Scene,
@@ -62,7 +63,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
       fontSize: '18px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ffffff',
+      color: '#ffffff',
       align: 'center',
       wordWrap: { width: width - 10 }
     });
@@ -93,7 +94,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
       fontSize: '16px',
       fontFamily: 'monospace',
       fontStyle: 'bold',
-      fill: '#ffffff',
+      color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 3
     });
@@ -110,19 +111,31 @@ export default class Enemy extends Phaser.GameObjects.Container {
       fontSize: '36px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ffffff',
+      color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 4
     });
     intentValue.setOrigin(0.5);
 
-    this.add([bg, nameText, enemyImage, hpBarBg, hpBar, hpText, intentIcon, intentValue]);
+    // 방어도 표시
+    const defenseText = this.scene.add.text(width / 2 - 25, -height / 2 + 25, '', {
+      fontSize: '24px',
+      fontFamily: 'Arial, sans-serif',
+      fontStyle: 'bold',
+      color: '#4ecdc4',
+      stroke: '#000000',
+      strokeThickness: 3
+    });
+    defenseText.setOrigin(0.5);
+
+    this.add([bg, nameText, enemyImage, hpBarBg, hpBar, hpText, intentIcon, intentValue, defenseText]);
 
     this.bg = bg;
     this.hpBar = hpBar;
     this.hpText = hpText;
     this.intentIcon = intentIcon;
     this.intentValue = intentValue;
+    this.defenseText = defenseText;
     this.hpBarWidth = width - 20;
 
     this.setSize(width, height);
@@ -202,19 +215,19 @@ export default class Enemy extends Phaser.GameObjects.Container {
     if (intent.type === 'attack') {
       this.intentIcon.setText('⚔️');
       this.intentValue.setText(intent.value?.toString() || '');
-      this.intentValue.setStyle({ fill: '#ff6b6b' });
+      this.intentValue.setStyle({ color: '#ff6b6b' });
     } else if (intent.type === 'defend') {
       this.intentIcon.setText('🛡️');
       this.intentValue.setText(intent.value?.toString() || '');
-      this.intentValue.setStyle({ fill: '#4ecdc4' });
+      this.intentValue.setStyle({ color: '#4ecdc4' });
     } else if (intent.type === 'special') {
       this.intentIcon.setText('⭐');
       this.intentValue.setText(intent.value ? intent.value.toString() : '?');
-      this.intentValue.setStyle({ fill: '#f39c12' });
+      this.intentValue.setStyle({ color: '#f39c12' });
     } else {
       this.intentIcon.setText('?');
       this.intentValue.setText('');
-      this.intentValue.setStyle({ fill: '#ffffff' });
+      this.intentValue.setStyle({ color: '#ffffff' });
     }
   }
 
@@ -237,6 +250,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     }
 
     this.updateHealthBar();
+    this.updateDefenseDisplay();
 
     this.scene.tweens.add({
       targets: this,
@@ -261,24 +275,36 @@ export default class Enemy extends Phaser.GameObjects.Container {
   applyDefense(amount: number): void {
     this.defense += amount;
 
-    const defenseText = this.scene.add.text(this.x, this.y - 50, `+${amount} 🛡️`, {
+    const defensePopup = this.scene.add.text(this.x, this.y - 50, `+${amount} 🛡️`, {
       fontSize: '24px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#4ecdc4',
+      color: '#4ecdc4',
       stroke: '#000000',
       strokeThickness: 3
     });
-    defenseText.setOrigin(0.5);
+    defensePopup.setOrigin(0.5);
 
     this.scene.tweens.add({
-      targets: defenseText,
-      y: defenseText.y - 40,
+      targets: defensePopup,
+      y: defensePopup.y - 40,
       alpha: 0,
       duration: 1000,
       ease: 'Power2',
-      onComplete: () => defenseText.destroy()
+      onComplete: () => defensePopup.destroy()
     });
+
+    this.updateDefenseDisplay();
+  }
+
+  updateDefenseDisplay(): void {
+    if (this.defense > 0) {
+      this.defenseText.setText(`🛡️${this.defense}`);
+      this.defenseText.setVisible(true);
+    } else {
+      this.defenseText.setText('');
+      this.defenseText.setVisible(false);
+    }
   }
 
   showBlockedDamage(amount: number): void {
@@ -286,7 +312,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
       fontSize: '20px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#4ecdc4',
+      color: '#4ecdc4',
       stroke: '#000000',
       strokeThickness: 3
     });
@@ -320,7 +346,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
       fontSize: '32px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ff6b6b',
+      color: '#ff6b6b',
       stroke: '#000000',
       strokeThickness: 4
     });

@@ -55,7 +55,7 @@ export default class StageSelectScene extends Phaser.Scene {
       fontSize: '56px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ffffff',
+      color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 4
     }).setOrigin(0.5);
@@ -91,26 +91,26 @@ export default class StageSelectScene extends Phaser.Scene {
       fontSize: '18px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#8b5cf6'
+      color: '#8b5cf6'
     }).setOrigin(0.5, 0);
 
     const healthText = this.add.text(20, 50, `❤️ 체력: ${player.health}/${player.maxHealth}`, {
       fontSize: '20px',
       fontFamily: 'Arial, sans-serif',
-      fill: '#ff6b6b'
+      color: '#ff6b6b'
     });
 
     const energyText = this.add.text(20, 80, `⚡ 에너지: ${player.maxEnergy}`, {
       fontSize: '20px',
       fontFamily: 'Arial, sans-serif',
-      fill: '#4ecdc4'
+      color: '#4ecdc4'
     });
 
     const gameState: GameState = this.registry.get('gameState');
     const deckText = this.add.text(20, 110, `🎴 덱: ${gameState.deck.length}장`, {
       fontSize: '18px',
       fontFamily: 'Arial, sans-serif',
-      fill: '#ffffff'
+      color: '#ffffff'
     });
 
     statsContainer.add([bg, titleText, healthText, energyText, deckText]);
@@ -123,7 +123,7 @@ export default class StageSelectScene extends Phaser.Scene {
     // 스테이지를 트리 구조로 계산
     const stageTree = this.buildStageTree(stagesData);
 
-    // 세로 방향으로 배치 (위에서 아래로, 역순으로 표시)
+    // 세로 방향으로 배치 (위에서 아래로)
     const startY = 200;
     const verticalSpacing = 150;
     const maxLevels = stageTree.length;
@@ -175,7 +175,7 @@ export default class StageSelectScene extends Phaser.Scene {
     // 시작 스테이지부터 계산
     calculateDepth(1);
 
-    // 깊이별로 그룹화
+    // 깊이별로 그룹화 (역순으로 - 보스가 위, 시작이 아래)
     const maxDepth = Math.max(...Array.from(depths.values()));
     for (let depth = maxDepth; depth >= 0; depth--) {
       const levelStages: number[] = [];
@@ -200,6 +200,7 @@ export default class StageSelectScene extends Phaser.Scene {
     width: number,
     clearedStages: number[]
   ): void {
+    // 역순 트리이므로 이전 스테이지를 찾아야 함
     stageTree.forEach((level, levelIndex) => {
       const y = startY + levelIndex * verticalSpacing;
       const horizontalSpacing = Math.min(300, width / (level.length + 2));
@@ -207,24 +208,24 @@ export default class StageSelectScene extends Phaser.Scene {
       const startX = (width - totalWidth) / 2 + horizontalSpacing / 2;
 
       level.forEach((stageId, index) => {
-        const stage = stagesData[stageId];
         const x = startX + index * horizontalSpacing;
 
-        if (stage.nextStages && levelIndex < stageTree.length - 1) {
-          stage.nextStages.forEach(nextId => {
-            // 다음 레벨에서 nextId 찾기
-            const nextLevel = stageTree[levelIndex + 1];
-            const nextIndex = nextLevel.indexOf(nextId);
+        // 다음 레벨(아래쪽)에서 현재 스테이지로 연결되는 스테이지 찾기
+        if (levelIndex < stageTree.length - 1) {
+          const nextLevel = stageTree[levelIndex + 1];
+          const nextY = startY + (levelIndex + 1) * verticalSpacing;
+          const nextHorizontalSpacing = Math.min(300, width / (nextLevel.length + 2));
+          const nextTotalWidth = nextHorizontalSpacing * nextLevel.length;
+          const nextStartX = (width - nextTotalWidth) / 2 + nextHorizontalSpacing / 2;
 
-            if (nextIndex !== -1) {
-              const nextHorizontalSpacing = Math.min(300, width / (nextLevel.length + 2));
-              const nextTotalWidth = nextHorizontalSpacing * nextLevel.length;
-              const nextStartX = (width - nextTotalWidth) / 2 + nextHorizontalSpacing / 2;
+          nextLevel.forEach((nextStageId, nextIndex) => {
+            const nextStage = stagesData[nextStageId];
+            if (nextStage && nextStage.nextStages && nextStage.nextStages.includes(stageId)) {
               const nextX = nextStartX + nextIndex * nextHorizontalSpacing;
-              const nextY = startY + (levelIndex + 1) * verticalSpacing;
+              const isPathCleared = clearedStages.includes(nextStageId);
 
-              const isPathCleared = clearedStages.includes(stageId);
-              this.drawConnectionArrow(x, y + 60, nextX, nextY - 60, isPathCleared);
+              // 아래에서 위로 화살표 그리기
+              this.drawConnectionArrow(nextX, nextY - 60, x, y + 60, isPathCleared);
             }
           });
         }
@@ -405,7 +406,7 @@ export default class StageSelectScene extends Phaser.Scene {
       fontSize: '16px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ffffff'
+      color: '#ffffff'
     }).setOrigin(0.5);
 
     // 스테이지 이름
@@ -413,7 +414,7 @@ export default class StageSelectScene extends Phaser.Scene {
       fontSize: '16px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ffffff',
+      color: '#ffffff',
       align: 'center',
       stroke: '#000000',
       strokeThickness: 3
@@ -424,7 +425,7 @@ export default class StageSelectScene extends Phaser.Scene {
       const descText = this.add.text(0, 95, stage.description, {
         fontSize: '12px',
         fontFamily: 'Arial, sans-serif',
-        fill: '#94a3b8',
+        color: '#94a3b8',
         align: 'center',
         wordWrap: { width: 200 }
       }).setOrigin(0.5);
@@ -506,7 +507,7 @@ export default class StageSelectScene extends Phaser.Scene {
     const backText = this.add.text(0, 0, '← 돌아가기', {
       fontSize: '18px',
       fontFamily: 'Arial, sans-serif',
-      fill: '#ffffff'
+      color: '#ffffff'
     }).setOrigin(0.5);
 
     backContainer.add([backBg, backText]);

@@ -28,7 +28,7 @@ export default class Player extends Phaser.GameObjects.Container {
       fontSize: '24px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#4ecdc4',
+      color: '#4ecdc4',
       stroke: '#000000',
       strokeThickness: 3
     });
@@ -61,7 +61,7 @@ export default class Player extends Phaser.GameObjects.Container {
       fontSize: '28px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ff6b6b',
+      color: '#ff6b6b',
       stroke: '#000000',
       strokeThickness: 3
     });
@@ -82,7 +82,7 @@ export default class Player extends Phaser.GameObjects.Container {
       fontSize: '28px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#4ecdc4',
+      color: '#4ecdc4',
       stroke: '#000000',
       strokeThickness: 3
     });

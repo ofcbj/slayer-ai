@@ -62,7 +62,7 @@ export default class Card extends Phaser.GameObjects.Container {
         fontSize: '15px',
         fontFamily: 'Arial, sans-serif',
         fontStyle: 'bold',
-        fill: '#ffffff',
+        color: '#ffffff',
         align: 'center',
         wordWrap: { width: width - 10 }
       }
@@ -86,7 +86,7 @@ export default class Card extends Phaser.GameObjects.Container {
         fontSize: '17px',
         fontFamily: 'Arial, sans-serif',
         fontStyle: 'bold',
-        fill: '#ffffff'
+        color: '#ffffff'
       }
     );
     costText.setOrigin(0.5);
@@ -112,7 +112,7 @@ export default class Card extends Phaser.GameObjects.Container {
         fontSize: '30px',
         fontFamily: 'Arial, sans-serif',
         fontStyle: 'bold',
-        fill: this.getValueColor(),
+        color: this.getValueColor(),
         stroke: '#000000',
         strokeThickness: 4
       }
@@ -127,7 +127,7 @@ export default class Card extends Phaser.GameObjects.Container {
       {
         fontSize: '11px',
         fontFamily: 'Arial, sans-serif',
-        fill: '#cccccc',
+        color: '#cccccc',
         align: 'center',
         wordWrap: { width: width - 20 }
       }

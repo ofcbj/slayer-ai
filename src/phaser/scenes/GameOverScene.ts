@@ -59,7 +59,7 @@ export default class GameOverScene extends Phaser.Scene {
         fontSize: '96px',
         fontFamily: 'Arial, sans-serif',
         fontStyle: 'bold',
-        fill: '#2ecc71',
+        color: '#2ecc71',
         stroke: '#ffffff',
         strokeThickness: 8
       }
@@ -81,7 +81,7 @@ export default class GameOverScene extends Phaser.Scene {
     this.add.text(width / 2, height / 2, 'You have defeated the Demon Lord!', {
       fontSize: '32px',
       fontFamily: 'Arial, sans-serif',
-      fill: '#ffffff',
+      color: '#ffffff',
       align: 'center'
     }).setOrigin(0.5);
 
@@ -102,7 +102,7 @@ export default class GameOverScene extends Phaser.Scene {
         fontSize: '96px',
         fontFamily: 'Arial, sans-serif',
         fontStyle: 'bold',
-        fill: '#ff6b6b',
+        color: '#ff6b6b',
         stroke: '#000000',
         strokeThickness: 8
       }
@@ -113,7 +113,7 @@ export default class GameOverScene extends Phaser.Scene {
     this.add.text(width / 2, height / 2, 'Your journey ends here...', {
       fontSize: '32px',
       fontFamily: 'Arial, sans-serif',
-      fill: '#cccccc',
+      color: '#cccccc',
       align: 'center'
     }).setOrigin(0.5);
 
@@ -124,7 +124,7 @@ export default class GameOverScene extends Phaser.Scene {
     this.add.text(width / 2, height / 2 + 80, statsText, {
       fontSize: '24px',
       fontFamily: 'monospace',
-      fill: '#aaaaaa',
+      color: '#aaaaaa',
       align: 'center'
     }).setOrigin(0.5);
   }
@@ -184,7 +184,7 @@ export default class GameOverScene extends Phaser.Scene {
       fontSize: '24px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ffffff'
+      color: '#ffffff'
     });
     btnText.setOrigin(0.5);
 

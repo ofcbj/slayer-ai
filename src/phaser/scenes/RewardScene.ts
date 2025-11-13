@@ -58,7 +58,7 @@ export default class RewardScene extends Phaser.Scene {
       fontSize: '64px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#2ecc71',
+      color: '#2ecc71',
       stroke: '#ffffff',
       strokeThickness: 4
     }).setOrigin(0.5);
@@ -70,7 +70,7 @@ export default class RewardScene extends Phaser.Scene {
     this.add.text(width / 2, 180, 'Choose a card to add to your deck', {
       fontSize: '24px',
       fontFamily: 'Arial, sans-serif',
-      fill: '#ffffff'
+      color: '#ffffff'
     }).setOrigin(0.5);
 
     // 보상 카드 생성
@@ -168,7 +168,7 @@ export default class RewardScene extends Phaser.Scene {
       fontSize: '28px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#2ecc71',
+      color: '#2ecc71',
       stroke: '#000000',
       strokeThickness: 4
     });
@@ -198,7 +198,7 @@ export default class RewardScene extends Phaser.Scene {
       fontSize: '32px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
-      fill: '#ffffff'
+      color: '#ffffff'
     });
     text.setOrigin(0.5);
 
