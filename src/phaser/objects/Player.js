@@ -1,0 +1,186 @@
+import Phaser from 'phaser';
+
+export default class Player extends Phaser.GameObjects.Container {
+  constructor(scene, x, y) {
+    super(scene, x, y);
+
+    this.createPlayer();
+    scene.add.existing(this);
+  }
+
+  createPlayer() {
+    const width = 240;
+    const height = 240;
+
+    // 플레이어 배경
+    const bg = this.scene.add.rectangle(0, 0, width, height, 0x2a2a4e);
+    bg.setStrokeStyle(4, 0x4ecdc4);
+
+    // 플레이어 이름
+    const nameText = this.scene.add.text(0, -height/2 + 25, 'Hero', {
+      fontSize: '24px',
+      fontFamily: 'Arial, sans-serif',
+      fontStyle: 'bold',
+      fill: '#4ecdc4',
+      stroke: '#000000',
+      strokeThickness: 3
+    });
+    nameText.setOrigin(0.5);
+
+    // 플레이어 캐릭터 이미지 - 머리와 목
+    const playerHead = this.scene.add.text(0, 0, '🧙‍♂️', {
+      fontSize: '120px',
+      fontFamily: 'Arial, sans-serif'
+    });
+    playerHead.setOrigin(0.5);
+
+    // 간단한 옷깃 표현
+    const playerCollar = this.scene.add.text(0, 55, '👕', {
+      fontSize: '60px',
+      fontFamily: 'Arial, sans-serif'
+    });
+    playerCollar.setOrigin(0.5);
+
+    // HP 컨테이너 (왼쪽 하단)
+    const hpContainer = this.scene.add.container(-width/2 + 70, height/2 - 40);
+
+    const hpIcon = this.scene.add.text(0, 0, '❤️', {
+      fontSize: '30px',
+      fontFamily: 'Arial, sans-serif'
+    });
+    hpIcon.setOrigin(0.5);
+
+    this.healthText = this.scene.add.text(25, 0, '100', {
+      fontSize: '28px',
+      fontFamily: 'Arial, sans-serif',
+      fontStyle: 'bold',
+      fill: '#ff6b6b',
+      stroke: '#000000',
+      strokeThickness: 3
+    });
+    this.healthText.setOrigin(0, 0.5);
+
+    hpContainer.add([hpIcon, this.healthText]);
+
+    // Defense 컨테이너 (오른쪽 하단)
+    const defContainer = this.scene.add.container(width/2 - 70, height/2 - 40);
+
+    const defIcon = this.scene.add.text(0, 0, '🛡️', {
+      fontSize: '30px',
+      fontFamily: 'Arial, sans-serif'
+    });
+    defIcon.setOrigin(0.5);
+
+    this.defenseText = this.scene.add.text(25, 0, '0', {
+      fontSize: '28px',
+      fontFamily: 'Arial, sans-serif',
+      fontStyle: 'bold',
+      fill: '#4ecdc4',
+      stroke: '#000000',
+      strokeThickness: 3
+    });
+    this.defenseText.setOrigin(0, 0.5);
+
+    defContainer.add([defIcon, this.defenseText]);
+
+    this.add([bg, nameText, playerHead, hpContainer, defContainer]);
+
+    this.bg = bg;
+    this.playerHead = playerHead;
+    this.hpContainer = hpContainer;
+    this.defContainer = defContainer;
+    this.setSize(width, height);
+  }
+
+  updateStats(health, defense) {
+    this.healthText.setText(health.toString());
+    this.defenseText.setText(defense.toString());
+  }
+
+  playHitAnimation(callback) {
+    // 피격 애니메이션
+    this.scene.tweens.add({
+      targets: this,
+      x: this.x + 15,
+      duration: 60,
+      yoyo: true,
+      repeat: 2,
+      onComplete: () => {
+        if (callback) callback();
+      }
+    });
+
+    // 빨간색 플래시
+    this.scene.tweens.add({
+      targets: this.bg,
+      fillAlpha: 0.3,
+      duration: 60,
+      yoyo: true,
+      repeat: 2
+    });
+
+    // 이미지 흔들림
+    this.scene.tweens.add({
+      targets: [this.playerHead],
+      angle: -10,
+      duration: 60,
+      yoyo: true,
+      repeat: 2,
+      onComplete: () => {
+        this.playerHead.setAngle(0);
+      }
+    });
+  }
+
+  playDefendAnimation() {
+    // 방어 애니메이션 - 푸른 빛
+    const shield = this.scene.add.circle(0, 0, 120, 0x4ecdc4, 0.3);
+    this.add(shield);
+
+    this.scene.tweens.add({
+      targets: shield,
+      scaleX: 1.3,
+      scaleY: 1.3,
+      alpha: 0,
+      duration: 600,
+      ease: 'Power2',
+      onComplete: () => shield.destroy()
+    });
+  }
+
+  playHealAnimation() {
+    // 치유 애니메이션 - 녹색 빛
+    for (let i = 0; i < 10; i++) {
+      const angle = (Math.PI * 2 * i) / 10;
+      const particle = this.scene.add.circle(
+        this.x + Math.cos(angle) * 80,
+        this.y + Math.sin(angle) * 80,
+        6,
+        0x2ecc71
+      );
+
+      this.scene.tweens.add({
+        targets: particle,
+        x: this.x,
+        y: this.y,
+        alpha: 0,
+        scale: 0,
+        duration: 800,
+        ease: 'Power2',
+        onComplete: () => particle.destroy()
+      });
+    }
+  }
+
+  idle() {
+    // 아이들 애니메이션 - 부드러운 상하 움직임 (머리)
+    this.scene.tweens.add({
+      targets: this.playerHead,
+      y: -15,
+      duration: 2000,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1
+    });
+  }
+}
