@@ -1,0 +1,101 @@
+{
+  "드래곤 라이더": [
+    {
+      "turn": 1,
+      "action": "attack",
+      "damage": 18,
+      "defense": 15,
+      "intent": "드래곤 브레스 (18 피해, 15 방어)"
+    },
+    {
+      "turn": 2,
+      "action": "charge",
+      "damage": 0,
+      "defense": 25,
+      "intent": "차지 중... (25 방어)"
+    },
+    {
+      "turn": 3,
+      "action": "devastate",
+      "damage": 35,
+      "defense": 0,
+      "intent": "파괴의 일격 (35 피해)"
+    }
+  ],
+  "그림자 군주": [
+    {
+      "turn": 1,
+      "action": "shadow_blast",
+      "damage": 20,
+      "defense": 20,
+      "intent": "그림자 폭풍 (20 피해, 20 방어)"
+    },
+    {
+      "turn": 2,
+      "action": "summon",
+      "damage": 0,
+      "defense": 0,
+      "intent": "그림자 소환"
+    },
+    {
+      "turn": 3,
+      "action": "dark_ritual",
+      "damage": 15,
+      "defense": 30,
+      "intent": "어둠의 의식 (15 피해, 30 방어)"
+    }
+  ],
+  "화염 대마법사": [
+    {
+      "turn": 1,
+      "action": "meteor",
+      "damage": 22,
+      "defense": 0,
+      "intent": "메테오 (22 피해)"
+    },
+    {
+      "turn": 2,
+      "action": "fire_shield",
+      "damage": 0,
+      "defense": 20,
+      "intent": "화염 방패 (20 방어)"
+    },
+    {
+      "turn": 3,
+      "action": "inferno",
+      "damage": 30,
+      "defense": 0,
+      "intent": "지옥불 (30 피해)"
+    }
+  ],
+  "마왕": [
+    {
+      "turn": 1,
+      "action": "dark_power",
+      "damage": 25,
+      "defense": 25,
+      "intent": "마왕의 분노 (25 피해, 25 방어)"
+    },
+    {
+      "turn": 2,
+      "action": "curse",
+      "damage": 0,
+      "defense": 0,
+      "intent": "저주 시전"
+    },
+    {
+      "turn": 3,
+      "action": "apocalypse",
+      "damage": 40,
+      "defense": 0,
+      "intent": "종말의 일격 (40 피해)"
+    },
+    {
+      "turn": 4,
+      "action": "regenerate",
+      "damage": 0,
+      "defense": 0,
+      "intent": "재생 중..."
+    }
+  ]
+}

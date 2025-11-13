@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카드 배틀 게임 (최종 리팩토링)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- 상단 UI -->
+        <div class="top-ui">
+            <div class="player-stats">
+                <div class="stat-item">
+                    <span>❤️</span>
+                    <span>체력: <span id="playerHp">80</span></span>
+                </div>
+                <div class="stat-item">
+                    <span>⚡</span>
+                    <span>에너지: <span id="playerEnergy">3</span></span>
+                </div>
+                <div class="stat-item">
+                    <span>🛡️</span>
+                    <span>방어: <span id="playerBlock">0</span></span>
+                </div>
+                <div class="stat-item">
+                    <span>🏆</span>
+                    <span>스테이지: <span id="currentStage">1</span></span>
+                </div>
+            </div>
+            <div class="enemy-stats">
+                <div class="stat-item clickable" onclick="gameEngine && gameEngine.showDeckModal()">
+                    <span>🎴</span>
+                    <span>덱: <span id="deckCount">7</span></span>
+                </div>
+                <div class="stat-item clickable" onclick="gameEngine && gameEngine.showDiscardModal()">
+                    <span>🗑️</span>
+                    <span>버린 카드: <span id="discardCount">0</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 전투 필드 -->
+        <div class="battlefield">
+            <div class="enemy-area" id="enemyArea">
+                <!-- 적들이 여기에 생성됩니다 -->
+            </div>
+        </div>
+
+        <!-- 카드 핸드 -->
+        <div class="hand-area" id="handArea">
+            <!-- 카드들이 여기에 생성됩니다 -->
+        </div>
+
+        <!-- 컨트롤 버튼 -->
+        <div class="controls">
+            <button class="btn" id="endTurnBtn" onclick="gameEngine && gameEngine.endTurn()">턴 종료</button>
+            <button class="btn" onclick="gameEngine && gameEngine.showStageSelect()">스테이지 선택</button>
+            <button class="btn" onclick="gameEngine && gameEngine.restartGame()">새 게임</button>
+        </div>
+
+        <!-- 게임 오버 모달 -->
+        <div class="game-over-modal" id="gameOverModal">
+            <div class="modal-content">
+                <div class="modal-title" id="gameOverTitle"></div>
+                <p id="gameOverMessage"></p>
+                <div id="rewardSection" style="display: none;">
+                    <div class="reward-message">보상 카드를 선택하세요!</div>
+                    <div class="reward-cards" id="rewardCards"></div>
+                </div>
+                <button class="btn" id="modalButton" onclick="gameEngine && gameEngine.restartGame()">다시 시작</button>
+            </div>
+        </div>
+
+        <!-- 카드 리스트 모달 -->
+        <div class="card-list-modal" id="cardListModal">
+            <div class="card-list-content">
+                <div class="card-list-title" id="cardListTitle">덱 카드 목록</div>
+                <div class="card-grid" id="cardGrid"></div>
+                <button class="close-modal-btn" onclick="gameEngine && gameEngine.closeCardListModal()">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ES6 모듈로 메인 파일 로드 (최종 리팩토링 버전) -->
+    <script type="module" src="./src/main-refactored.js"></script>
+</body>
+</html>
