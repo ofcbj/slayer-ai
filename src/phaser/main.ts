@@ -7,7 +7,7 @@ import BattleScene from './scenes/BattleScene.js';
 import RewardScene from './scenes/RewardScene.js';
 import GameOverScene from './scenes/GameOverScene.js';
 
-const config = {
+const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 1920,
   height: 1080,

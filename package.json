@@ -2,7 +2,7 @@
   "name": "slayer-ai",
   "version": "1.0.0",
   "description": "Slay the Spire style card battle game with Phaser 3",
-  "main": "src/main-refactored.js",
+  "main": "src/phaser/main.ts",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,6 +13,8 @@
     "phaser": "^3.80.1"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3",
     "vite": "^5.0.0"
   }
 }

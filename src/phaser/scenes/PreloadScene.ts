@@ -1,11 +1,24 @@
 import Phaser from 'phaser';
 
+interface GameState {
+  player: {
+    maxHealth: number;
+    health: number;
+    energy: number;
+    maxEnergy: number;
+    defense: number;
+  };
+  deck: unknown[];
+  currentStage: number;
+  stagesCleared: unknown[];
+}
+
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
     super({ key: 'PreloadScene' });
   }
 
-  preload() {
+  preload(): void {
     // 게임 데이터 로드
     this.load.json('cards', '/data/cards.json');
     this.load.json('enemies', '/data/enemies.json');
@@ -18,7 +31,7 @@ export default class PreloadScene extends Phaser.Scene {
     // this.load.audio('attack', '/assets/sounds/attack.mp3');
   }
 
-  create() {
+  create(): void {
     // 로드된 데이터를 전역 레지스트리에 저장
     this.registry.set('cardsData', this.cache.json.get('cards'));
     this.registry.set('enemiesData', this.cache.json.get('enemies'));
@@ -26,7 +39,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.registry.set('bossPatternsData', this.cache.json.get('bossPatterns'));
 
     // 게임 상태 초기화
-    this.registry.set('gameState', {
+    const gameState: GameState = {
       player: {
         maxHealth: 100,
         health: 100,
@@ -37,7 +50,9 @@ export default class PreloadScene extends Phaser.Scene {
       deck: [],
       currentStage: 0,
       stagesCleared: []
-    });
+    };
+
+    this.registry.set('gameState', gameState);
 
     // 메뉴 씬으로 이동
     this.scene.start('MenuScene');

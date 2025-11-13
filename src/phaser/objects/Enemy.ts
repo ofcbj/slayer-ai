@@ -1,14 +1,45 @@
 import Phaser from 'phaser';
 
+interface EnemyData {
+  name: string;
+  health?: number;
+  hp?: number;
+}
+
+interface Intent {
+  type: 'attack' | 'defend' | 'special' | string;
+  value?: number;
+}
+
 export default class Enemy extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, enemyData, index) {
+  enemyData: EnemyData;
+  enemyIndex: number;
+  health: number;
+  maxHealth: number;
+  defense: number;
+  intent: Intent | null;
+  isTargeted: boolean;
+  bg!: Phaser.GameObjects.Rectangle;
+  hpBar!: Phaser.GameObjects.Rectangle;
+  hpText!: Phaser.GameObjects.Text;
+  intentIcon!: Phaser.GameObjects.Text;
+  intentValue!: Phaser.GameObjects.Text;
+  hpBarWidth!: number;
+
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    enemyData: EnemyData,
+    index: number
+  ) {
     super(scene, x, y);
 
     this.enemyData = enemyData;
     this.enemyIndex = index;
-    this.health = enemyData.health || enemyData.hp; // hp를 health로 변환
-    this.maxHealth = enemyData.health || enemyData.hp;
-    this.defense = 0; // 방어력 초기화
+    this.health = enemyData.health || enemyData.hp || 0;
+    this.maxHealth = enemyData.health || enemyData.hp || 0;
+    this.defense = 0;
     this.intent = null;
     this.isTargeted = false;
 
@@ -18,7 +49,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     scene.add.existing(this);
   }
 
-  createEnemy() {
+  createEnemy(): void {
     const width = 180;
     const height = 240;
 
@@ -27,7 +58,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     bg.setStrokeStyle(3, 0xff6b6b);
 
     // 적 이름
-    const nameText = this.scene.add.text(0, -height/2 + 25, this.enemyData.name, {
+    const nameText = this.scene.add.text(0, -height / 2 + 25, this.enemyData.name, {
       fontSize: '18px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
@@ -45,12 +76,12 @@ export default class Enemy extends Phaser.GameObjects.Container {
     enemyImage.setOrigin(0.5);
 
     // 체력 바 배경
-    const hpBarBg = this.scene.add.rectangle(0, height/2 - 40, width - 20, 20, 0x333333);
+    const hpBarBg = this.scene.add.rectangle(0, height / 2 - 40, width - 20, 20, 0x333333);
 
     // 체력 바
     const hpBar = this.scene.add.rectangle(
       -(width - 20) / 2,
-      height/2 - 40,
+      height / 2 - 40,
       width - 20,
       20,
       0xff6b6b
@@ -58,7 +89,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     hpBar.setOrigin(0, 0.5);
 
     // 체력 텍스트
-    const hpText = this.scene.add.text(0, height/2 - 40, `${this.health}/${this.maxHealth}`, {
+    const hpText = this.scene.add.text(0, height / 2 - 40, `${this.health}/${this.maxHealth}`, {
       fontSize: '16px',
       fontFamily: 'monospace',
       fontStyle: 'bold',
@@ -97,9 +128,8 @@ export default class Enemy extends Phaser.GameObjects.Container {
     this.setSize(width, height);
   }
 
-  getEnemyImage() {
-    // 적 이름에 따른 이모지 매핑
-    const enemyImageMap = {
+  getEnemyImage(): string {
+    const enemyImageMap: Record<string, string> = {
       '고블린 전사': '👺',
       '오크 방패병': '🛡️',
       '마법사': '🧙',
@@ -122,7 +152,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     return enemyImageMap[this.enemyData.name] || '👾';
   }
 
-  setupInteraction() {
+  setupInteraction(): void {
     this.bg.setInteractive({ useHandCursor: true });
 
     this.bg.on('pointerover', () => {
@@ -142,7 +172,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     });
   }
 
-  target() {
+  target(): void {
     this.isTargeted = true;
     this.bg.setStrokeStyle(5, 0xffff00);
 
@@ -154,7 +184,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     });
   }
 
-  untarget() {
+  untarget(): void {
     this.isTargeted = false;
     this.bg.setStrokeStyle(3, 0xff6b6b);
 
@@ -166,16 +196,16 @@ export default class Enemy extends Phaser.GameObjects.Container {
     });
   }
 
-  setIntent(intent) {
+  setIntent(intent: Intent): void {
     this.intent = intent;
 
     if (intent.type === 'attack') {
       this.intentIcon.setText('⚔️');
-      this.intentValue.setText(intent.value.toString());
+      this.intentValue.setText(intent.value?.toString() || '');
       this.intentValue.setStyle({ fill: '#ff6b6b' });
     } else if (intent.type === 'defend') {
       this.intentIcon.setText('🛡️');
-      this.intentValue.setText(intent.value.toString());
+      this.intentValue.setText(intent.value?.toString() || '');
       this.intentValue.setStyle({ fill: '#4ecdc4' });
     } else if (intent.type === 'special') {
       this.intentIcon.setText('⭐');
@@ -188,8 +218,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     }
   }
 
-  takeDamage(amount) {
-    // 방어력으로 먼저 흡수
+  takeDamage(amount: number): void {
     let damageToHealth = amount;
 
     if (this.defense > 0) {
@@ -197,13 +226,11 @@ export default class Enemy extends Phaser.GameObjects.Container {
       this.defense -= blockedDamage;
       damageToHealth = amount - blockedDamage;
 
-      // 방어력이 데미지를 막은 경우 특수 표시
       if (blockedDamage > 0) {
         this.showBlockedDamage(blockedDamage);
       }
     }
 
-    // 남은 데미지를 체력에 적용
     if (damageToHealth > 0) {
       this.health = Math.max(0, this.health - damageToHealth);
       this.showDamageNumber(damageToHealth);
@@ -211,7 +238,6 @@ export default class Enemy extends Phaser.GameObjects.Container {
 
     this.updateHealthBar();
 
-    // 피격 애니메이션
     this.scene.tweens.add({
       targets: this,
       x: this.x + 10,
@@ -220,7 +246,6 @@ export default class Enemy extends Phaser.GameObjects.Container {
       repeat: 3
     });
 
-    // 흔들림 효과
     this.scene.tweens.add({
       targets: this.bg,
       alpha: 0.5,
@@ -233,11 +258,9 @@ export default class Enemy extends Phaser.GameObjects.Container {
     }
   }
 
-  applyDefense(amount) {
-    // 방어력 증가
+  applyDefense(amount: number): void {
     this.defense += amount;
 
-    // 방어력 증가 표시
     const defenseText = this.scene.add.text(this.x, this.y - 50, `+${amount} 🛡️`, {
       fontSize: '24px',
       fontFamily: 'Arial, sans-serif',
@@ -258,7 +281,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     });
   }
 
-  showBlockedDamage(amount) {
+  showBlockedDamage(amount: number): void {
     const blockText = this.scene.add.text(this.x + 30, this.y - 50, `-${amount} 🛡️`, {
       fontSize: '20px',
       fontFamily: 'Arial, sans-serif',
@@ -279,7 +302,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     });
   }
 
-  updateHealthBar() {
+  updateHealthBar(): void {
     const healthPercent = this.health / this.maxHealth;
     const newWidth = this.hpBarWidth * healthPercent;
 
@@ -292,7 +315,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     this.hpText.setText(`${this.health}/${this.maxHealth}`);
   }
 
-  showDamageNumber(amount) {
+  showDamageNumber(amount: number): void {
     const damageText = this.scene.add.text(this.x, this.y - 50, `-${amount}`, {
       fontSize: '32px',
       fontFamily: 'Arial, sans-serif',
@@ -313,8 +336,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     });
   }
 
-  playAttackAnimation(callback) {
-    // 공격 애니메이션
+  playAttackAnimation(callback?: () => void): void {
     this.scene.tweens.add({
       targets: this,
       x: this.x + 40,
@@ -328,11 +350,10 @@ export default class Enemy extends Phaser.GameObjects.Container {
       }
     });
 
-    // 화면 흔들림
     this.scene.cameras.main.shake(300, 0.005);
   }
 
-  playDeathAnimation() {
+  playDeathAnimation(): void {
     this.scene.tweens.add({
       targets: this,
       alpha: 0,
@@ -346,11 +367,10 @@ export default class Enemy extends Phaser.GameObjects.Container {
       }
     });
 
-    // 폭발 파티클
     this.createDeathParticles();
   }
 
-  createDeathParticles() {
+  createDeathParticles(): void {
     const particleCount = 30;
     const color = 0xff6b6b;
 
@@ -377,7 +397,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
     }
   }
 
-  isDead() {
+  isDead(): boolean {
     return this.health <= 0;
   }
 }

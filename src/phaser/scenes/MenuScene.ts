@@ -5,15 +5,15 @@ export default class MenuScene extends Phaser.Scene {
     super({ key: 'MenuScene' });
   }
 
-  create() {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+  create(): void {
+    const width: number = this.cameras.main.width;
+    const height: number = this.cameras.main.height;
 
     // 배경
     this.add.rectangle(0, 0, width, height, 0x1a1a2e).setOrigin(0);
 
     // 타이틀
-    const title = this.add.text(width / 2, height / 3, 'SLAYER AI', {
+    const title: Phaser.GameObjects.Text = this.add.text(width / 2, height / 3, 'SLAYER AI', {
       fontSize: '72px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
@@ -35,7 +35,7 @@ export default class MenuScene extends Phaser.Scene {
     });
 
     // 시작 버튼
-    const startButton = this.createButton(
+    const startButton: Phaser.GameObjects.Container = this.createButton(
       width / 2,
       height / 2 + 50,
       'START GAME',
@@ -45,7 +45,7 @@ export default class MenuScene extends Phaser.Scene {
     );
 
     // 설명 텍스트
-    const description = this.add.text(
+    const description: Phaser.GameObjects.Text = this.add.text(
       width / 2,
       height - 100,
       'A deck-building roguelike card game',
@@ -61,15 +61,20 @@ export default class MenuScene extends Phaser.Scene {
     this.createBackgroundParticles();
   }
 
-  createButton(x, y, text, onClick) {
-    const button = this.add.container(x, y);
+  createButton(
+    x: number,
+    y: number,
+    text: string,
+    onClick: () => void
+  ): Phaser.GameObjects.Container {
+    const button: Phaser.GameObjects.Container = this.add.container(x, y);
 
     // 버튼 배경
-    const bg = this.add.rectangle(0, 0, 300, 60, 0x4ecdc4);
+    const bg: Phaser.GameObjects.Rectangle = this.add.rectangle(0, 0, 300, 60, 0x4ecdc4);
     bg.setStrokeStyle(3, 0xffffff);
 
     // 버튼 텍스트
-    const btnText = this.add.text(0, 0, text, {
+    const btnText: Phaser.GameObjects.Text = this.add.text(0, 0, text, {
       fontSize: '28px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
@@ -116,16 +121,16 @@ export default class MenuScene extends Phaser.Scene {
     return button;
   }
 
-  createBackgroundParticles() {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+  createBackgroundParticles(): void {
+    const width: number = this.cameras.main.width;
+    const height: number = this.cameras.main.height;
 
     // 간단한 파티클 효과 (원으로 대체)
-    for (let i = 0; i < 30; i++) {
-      const x = Phaser.Math.Between(0, width);
-      const y = Phaser.Math.Between(0, height);
-      const size = Phaser.Math.Between(2, 5);
-      const particle = this.add.circle(x, y, size, 0xffffff, 0.3);
+    for (let i: number = 0; i < 30; i++) {
+      const x: number = Phaser.Math.Between(0, width);
+      const y: number = Phaser.Math.Between(0, height);
+      const size: number = Phaser.Math.Between(2, 5);
+      const particle: Phaser.GameObjects.Arc = this.add.circle(x, y, size, 0xffffff, 0.3);
 
       this.tweens.add({
         targets: particle,

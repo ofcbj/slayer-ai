@@ -1,7 +1,23 @@
 import Phaser from 'phaser';
 
+interface CardData {
+  name: string;
+  cost: number;
+  type: string;
+  value: number;
+  description?: string;
+  rawData?: {
+    image?: string;
+  };
+}
+
 export default class Card extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, cardData) {
+  private cardData: CardData;
+  private isSelected: boolean;
+  private originalY: number;
+  private bg!: Phaser.GameObjects.Rectangle;
+
+  constructor(scene: Phaser.Scene, x: number, y: number, cardData: CardData) {
     super(scene, x, y);
 
     this.cardData = cardData;
@@ -14,66 +30,108 @@ export default class Card extends Phaser.GameObjects.Container {
     scene.add.existing(this);
   }
 
-  createCard() {
-    const width = 140;
-    const height = 200;
+  private createCard(): void {
+    const width: number = 140;
+    const height: number = 200;
 
     // 카드 배경
-    const bg = this.scene.add.rectangle(0, 0, width, height, 0x2a2a4e);
+    const bg: Phaser.GameObjects.Rectangle = this.scene.add.rectangle(
+      0,
+      0,
+      width,
+      height,
+      0x2a2a4e
+    );
     bg.setStrokeStyle(3, this.getCardColor());
 
     // 카드 타입에 따른 상단 배경
-    const headerBg = this.scene.add.rectangle(0, -height/2 + 18, width, 36, this.getCardColor());
+    const headerBg: Phaser.GameObjects.Rectangle = this.scene.add.rectangle(
+      0,
+      -height / 2 + 18,
+      width,
+      36,
+      this.getCardColor()
+    );
 
     // 카드 이름
-    const nameText = this.scene.add.text(0, -height/2 + 18, this.cardData.name, {
-      fontSize: '15px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      fill: '#ffffff',
-      align: 'center',
-      wordWrap: { width: width - 10 }
-    });
+    const nameText: Phaser.GameObjects.Text = this.scene.add.text(
+      0,
+      -height / 2 + 18,
+      this.cardData.name,
+      {
+        fontSize: '15px',
+        fontFamily: 'Arial, sans-serif',
+        fontStyle: 'bold',
+        fill: '#ffffff',
+        align: 'center',
+        wordWrap: { width: width - 10 }
+      }
+    );
     nameText.setOrigin(0.5);
 
     // 코스트
-    const costCircle = this.scene.add.circle(-width/2 + 20, -height/2 + 18, 15, 0x4ecdc4);
+    const costCircle: Phaser.GameObjects.Arc = this.scene.add.circle(
+      -width / 2 + 20,
+      -height / 2 + 18,
+      15,
+      0x4ecdc4
+    );
     costCircle.setStrokeStyle(2, 0xffffff);
 
-    const costText = this.scene.add.text(-width/2 + 20, -height/2 + 18, this.cardData.cost.toString(), {
-      fontSize: '17px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      fill: '#ffffff'
-    });
+    const costText: Phaser.GameObjects.Text = this.scene.add.text(
+      -width / 2 + 20,
+      -height / 2 + 18,
+      this.cardData.cost.toString(),
+      {
+        fontSize: '17px',
+        fontFamily: 'Arial, sans-serif',
+        fontStyle: 'bold',
+        fill: '#ffffff'
+      }
+    );
     costText.setOrigin(0.5);
 
     // 카드 이미지 (이모지) - 중앙에 크게 표시
-    const cardImage = this.scene.add.text(0, -20, this.getCardImage(), {
-      fontSize: '44px',
-      fontFamily: 'Arial, sans-serif'
-    });
+    const cardImage: Phaser.GameObjects.Text = this.scene.add.text(
+      0,
+      -20,
+      this.getCardImage(),
+      {
+        fontSize: '44px',
+        fontFamily: 'Arial, sans-serif'
+      }
+    );
     cardImage.setOrigin(0.5);
 
     // 카드 값 (데미지, 방어도 등) - 이미지 아래
-    const valueText = this.scene.add.text(0, 25, this.getValueDisplay(), {
-      fontSize: '30px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      fill: this.getValueColor(),
-      stroke: '#000000',
-      strokeThickness: 4
-    });
+    const valueText: Phaser.GameObjects.Text = this.scene.add.text(
+      0,
+      25,
+      this.getValueDisplay(),
+      {
+        fontSize: '30px',
+        fontFamily: 'Arial, sans-serif',
+        fontStyle: 'bold',
+        fill: this.getValueColor(),
+        stroke: '#000000',
+        strokeThickness: 4
+      }
+    );
     valueText.setOrigin(0.5);
 
     // 카드 효과 설명 - 하단
-    const descText = this.scene.add.text(0, 62, this.getEffectDescription(), {
-      fontSize: '11px',
-      fontFamily: 'Arial, sans-serif',
-      fill: '#cccccc',
-      align: 'center',
-      wordWrap: { width: width - 20 }
-    });
+    const descText: Phaser.GameObjects.Text = this.scene.add.text(
+      0,
+      62,
+      this.getEffectDescription(),
+      {
+        fontSize: '11px',
+        fontFamily: 'Arial, sans-serif',
+        fill: '#cccccc',
+        align: 'center',
+        wordWrap: { width: width - 20 }
+      }
+    );
     descText.setOrigin(0.5);
 
     this.add([bg, headerBg, nameText, costCircle, costText, cardImage, valueText, descText]);
@@ -82,14 +140,14 @@ export default class Card extends Phaser.GameObjects.Container {
     this.setSize(width, height);
   }
 
-  getCardImage() {
+  private getCardImage(): string {
     // rawData에서 이미지(이모지) 가져오기
     if (this.cardData.rawData && this.cardData.rawData.image) {
       return this.cardData.rawData.image;
     }
 
     // 기본 이모지 (타입별)
-    const type = this.cardData.type;
+    const type: string = this.cardData.type;
     if (type === '공격') return '⚔️';
     if (type === '방어') return '🛡️';
     if (type === '치유') return '💚';
@@ -97,8 +155,8 @@ export default class Card extends Phaser.GameObjects.Container {
     return '✨';
   }
 
-  getCardColor() {
-    const type = this.cardData.type;
+  private getCardColor(): number {
+    const type: string = this.cardData.type;
     if (type === '공격') return 0xff6b6b;
     if (type === '방어') return 0x4ecdc4;
     if (type === '치유') return 0x2ecc71;
@@ -106,8 +164,8 @@ export default class Card extends Phaser.GameObjects.Container {
     return 0x9b59b6;
   }
 
-  getValueColor() {
-    const type = this.cardData.type;
+  private getValueColor(): string {
+    const type: string = this.cardData.type;
     if (type === '공격') return '#ff6b6b';
     if (type === '방어') return '#4ecdc4';
     if (type === '치유') return '#2ecc71';
@@ -115,9 +173,9 @@ export default class Card extends Phaser.GameObjects.Container {
     return '#ffffff';
   }
 
-  getEffectDescription() {
-    const type = this.cardData.type;
-    const value = this.cardData.value;
+  private getEffectDescription(): string {
+    const type: string = this.cardData.type;
+    const value: number = this.cardData.value;
 
     if (type === '공격') return `Deal ${value} damage`;
     if (type === '방어') return `Gain ${value} defense`;
@@ -126,9 +184,9 @@ export default class Card extends Phaser.GameObjects.Container {
     return this.cardData.description || '';
   }
 
-  getValueDisplay() {
-    const type = this.cardData.type;
-    const value = this.cardData.value;
+  private getValueDisplay(): string {
+    const type: string = this.cardData.type;
+    const value: number = this.cardData.value;
 
     if (type === '공격') return value.toString();
     if (type === '방어') return value.toString();
@@ -137,7 +195,7 @@ export default class Card extends Phaser.GameObjects.Container {
     return '';
   }
 
-  setupInteraction() {
+  private setupInteraction(): void {
     this.bg.setInteractive({ useHandCursor: true });
 
     this.bg.on('pointerover', () => {
@@ -169,7 +227,7 @@ export default class Card extends Phaser.GameObjects.Container {
     });
   }
 
-  select() {
+  public select(): void {
     this.isSelected = true;
     this.bg.setStrokeStyle(4, 0xffff00);
 
@@ -181,7 +239,7 @@ export default class Card extends Phaser.GameObjects.Container {
     });
   }
 
-  deselect() {
+  public deselect(): void {
     this.isSelected = false;
     this.bg.setStrokeStyle(3, this.getCardColor());
 
@@ -194,7 +252,7 @@ export default class Card extends Phaser.GameObjects.Container {
     });
   }
 
-  playEffect(targetX, targetY, callback) {
+  public playEffect(targetX: number, targetY: number, callback?: () => void): void {
     // 카드가 목표로 날아가는 애니메이션
     this.scene.tweens.add({
       targets: this,
@@ -215,14 +273,14 @@ export default class Card extends Phaser.GameObjects.Container {
     this.createParticleEffect();
   }
 
-  createParticleEffect() {
-    const color = this.getCardColor();
-    const particleCount = 20;
+  private createParticleEffect(): void {
+    const color: number = this.getCardColor();
+    const particleCount: number = 20;
 
-    for (let i = 0; i < particleCount; i++) {
-      const angle = (Math.PI * 2 * i) / particleCount;
-      const speed = Phaser.Math.Between(50, 150);
-      const particle = this.scene.add.circle(
+    for (let i: number = 0; i < particleCount; i++) {
+      const angle: number = (Math.PI * 2 * i) / particleCount;
+      const speed: number = Phaser.Math.Between(50, 150);
+      const particle: Phaser.GameObjects.Arc = this.scene.add.circle(
         this.x,
         this.y,
         Phaser.Math.Between(3, 8),

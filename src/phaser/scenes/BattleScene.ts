@@ -1,14 +1,93 @@
 import Phaser from 'phaser';
-import Card from '../objects/Card.js';
-import Enemy from '../objects/Enemy.js';
-import Player from '../objects/Player.js';
+import Card from '../objects/Card';
+import Enemy from '../objects/Enemy';
+import Player from '../objects/Player';
+
+// Interfaces
+interface CardData {
+  name: string;
+  damage?: number;
+  block?: number;
+  heal?: number;
+  energy?: number;
+  cost: number;
+  allEnemies?: boolean;
+  hits?: number;
+  selfDamage?: number;
+  description: string;
+}
+
+interface NormalizedCardData {
+  name: string;
+  type: string;
+  cost: number;
+  value: number;
+  allEnemies: boolean;
+  hits: number;
+  selfDamage: number;
+  description: string;
+  rawData: CardData;
+}
+
+interface EnemyIntent {
+  type: 'attack' | 'defend';
+  value: number;
+}
+
+interface EnemyData {
+  attack?: number;
+  defense?: number;
+}
+
+interface StageData {
+  id: string;
+  data: {
+    enemies: string[];
+    type: string;
+    nextStages?: string[];
+  };
+}
+
+interface GameState {
+  player: {
+    health: number;
+    maxHealth: number;
+    energy: number;
+    maxEnergy: number;
+    defense: number;
+  };
+  deck: CardData[];
+  stagesCleared: string[];
+  currentStage: string;
+}
+
+interface EnergyOrbData {
+  orb: Phaser.GameObjects.Circle;
+  glow: Phaser.GameObjects.Circle;
+  active: boolean;
+}
 
 export default class BattleScene extends Phaser.Scene {
+  private selectedCard: Card | null = null;
+  private hand: Card[] = [];
+  private deck: CardData[] = [];
+  private discardPile: CardData[] = [];
+  private enemies: Enemy[] = [];
+  private turn: 'player' | 'enemy' = 'player';
+  private gameState!: GameState;
+  private selectedStage!: StageData;
+  private playerCharacter!: Player;
+  private handContainer!: Phaser.GameObjects.Container;
+  private energyContainer!: Phaser.GameObjects.Container;
+  private energyOrbs: EnergyOrbData[] = [];
+  private deckText!: Phaser.GameObjects.Text;
+  private endTurnButton!: Phaser.GameObjects.Container;
+
   constructor() {
     super({ key: 'BattleScene' });
   }
 
-  init() {
+  init(): void {
     this.selectedCard = null;
     this.hand = [];
     this.deck = [];
@@ -17,7 +96,7 @@ export default class BattleScene extends Phaser.Scene {
     this.turn = 'player';
   }
 
-  create() {
+  create(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
@@ -52,7 +131,7 @@ export default class BattleScene extends Phaser.Scene {
     this.startPlayerTurn();
   }
 
-  createPlayerCharacter() {
+  private createPlayerCharacter(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
@@ -61,9 +140,7 @@ export default class BattleScene extends Phaser.Scene {
     this.playerCharacter.idle(); // 아이들 애니메이션 시작
   }
 
-  createPlayerUI() {
-    const width = this.cameras.main.width;
-
+  private createPlayerUI(): void {
     // Energy (오른쪽)
     this.createEnergyUI();
 
@@ -71,7 +148,7 @@ export default class BattleScene extends Phaser.Scene {
     this.createEndTurnButton();
   }
 
-  createEnergyUI() {
+  private createEnergyUI(): void {
     const width = this.cameras.main.width;
     const x = width - 300;
     const y = 580;
@@ -109,7 +186,7 @@ export default class BattleScene extends Phaser.Scene {
     this.energyContainer = energyContainer;
   }
 
-  createEndTurnButton() {
+  private createEndTurnButton(): void {
     const width = this.cameras.main.width;
 
     const button = this.add.container(width - 200, 50);
@@ -158,15 +235,15 @@ export default class BattleScene extends Phaser.Scene {
     this.endTurnButton = button;
   }
 
-  createEnemies() {
+  private createEnemies(): void {
     const width = this.cameras.main.width;
-    const enemiesData = this.registry.get('enemiesData');
-    const stageEnemies = this.selectedStage.data.enemies;
+    const enemiesData: Record<string, EnemyData> = this.registry.get('enemiesData');
+    const stageEnemies: string[] = this.selectedStage.data.enemies;
 
     const spacing = Math.min(300, width / (stageEnemies.length + 1));
     const startX = (width - (spacing * (stageEnemies.length - 1))) / 2;
 
-    stageEnemies.forEach((enemyName, index) => {
+    stageEnemies.forEach((enemyName: string, index: number) => {
       const enemyData = enemiesData[enemyName];
       if (enemyData) {
         const x = startX + (index * spacing);
@@ -181,8 +258,8 @@ export default class BattleScene extends Phaser.Scene {
     });
   }
 
-  setEnemyIntent(enemy) {
-    const enemyData = enemy.enemyData;
+  private setEnemyIntent(enemy: Enemy): void {
+    const enemyData: EnemyData = (enemy as any).enemyData;
 
     // 적 데이터에 따라 의도 설정
     if (enemyData.defense && Phaser.Math.Between(0, 100) < 30) {
@@ -198,7 +275,7 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  createDeckArea() {
+  private createDeckArea(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
@@ -215,8 +292,8 @@ export default class BattleScene extends Phaser.Scene {
     this.updateDeckInfo();
   }
 
-  setupDeck() {
-    const cardsData = this.registry.get('cardsData');
+  private setupDeck(): void {
+    const cardsData: { basic: CardData[] } = this.registry.get('cardsData');
 
     // 기본 덱 생성 (플레이어 덱이 비어있으면)
     if (this.gameState.deck.length === 0) {
@@ -232,7 +309,7 @@ export default class BattleScene extends Phaser.Scene {
     Phaser.Utils.Array.Shuffle(this.deck);
   }
 
-  startPlayerTurn() {
+  private startPlayerTurn(): void {
     this.turn = 'player';
 
     // 에너지 회복
@@ -247,7 +324,7 @@ export default class BattleScene extends Phaser.Scene {
     this.updateUI();
   }
 
-  drawCards(count) {
+  private drawCards(count: number): void {
     for (let i = 0; i < count; i++) {
       if (this.deck.length === 0) {
         // 덱이 비었으면 버린 카드 더미를 섞어서 덱으로
@@ -259,14 +336,16 @@ export default class BattleScene extends Phaser.Scene {
       }
 
       const cardData = this.deck.pop();
-      this.addCardToHand(cardData);
+      if (cardData) {
+        this.addCardToHand(cardData);
+      }
     }
 
     this.arrangeHand();
     this.updateDeckInfo();
   }
 
-  addCardToHand(cardData) {
+  private addCardToHand(cardData: CardData): void {
     // 카드 타입 정규화
     const normalizedCard = this.normalizeCardData(cardData);
     const card = new Card(this, 0, 0, normalizedCard);
@@ -274,7 +353,7 @@ export default class BattleScene extends Phaser.Scene {
     this.handContainer.add(card);
   }
 
-  normalizeCardData(cardData) {
+  private normalizeCardData(cardData: CardData): NormalizedCardData {
     // 기존 카드 데이터를 Card 클래스가 기대하는 형식으로 변환
     return {
       name: cardData.name,
@@ -289,7 +368,7 @@ export default class BattleScene extends Phaser.Scene {
     };
   }
 
-  arrangeHand() {
+  private arrangeHand(): void {
     const cardCount = this.hand.length;
     const spacing = 150;
     const totalWidth = (cardCount - 1) * spacing;
@@ -307,15 +386,17 @@ export default class BattleScene extends Phaser.Scene {
         ease: 'Back.easeOut'
       });
 
-      card.originalY = targetY;
+      (card as any).originalY = targetY;
     });
   }
 
-  onCardClicked(card) {
+  private onCardClicked(card: Card): void {
     if (this.turn !== 'player') return;
 
+    const cardData: any = (card as any).cardData;
+
     // 에너지가 부족한 경우
-    if (this.gameState.player.energy < card.cardData.cost) {
+    if (this.gameState.player.energy < cardData.cost) {
       this.showMessage('Not enough energy!');
       return;
     }
@@ -330,7 +411,7 @@ export default class BattleScene extends Phaser.Scene {
     card.select();
 
     // 공격 카드인 경우 적 선택 대기, 아니면 즉시 사용
-    if (card.cardData.type === '공격' && !card.cardData.allEnemies) {
+    if (cardData.type === '공격' && !cardData.allEnemies) {
       this.showMessage('Select a target');
     } else {
       // 자동 사용 (방어, 치유, 전체 공격 등)
@@ -338,16 +419,18 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  onEnemyClicked(enemy) {
+  private onEnemyClicked(enemy: Enemy): void {
     if (this.turn !== 'player') return;
     if (!this.selectedCard) return;
-    if (this.selectedCard.cardData.type !== '공격') return;
+
+    const cardData: any = (this.selectedCard as any).cardData;
+    if (cardData.type !== '공격') return;
 
     this.useCard(this.selectedCard, enemy);
   }
 
-  useCard(card, target = null) {
-    const cardData = card.cardData;
+  private useCard(card: Card, target: Enemy | null = null): void {
+    const cardData: any = (card as any).cardData;
 
     // 에너지 소모
     this.gameState.player.energy -= cardData.cost;
@@ -424,7 +507,7 @@ export default class BattleScene extends Phaser.Scene {
     this.updateUI();
   }
 
-  playerTakeDamage(amount) {
+  private playerTakeDamage(amount: number): void {
     // 방어도로 먼저 흡수
     const remainingDamage = Math.max(0, amount - this.gameState.player.defense);
     this.gameState.player.defense = Math.max(0, this.gameState.player.defense - amount);
@@ -488,10 +571,11 @@ export default class BattleScene extends Phaser.Scene {
     this.updateUI();
   }
 
-  endPlayerTurn() {
+  private endPlayerTurn(): void {
     // 손에 있는 모든 카드 버리기
     this.hand.forEach(card => {
-      this.discardPile.push(card.cardData.rawData);
+      const cardData: any = (card as any).cardData;
+      this.discardPile.push(cardData.rawData);
       card.destroy();
     });
     this.hand = [];
@@ -504,7 +588,7 @@ export default class BattleScene extends Phaser.Scene {
     });
   }
 
-  startEnemyTurn() {
+  private startEnemyTurn(): void {
     this.turn = 'enemy';
 
     let delay = 0;
@@ -524,8 +608,8 @@ export default class BattleScene extends Phaser.Scene {
     });
   }
 
-  executeEnemyAction(enemy) {
-    const intent = enemy.intent;
+  private executeEnemyAction(enemy: Enemy): void {
+    const intent: EnemyIntent = (enemy as any).intent;
 
     if (intent.type === 'attack') {
       enemy.playAttackAnimation(() => {
@@ -540,7 +624,7 @@ export default class BattleScene extends Phaser.Scene {
     this.setEnemyIntent(enemy);
   }
 
-  onEnemyDefeated(enemy) {
+  private onEnemyDefeated(enemy: Enemy): void {
     const index = this.enemies.indexOf(enemy);
     if (index > -1) {
       this.enemies.splice(index, 1);
@@ -549,7 +633,7 @@ export default class BattleScene extends Phaser.Scene {
     this.checkBattleEnd();
   }
 
-  checkBattleEnd() {
+  private checkBattleEnd(): void {
     const aliveEnemies = this.enemies.filter(e => !e.isDead());
 
     if (aliveEnemies.length === 0) {
@@ -559,7 +643,7 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  checkGameOver() {
+  private checkGameOver(): void {
     if (this.gameState.player.health <= 0) {
       this.time.delayedCall(1000, () => {
         this.scene.start('GameOverScene');
@@ -567,7 +651,7 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  winBattle() {
+  private winBattle(): void {
     // 스테이지 클리어 처리
     if (!this.gameState.stagesCleared.includes(this.selectedStage.id)) {
       this.gameState.stagesCleared.push(this.selectedStage.id);
@@ -592,7 +676,7 @@ export default class BattleScene extends Phaser.Scene {
     this.scene.start('RewardScene');
   }
 
-  updateUI() {
+  private updateUI(): void {
     // 플레이어 캐릭터 스탯 업데이트
     this.playerCharacter.updateStats(
       this.gameState.player.health,
@@ -662,11 +746,11 @@ export default class BattleScene extends Phaser.Scene {
     });
   }
 
-  updateDeckInfo() {
+  private updateDeckInfo(): void {
     this.deckText.setText(`Deck: ${this.deck.length} | Hand: ${this.hand.length} | Discard: ${this.discardPile.length}`);
   }
 
-  showMessage(text) {
+  private showMessage(text: string): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 

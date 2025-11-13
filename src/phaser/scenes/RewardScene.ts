@@ -1,12 +1,52 @@
 import Phaser from 'phaser';
-import Card from '../objects/Card.js';
+import Card from '../objects/Card';
+
+interface CardData {
+  name: string;
+  type?: string;
+  cost: number;
+  damage?: number;
+  block?: number;
+  heal?: number;
+  energy?: number;
+  allEnemies?: boolean;
+  hits?: number;
+  selfDamage?: number;
+  description?: string;
+  [key: string]: unknown;
+}
+
+interface NormalizedCardData {
+  name: string;
+  type: string;
+  cost: number;
+  value: number;
+  allEnemies: boolean;
+  hits: number;
+  selfDamage: number;
+  description?: string;
+  rawData: CardData;
+}
+
+interface GameState {
+  deck: CardData[];
+  stagesCleared: number[];
+  [key: string]: unknown;
+}
+
+interface CardsDataRegistry {
+  rewards: CardData[];
+  [key: string]: unknown;
+}
 
 export default class RewardScene extends Phaser.Scene {
+  private continueButton!: Phaser.GameObjects.Container;
+
   constructor() {
     super({ key: 'RewardScene' });
   }
 
-  create() {
+  create(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
@@ -40,18 +80,18 @@ export default class RewardScene extends Phaser.Scene {
     this.createContinueButton();
   }
 
-  createRewardCards() {
+  private createRewardCards(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
-    const cardsData = this.registry.get('cardsData');
+    const cardsData = this.registry.get('cardsData') as CardsDataRegistry;
 
     // 랜덤 보상 카드 3장 선택
-    const rewardCards = Phaser.Utils.Array.Shuffle([...cardsData.rewards]).slice(0, 3);
+    const rewardCards: CardData[] = Phaser.Utils.Array.Shuffle([...cardsData.rewards]).slice(0, 3);
 
     const spacing = 200;
     const startX = width / 2 - spacing;
 
-    rewardCards.forEach((cardData, index) => {
+    rewardCards.forEach((cardData: CardData, index: number) => {
       const x = startX + (index * spacing);
       const y = height / 2;
 
@@ -80,7 +120,7 @@ export default class RewardScene extends Phaser.Scene {
     });
   }
 
-  normalizeCardData(cardData) {
+  private normalizeCardData(cardData: CardData): NormalizedCardData {
     return {
       name: cardData.name,
       type: cardData.damage ? '공격' : cardData.block ? '방어' : cardData.heal ? '치유' : cardData.energy ? '에너지' : '스킬',
@@ -94,9 +134,9 @@ export default class RewardScene extends Phaser.Scene {
     };
   }
 
-  selectRewardCard(cardData, cardObj) {
+  private selectRewardCard(cardData: CardData, cardObj: Card): void {
     // 덱에 추가
-    const gameState = this.registry.get('gameState');
+    const gameState = this.registry.get('gameState') as GameState;
     gameState.deck.push(cardData);
 
     // 선택 효과
@@ -112,7 +152,7 @@ export default class RewardScene extends Phaser.Scene {
     });
 
     // 다른 카드 페이드 아웃
-    this.children.getAll().forEach(child => {
+    this.children.getAll().forEach((child: Phaser.GameObjects.GameObject) => {
       if (child instanceof Card && child !== cardObj) {
         this.tweens.add({
           targets: child,
@@ -145,7 +185,7 @@ export default class RewardScene extends Phaser.Scene {
     this.continueButton.setVisible(true);
   }
 
-  createContinueButton() {
+  private createContinueButton(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
@@ -188,7 +228,7 @@ export default class RewardScene extends Phaser.Scene {
     });
 
     button.on('pointerdown', () => {
-      const gameState = this.registry.get('gameState');
+      const gameState = this.registry.get('gameState') as GameState;
 
       // 최종 보스를 클리어했는지 확인
       if (gameState.stagesCleared.includes(10)) {
@@ -203,7 +243,7 @@ export default class RewardScene extends Phaser.Scene {
     this.continueButton = button;
   }
 
-  createVictoryParticles() {
+  private createVictoryParticles(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 

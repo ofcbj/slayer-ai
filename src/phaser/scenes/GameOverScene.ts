@@ -1,20 +1,39 @@
 import Phaser from 'phaser';
 
+interface InitData {
+  victory?: boolean;
+}
+
+interface GameState {
+  player: {
+    maxHealth: number;
+    health: number;
+    energy: number;
+    maxEnergy: number;
+    defense: number;
+  };
+  deck: any[];
+  currentStage: number;
+  stagesCleared: any[];
+}
+
 export default class GameOverScene extends Phaser.Scene {
+  private victory: boolean = false;
+
   constructor() {
     super({ key: 'GameOverScene' });
   }
 
-  init(data) {
+  init(data: InitData): void {
     this.victory = data.victory || false;
   }
 
-  create() {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+  create(): void {
+    const width: number = this.cameras.main.width;
+    const height: number = this.cameras.main.height;
 
     // 배경
-    const bgColor = this.victory ? 0x1a3a1a : 0x3a1a1a;
+    const bgColor: number = this.victory ? 0x1a3a1a : 0x3a1a1a;
     this.add.rectangle(0, 0, width, height, bgColor).setOrigin(0);
 
     if (this.victory) {
@@ -27,19 +46,24 @@ export default class GameOverScene extends Phaser.Scene {
     this.createButtons();
   }
 
-  createVictoryScreen() {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+  private createVictoryScreen(): void {
+    const width: number = this.cameras.main.width;
+    const height: number = this.cameras.main.height;
 
     // 타이틀
-    const title = this.add.text(width / 2, height / 3, 'VICTORY!', {
-      fontSize: '96px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      fill: '#2ecc71',
-      stroke: '#ffffff',
-      strokeThickness: 8
-    });
+    const title: Phaser.GameObjects.Text = this.add.text(
+      width / 2,
+      height / 3,
+      'VICTORY!',
+      {
+        fontSize: '96px',
+        fontFamily: 'Arial, sans-serif',
+        fontStyle: 'bold',
+        fill: '#2ecc71',
+        stroke: '#ffffff',
+        strokeThickness: 8
+      }
+    );
     title.setOrigin(0.5);
 
     // 애니메이션
@@ -65,19 +89,24 @@ export default class GameOverScene extends Phaser.Scene {
     this.createCelebrationParticles();
   }
 
-  createDefeatScreen() {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+  private createDefeatScreen(): void {
+    const width: number = this.cameras.main.width;
+    const height: number = this.cameras.main.height;
 
     // 타이틀
-    const title = this.add.text(width / 2, height / 3, 'DEFEAT', {
-      fontSize: '96px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      fill: '#ff6b6b',
-      stroke: '#000000',
-      strokeThickness: 8
-    });
+    const title: Phaser.GameObjects.Text = this.add.text(
+      width / 2,
+      height / 3,
+      'DEFEAT',
+      {
+        fontSize: '96px',
+        fontFamily: 'Arial, sans-serif',
+        fontStyle: 'bold',
+        fill: '#ff6b6b',
+        stroke: '#000000',
+        strokeThickness: 8
+      }
+    );
     title.setOrigin(0.5);
 
     // 메시지
@@ -89,8 +118,8 @@ export default class GameOverScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // 게임 상태
-    const gameState = this.registry.get('gameState');
-    const statsText = `Stages Cleared: ${gameState.stagesCleared.length}\nDeck Size: ${gameState.deck.length} cards`;
+    const gameState: GameState = this.registry.get('gameState');
+    const statsText: string = `Stages Cleared: ${gameState.stagesCleared.length}\nDeck Size: ${gameState.deck.length} cards`;
 
     this.add.text(width / 2, height / 2 + 80, statsText, {
       fontSize: '24px',
@@ -100,18 +129,18 @@ export default class GameOverScene extends Phaser.Scene {
     }).setOrigin(0.5);
   }
 
-  createButtons() {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+  private createButtons(): void {
+    const width: number = this.cameras.main.width;
+    const height: number = this.cameras.main.height;
 
     // 다시하기 버튼
-    const restartBtn = this.createButton(
+    this.createButton(
       width / 2 - 150,
       height - 150,
       'Restart',
-      () => {
+      (): void => {
         // 게임 상태 리셋
-        this.registry.set('gameState', {
+        const initialGameState: GameState = {
           player: {
             maxHealth: 100,
             health: 100,
@@ -122,30 +151,36 @@ export default class GameOverScene extends Phaser.Scene {
           deck: [],
           currentStage: 1,
           stagesCleared: []
-        });
+        };
+        this.registry.set('gameState', initialGameState);
 
         this.scene.start('MenuScene');
       }
     );
 
     // 메인 메뉴 버튼
-    const menuBtn = this.createButton(
+    this.createButton(
       width / 2 + 150,
       height - 150,
       'Main Menu',
-      () => {
+      (): void => {
         this.scene.start('MenuScene');
       }
     );
   }
 
-  createButton(x, y, text, onClick) {
-    const button = this.add.container(x, y);
+  private createButton(
+    x: number,
+    y: number,
+    text: string,
+    onClick: () => void
+  ): Phaser.GameObjects.Container {
+    const button: Phaser.GameObjects.Container = this.add.container(x, y);
 
-    const bg = this.add.rectangle(0, 0, 200, 60, 0x4ecdc4);
+    const bg: Phaser.GameObjects.Rectangle = this.add.rectangle(0, 0, 200, 60, 0x4ecdc4);
     bg.setStrokeStyle(3, 0xffffff);
 
-    const btnText = this.add.text(0, 0, text, {
+    const btnText: Phaser.GameObjects.Text = this.add.text(0, 0, text, {
       fontSize: '24px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
@@ -157,7 +192,7 @@ export default class GameOverScene extends Phaser.Scene {
     button.setSize(200, 60);
     button.setInteractive({ useHandCursor: true });
 
-    button.on('pointerover', () => {
+    button.on('pointerover', (): void => {
       this.tweens.add({
         targets: button,
         scaleX: 1.1,
@@ -167,7 +202,7 @@ export default class GameOverScene extends Phaser.Scene {
       bg.setFillStyle(0x5fddd5);
     });
 
-    button.on('pointerout', () => {
+    button.on('pointerout', (): void => {
       this.tweens.add({
         targets: button,
         scaleX: 1,
@@ -177,7 +212,7 @@ export default class GameOverScene extends Phaser.Scene {
       bg.setFillStyle(0x4ecdc4);
     });
 
-    button.on('pointerdown', () => {
+    button.on('pointerdown', (): void => {
       this.tweens.add({
         targets: button,
         scaleX: 0.95,
@@ -191,18 +226,18 @@ export default class GameOverScene extends Phaser.Scene {
     return button;
   }
 
-  createCelebrationParticles() {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+  private createCelebrationParticles(): void {
+    const width: number = this.cameras.main.width;
+    const height: number = this.cameras.main.height;
 
-    for (let i = 0; i < 100; i++) {
-      const x = Phaser.Math.Between(0, width);
-      const y = Phaser.Math.Between(-200, height);
-      const size = Phaser.Math.Between(4, 12);
-      const colors = [0xffd700, 0xffff00, 0xffa500, 0xff69b4, 0x00ff00];
-      const color = Phaser.Math.RND.pick(colors);
+    for (let i: number = 0; i < 100; i++) {
+      const x: number = Phaser.Math.Between(0, width);
+      const y: number = Phaser.Math.Between(-200, height);
+      const size: number = Phaser.Math.Between(4, 12);
+      const colors: number[] = [0xffd700, 0xffff00, 0xffa500, 0xff69b4, 0x00ff00];
+      const color: number = Phaser.Math.RND.pick(colors);
 
-      const particle = this.add.circle(x, y, size, color);
+      const particle: Phaser.GameObjects.Arc = this.add.circle(x, y, size, color);
 
       this.tweens.add({
         targets: particle,

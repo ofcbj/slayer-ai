@@ -1,23 +1,30 @@
 import Phaser from 'phaser';
 
 export default class Player extends Phaser.GameObjects.Container {
-  constructor(scene, x, y) {
+  private healthText: Phaser.GameObjects.Text;
+  private defenseText: Phaser.GameObjects.Text;
+  private bg: Phaser.GameObjects.Rectangle;
+  private playerHead: Phaser.GameObjects.Text;
+  private hpContainer: Phaser.GameObjects.Container;
+  private defContainer: Phaser.GameObjects.Container;
+
+  constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
 
     this.createPlayer();
     scene.add.existing(this);
   }
 
-  createPlayer() {
-    const width = 240;
-    const height = 240;
+  private createPlayer(): void {
+    const width: number = 240;
+    const height: number = 240;
 
     // 플레이어 배경
-    const bg = this.scene.add.rectangle(0, 0, width, height, 0x2a2a4e);
+    const bg: Phaser.GameObjects.Rectangle = this.scene.add.rectangle(0, 0, width, height, 0x2a2a4e);
     bg.setStrokeStyle(4, 0x4ecdc4);
 
     // 플레이어 이름
-    const nameText = this.scene.add.text(0, -height/2 + 25, 'Hero', {
+    const nameText: Phaser.GameObjects.Text = this.scene.add.text(0, -height/2 + 25, 'Hero', {
       fontSize: '24px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
@@ -28,23 +35,23 @@ export default class Player extends Phaser.GameObjects.Container {
     nameText.setOrigin(0.5);
 
     // 플레이어 캐릭터 이미지 - 머리와 목
-    const playerHead = this.scene.add.text(0, 0, '🧙‍♂️', {
+    const playerHead: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🧙‍♂️', {
       fontSize: '120px',
       fontFamily: 'Arial, sans-serif'
     });
     playerHead.setOrigin(0.5);
 
     // 간단한 옷깃 표현
-    const playerCollar = this.scene.add.text(0, 55, '👕', {
+    const playerCollar: Phaser.GameObjects.Text = this.scene.add.text(0, 55, '👕', {
       fontSize: '60px',
       fontFamily: 'Arial, sans-serif'
     });
     playerCollar.setOrigin(0.5);
 
     // HP 컨테이너 (왼쪽 하단)
-    const hpContainer = this.scene.add.container(-width/2 + 70, height/2 - 40);
+    const hpContainer: Phaser.GameObjects.Container = this.scene.add.container(-width/2 + 70, height/2 - 40);
 
-    const hpIcon = this.scene.add.text(0, 0, '❤️', {
+    const hpIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '❤️', {
       fontSize: '30px',
       fontFamily: 'Arial, sans-serif'
     });
@@ -63,9 +70,9 @@ export default class Player extends Phaser.GameObjects.Container {
     hpContainer.add([hpIcon, this.healthText]);
 
     // Defense 컨테이너 (오른쪽 하단)
-    const defContainer = this.scene.add.container(width/2 - 70, height/2 - 40);
+    const defContainer: Phaser.GameObjects.Container = this.scene.add.container(width/2 - 70, height/2 - 40);
 
-    const defIcon = this.scene.add.text(0, 0, '🛡️', {
+    const defIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🛡️', {
       fontSize: '30px',
       fontFamily: 'Arial, sans-serif'
     });
@@ -92,12 +99,12 @@ export default class Player extends Phaser.GameObjects.Container {
     this.setSize(width, height);
   }
 
-  updateStats(health, defense) {
+  updateStats(health: number, defense: number): void {
     this.healthText.setText(health.toString());
     this.defenseText.setText(defense.toString());
   }
 
-  playHitAnimation(callback) {
+  playHitAnimation(callback?: () => void): void {
     // 피격 애니메이션
     this.scene.tweens.add({
       targets: this,
@@ -105,7 +112,7 @@ export default class Player extends Phaser.GameObjects.Container {
       duration: 60,
       yoyo: true,
       repeat: 2,
-      onComplete: () => {
+      onComplete: (): void => {
         if (callback) callback();
       }
     });
@@ -126,15 +133,15 @@ export default class Player extends Phaser.GameObjects.Container {
       duration: 60,
       yoyo: true,
       repeat: 2,
-      onComplete: () => {
+      onComplete: (): void => {
         this.playerHead.setAngle(0);
       }
     });
   }
 
-  playDefendAnimation() {
+  playDefendAnimation(): void {
     // 방어 애니메이션 - 푸른 빛
-    const shield = this.scene.add.circle(0, 0, 120, 0x4ecdc4, 0.3);
+    const shield: Phaser.GameObjects.Circle = this.scene.add.circle(0, 0, 120, 0x4ecdc4, 0.3);
     this.add(shield);
 
     this.scene.tweens.add({
@@ -144,15 +151,15 @@ export default class Player extends Phaser.GameObjects.Container {
       alpha: 0,
       duration: 600,
       ease: 'Power2',
-      onComplete: () => shield.destroy()
+      onComplete: (): void => shield.destroy()
     });
   }
 
-  playHealAnimation() {
+  playHealAnimation(): void {
     // 치유 애니메이션 - 녹색 빛
-    for (let i = 0; i < 10; i++) {
-      const angle = (Math.PI * 2 * i) / 10;
-      const particle = this.scene.add.circle(
+    for (let i: number = 0; i < 10; i++) {
+      const angle: number = (Math.PI * 2 * i) / 10;
+      const particle: Phaser.GameObjects.Circle = this.scene.add.circle(
         this.x + Math.cos(angle) * 80,
         this.y + Math.sin(angle) * 80,
         6,
@@ -167,12 +174,12 @@ export default class Player extends Phaser.GameObjects.Container {
         scale: 0,
         duration: 800,
         ease: 'Power2',
-        onComplete: () => particle.destroy()
+        onComplete: (): void => particle.destroy()
       });
     }
   }
 
-  idle() {
+  idle(): void {
     // 아이들 애니메이션 - 부드러운 상하 움직임 (머리)
     this.scene.tweens.add({
       targets: this.playerHead,

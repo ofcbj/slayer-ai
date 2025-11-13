@@ -5,17 +5,17 @@ export default class BootScene extends Phaser.Scene {
     super({ key: 'BootScene' });
   }
 
-  preload() {
+  preload(): void {
     // 로딩 바 배경
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+    const width: number = this.cameras.main.width;
+    const height: number = this.cameras.main.height;
 
-    const progressBar = this.add.graphics();
-    const progressBox = this.add.graphics();
+    const progressBar: Phaser.GameObjects.Graphics = this.add.graphics();
+    const progressBox: Phaser.GameObjects.Graphics = this.add.graphics();
     progressBox.fillStyle(0x222222, 0.8);
     progressBox.fillRect(width / 2 - 160, height / 2 - 25, 320, 50);
 
-    const loadingText = this.make.text({
+    const loadingText: Phaser.GameObjects.Text = this.make.text({
       x: width / 2,
       y: height / 2 - 50,
       text: 'Loading...',
@@ -26,7 +26,7 @@ export default class BootScene extends Phaser.Scene {
     });
     loadingText.setOrigin(0.5, 0.5);
 
-    const percentText = this.make.text({
+    const percentText: Phaser.GameObjects.Text = this.make.text({
       x: width / 2,
       y: height / 2,
       text: '0%',
@@ -37,14 +37,14 @@ export default class BootScene extends Phaser.Scene {
     });
     percentText.setOrigin(0.5, 0.5);
 
-    this.load.on('progress', (value) => {
+    this.load.on('progress', (value: number): void => {
       percentText.setText(parseInt(value * 100) + '%');
       progressBar.clear();
       progressBar.fillStyle(0xffffff, 1);
       progressBar.fillRect(width / 2 - 150, height / 2 - 15, 300 * value, 30);
     });
 
-    this.load.on('complete', () => {
+    this.load.on('complete', (): void => {
       progressBar.destroy();
       progressBox.destroy();
       loadingText.destroy();
@@ -52,7 +52,7 @@ export default class BootScene extends Phaser.Scene {
     });
   }
 
-  create() {
+  create(): void {
     // PreloadScene으로 전환
     this.scene.start('PreloadScene');
   }
