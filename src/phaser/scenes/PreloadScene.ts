@@ -20,10 +20,11 @@ export default class PreloadScene extends Phaser.Scene {
 
   preload(): void {
     // 게임 데이터 로드
-    this.load.json('cards', '/data/cards.json');
-    this.load.json('enemies', '/data/enemies.json');
-    this.load.json('stages', '/data/stages.json');
-    this.load.json('bossPatterns', '/data/boss-patterns.json');
+    const basePath: string = import.meta.env.BASE_URL;
+    this.load.json('cards', `${basePath}data/cards.json`);
+    this.load.json('enemies', `${basePath}data/enemies.json`);
+    this.load.json('stages', `${basePath}data/stages.json`);
+    this.load.json('bossPatterns', `${basePath}data/boss-patterns.json`);
 
     // 에셋 로드 (나중에 추가)
     // this.load.image('card-bg', '/assets/card-bg.png');
