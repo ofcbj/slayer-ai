@@ -447,9 +447,9 @@ export default class BattleScene extends Phaser.Scene {
     // 기본 덱 생성 (플레이어 덱이 비어있으면)
     if (this.gameState.deck.length === 0) {
       this.gameState.deck = [
-        ...Array(5).fill(cardsData.basic[0]), // 강타 x5
-        ...Array(4).fill(cardsData.basic[1]), // 방어 x4
-        ...Array(1).fill(cardsData.basic[4])  // 집중 x1
+        ...Array(5).fill(null).map(() => ({ ...cardsData.basic[0] })), // 강타 x5
+        ...Array(4).fill(null).map(() => ({ ...cardsData.basic[1] })), // 방어 x4
+        ...Array(1).fill(null).map(() => ({ ...cardsData.basic[4] }))  // 집중 x1
       ];
     }
 
