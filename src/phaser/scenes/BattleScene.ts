@@ -35,6 +35,7 @@ interface EnemyIntent {
 }
 
 interface EnemyData {
+  name: string;
   attack?: number;
   defense?: number;
 }
@@ -140,7 +141,8 @@ export default class BattleScene extends Phaser.Scene {
     const height = this.cameras.main.height;
 
     // 플레이어 캐릭터를 중앙 하단에 배치 (적과 카드 사이)
-    this.playerCharacter = new Player(this, width / 2, height / 2 + 100);
+    this.playerCharacter = new Player(this, width / 2, height / 2 + 100, this.gameState.player.maxHealth);
+    this.playerCharacter.updateStats(this.gameState.player.health, this.gameState.player.defense);
     this.playerCharacter.idle(); // 아이들 애니메이션 시작
   }
 
@@ -444,6 +446,8 @@ export default class BattleScene extends Phaser.Scene {
   private setupDeck(): void {
     const cardsData: { basic: CardData[] } = this.registry.get('cardsData');
 
+    console.log(`[BattleScene] setupDeck - gameState.deck.length: ${this.gameState.deck.length}`);
+
     // 기본 덱 생성 (플레이어 덱이 비어있으면)
     if (this.gameState.deck.length === 0) {
       this.gameState.deck = [
@@ -451,11 +455,13 @@ export default class BattleScene extends Phaser.Scene {
         ...Array(4).fill(null).map(() => ({ ...cardsData.basic[1] })), // 방어 x4
         ...Array(1).fill(null).map(() => ({ ...cardsData.basic[4] }))  // 집중 x1
       ];
+      console.log(`[BattleScene] setupDeck - Created basic deck with ${this.gameState.deck.length} cards`);
     }
 
     // 덱을 복사하고 섞기
     this.deck = [...this.gameState.deck];
     Phaser.Utils.Array.Shuffle(this.deck);
+    console.log(`[BattleScene] setupDeck - Copied and shuffled deck: ${this.deck.length} cards`);
   }
 
   private startPlayerTurn(): void {
@@ -603,7 +609,7 @@ export default class BattleScene extends Phaser.Scene {
       }
     });
 
-    this.updateDeckInfo();
+    // updateDeckInfo()는 drawCards에서 한 번만 호출하도록 제거
   }
 
 
@@ -806,63 +812,19 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   private playerTakeDamage(amount: number): void {
-    // 방어도로 먼저 흡수
-    const remainingDamage = Math.max(0, amount - this.gameState.player.defense);
-    this.gameState.player.defense = Math.max(0, this.gameState.player.defense - amount);
+    // Player의 takeDamage 메서드 사용 (공통 로직)
+    this.playerCharacter.takeDamage(amount);
 
-    if (remainingDamage > 0) {
-      this.gameState.player.health -= remainingDamage;
+    // gameState 동기화
+    this.gameState.player.health = this.playerCharacter.health;
+    this.gameState.player.defense = this.playerCharacter.defense;
 
-      // 플레이어 캐릭터 피격 애니메이션
-      this.playerCharacter.playHitAnimation();
-
-      // 데미지 숫자 표시
-      const damageText = this.add.text(this.playerCharacter.x, this.playerCharacter.y - 100, `-${remainingDamage}`, {
-        fontSize: '48px',
-        fontFamily: 'Arial, sans-serif',
-        fontStyle: 'bold',
-        color: '#ff6b6b',
-        stroke: '#000000',
-        strokeThickness: 6
-      });
-      damageText.setOrigin(0.5);
-
-      this.tweens.add({
-        targets: damageText,
-        y: damageText.y - 60,
-        alpha: 0,
-        duration: 1200,
-        ease: 'Power2',
-        onComplete: () => damageText.destroy()
-      });
-
-      // 화면 빨갛게
+    // 체력이 0 이하면 화면 빨갛게 + 게임 오버 체크
+    if (this.playerCharacter.health <= 0) {
       this.cameras.main.flash(200, 255, 0, 0, false, (camera, progress) => {
         if (progress === 1) {
           this.checkGameOver();
         }
-      });
-    } else {
-      // 방어로 막았을 때
-      this.playerCharacter.playDefendAnimation();
-
-      const blockText = this.add.text(this.playerCharacter.x, this.playerCharacter.y - 100, `BLOCK`, {
-        fontSize: '36px',
-        fontFamily: 'Arial, sans-serif',
-        fontStyle: 'bold',
-        color: '#4ecdc4',
-        stroke: '#000000',
-        strokeThickness: 5
-      });
-      blockText.setOrigin(0.5);
-
-      this.tweens.add({
-        targets: blockText,
-        y: blockText.y - 50,
-        alpha: 0,
-        duration: 1000,
-        ease: 'Power2',
-        onComplete: () => blockText.destroy()
       });
     }
 
@@ -1052,6 +1014,9 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   private updateDeckInfo(): void {
+    const totalCards = this.deck.length + this.hand.length + this.discardPile.length;
+    console.log(`[BattleScene] updateDeckInfo - Deck: ${this.deck.length}, Hand: ${this.hand.length}, Discard: ${this.discardPile.length}, Total: ${totalCards}`);
+
     this.deckText.setText(`Deck: ${this.deck.length} | Hand: ${this.hand.length} | Discard: ${this.discardPile.length}`);
 
     // 덱 카운트 업데이트

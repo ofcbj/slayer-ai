@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import Character from './Character';
 
 interface EnemyData {
   name: string;
@@ -11,12 +12,9 @@ interface Intent {
   value?: number;
 }
 
-export default class Enemy extends Phaser.GameObjects.Container {
+export default class Enemy extends Character {
   enemyData: EnemyData;
   enemyIndex: number;
-  health: number;
-  maxHealth: number;
-  defense: number;
   intent: Intent | null;
   isTargeted: boolean;
   bg!: Phaser.GameObjects.Rectangle;
@@ -231,27 +229,11 @@ export default class Enemy extends Phaser.GameObjects.Container {
     }
   }
 
-  takeDamage(amount: number): void {
-    let damageToHealth = amount;
-
-    if (this.defense > 0) {
-      const blockedDamage = Math.min(this.defense, amount);
-      this.defense -= blockedDamage;
-      damageToHealth = amount - blockedDamage;
-
-      if (blockedDamage > 0) {
-        this.showBlockedDamage(blockedDamage);
-      }
-    }
-
-    if (damageToHealth > 0) {
-      this.health = Math.max(0, this.health - damageToHealth);
-      this.showDamageNumber(damageToHealth);
-    }
-
-    this.updateHealthBar();
-    this.updateDefenseDisplay();
-
+  /**
+   * 피격 애니메이션 (Character 추상 메서드 구현)
+   */
+  protected playHitAnimation(): void {
+    // 좌우 흔들림
     this.scene.tweens.add({
       targets: this,
       x: this.x + 10,
@@ -260,6 +242,7 @@ export default class Enemy extends Phaser.GameObjects.Container {
       repeat: 3
     });
 
+    // 배경 깜빡임
     this.scene.tweens.add({
       targets: this.bg,
       alpha: 0.5,
@@ -267,14 +250,19 @@ export default class Enemy extends Phaser.GameObjects.Container {
       yoyo: true
     });
 
+    // 죽었으면 죽음 애니메이션
     if (this.isDead()) {
       this.playDeathAnimation();
     }
   }
 
+  /**
+   * 방어력 적용 (베이스 클래스 오버라이드)
+   */
   applyDefense(amount: number): void {
-    this.defense += amount;
+    super.applyDefense(amount);
 
+    // 방어력 증가 시각 효과
     const defensePopup = this.scene.add.text(this.x, this.y - 50, `+${amount} 🛡️`, {
       fontSize: '24px',
       fontFamily: 'Arial, sans-serif',
@@ -293,11 +281,12 @@ export default class Enemy extends Phaser.GameObjects.Container {
       ease: 'Power2',
       onComplete: () => defensePopup.destroy()
     });
-
-    this.updateDefenseDisplay();
   }
 
-  updateDefenseDisplay(): void {
+  /**
+   * 방어력 표시 업데이트 (Character 추상 메서드 구현)
+   */
+  protected updateDefenseDisplay(): void {
     if (this.defense > 0) {
       this.defenseText.setText(`🛡️${this.defense}`);
       this.defenseText.setVisible(true);
@@ -307,28 +296,10 @@ export default class Enemy extends Phaser.GameObjects.Container {
     }
   }
 
-  showBlockedDamage(amount: number): void {
-    const blockText = this.scene.add.text(this.x + 30, this.y - 50, `-${amount} 🛡️`, {
-      fontSize: '20px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#4ecdc4',
-      stroke: '#000000',
-      strokeThickness: 3
-    });
-    blockText.setOrigin(0.5);
-
-    this.scene.tweens.add({
-      targets: blockText,
-      y: blockText.y - 30,
-      alpha: 0,
-      duration: 800,
-      ease: 'Power2',
-      onComplete: () => blockText.destroy()
-    });
-  }
-
-  updateHealthBar(): void {
+  /**
+   * 체력바 업데이트 (Character 추상 메서드 구현)
+   */
+  protected updateHealthDisplay(): void {
     const healthPercent = this.health / this.maxHealth;
     const newWidth = this.hpBarWidth * healthPercent;
 
@@ -339,27 +310,6 @@ export default class Enemy extends Phaser.GameObjects.Container {
     });
 
     this.hpText.setText(`${this.health}/${this.maxHealth}`);
-  }
-
-  showDamageNumber(amount: number): void {
-    const damageText = this.scene.add.text(this.x, this.y - 50, `-${amount}`, {
-      fontSize: '32px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ff6b6b',
-      stroke: '#000000',
-      strokeThickness: 4
-    });
-    damageText.setOrigin(0.5);
-
-    this.scene.tweens.add({
-      targets: damageText,
-      y: damageText.y - 60,
-      alpha: 0,
-      duration: 1000,
-      ease: 'Power2',
-      onComplete: () => damageText.destroy()
-    });
   }
 
   playAttackAnimation(callback?: () => void): void {
@@ -421,9 +371,5 @@ export default class Enemy extends Phaser.GameObjects.Container {
         onComplete: () => particle.destroy()
       });
     }
-  }
-
-  isDead(): boolean {
-    return this.health <= 0;
   }
 }

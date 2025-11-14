@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
+import Character from './Character';
 
-export default class Player extends Phaser.GameObjects.Container {
+export default class Player extends Character {
   private healthText: Phaser.GameObjects.Text;
   private defenseText: Phaser.GameObjects.Text;
   private bg: Phaser.GameObjects.Rectangle;
@@ -8,8 +9,12 @@ export default class Player extends Phaser.GameObjects.Container {
   private hpContainer: Phaser.GameObjects.Container;
   private defContainer: Phaser.GameObjects.Container;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, maxHealth: number = 100) {
     super(scene, x, y);
+
+    this.health = maxHealth;
+    this.maxHealth = maxHealth;
+    this.defense = 0;
 
     this.createPlayer();
     scene.add.existing(this);
@@ -40,13 +45,6 @@ export default class Player extends Phaser.GameObjects.Container {
       fontFamily: 'Arial, sans-serif'
     });
     playerHead.setOrigin(0.5);
-
-    // 간단한 옷깃 표현
-    const playerCollar: Phaser.GameObjects.Text = this.scene.add.text(0, 55, '👕', {
-      fontSize: '60px',
-      fontFamily: 'Arial, sans-serif'
-    });
-    playerCollar.setOrigin(0.5);
 
     // HP 컨테이너 (왼쪽 하단)
     const hpContainer: Phaser.GameObjects.Container = this.scene.add.container(-width/2 + 70, height/2 - 40);
@@ -99,12 +97,34 @@ export default class Player extends Phaser.GameObjects.Container {
     this.setSize(width, height);
   }
 
+  /**
+   * 체력과 방어력 업데이트 (외부에서 호출용)
+   */
   updateStats(health: number, defense: number): void {
-    this.healthText.setText(health.toString());
-    this.defenseText.setText(defense.toString());
+    this.health = health;
+    this.defense = defense;
+    this.updateHealthDisplay();
+    this.updateDefenseDisplay();
   }
 
-  playHitAnimation(callback?: () => void): void {
+  /**
+   * 체력 표시 업데이트 (Character 추상 메서드 구현)
+   */
+  protected updateHealthDisplay(): void {
+    this.healthText.setText(this.health.toString());
+  }
+
+  /**
+   * 방어력 표시 업데이트 (Character 추상 메서드 구현)
+   */
+  protected updateDefenseDisplay(): void {
+    this.defenseText.setText(this.defense.toString());
+  }
+
+  /**
+   * 피격 애니메이션 (Character 추상 메서드 구현)
+   */
+  protected playHitAnimation(callback?: () => void): void {
     // 피격 애니메이션
     this.scene.tweens.add({
       targets: this,
