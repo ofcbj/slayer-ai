@@ -125,6 +125,13 @@ export default class Player extends Character {
    * 피격 애니메이션 (Character 추상 메서드 구현)
    */
   protected playHitAnimation(callback?: () => void): void {
+    this.playHitAnimationPublic(callback);
+  }
+
+  /**
+   * 피격 애니메이션 (public 버전)
+   */
+  public playHitAnimationPublic(callback?: () => void): void {
     // 피격 애니메이션
     this.scene.tweens.add({
       targets: this,

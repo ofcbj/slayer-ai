@@ -121,6 +121,7 @@ export default class RewardScene extends Phaser.Scene {
   }
 
   private normalizeCardData(cardData: CardData): NormalizedCardData {
+    // rawData도 깊은 복사하여 객체 참조 문제 방지
     return {
       name: cardData.name,
       type: cardData.damage ? '공격' : cardData.block ? '방어' : cardData.heal ? '치유' : cardData.energy ? '에너지' : '스킬',
@@ -130,14 +131,14 @@ export default class RewardScene extends Phaser.Scene {
       hits: cardData.hits || 1,
       selfDamage: cardData.selfDamage || 0,
       description: cardData.description,
-      rawData: cardData
+      rawData: { ...cardData }
     };
   }
 
   private selectRewardCard(cardData: CardData, cardObj: Card): void {
-    // 덱에 추가
+    // 덱에 추가 (깊은 복사하여 객체 참조 문제 방지)
     const gameState = this.registry.get('gameState') as GameState;
-    gameState.deck.push(cardData);
+    gameState.deck.push({ ...cardData });
 
     // 선택 효과
     this.tweens.add({
