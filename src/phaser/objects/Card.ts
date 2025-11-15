@@ -1,23 +1,13 @@
 import Phaser from 'phaser';
-
-interface CardData {
-  name: string;
-  cost: number;
-  type: string;
-  value: number;
-  description?: string;
-  rawData?: {
-    image?: string;
-  };
-}
+import { NormalizedCardData } from '../managers/BattleManager';
 
 export default class Card extends Phaser.GameObjects.Container {
-  private cardData: CardData;
+  private cardData: NormalizedCardData;
   private isSelected: boolean;
   private originalY: number;
   private bg!: Phaser.GameObjects.Rectangle;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, cardData: CardData) {
+  constructor(scene: Phaser.Scene, x: number, y: number, cardData: NormalizedCardData) {
     super(scene, x, y);
 
     this.cardData = cardData;

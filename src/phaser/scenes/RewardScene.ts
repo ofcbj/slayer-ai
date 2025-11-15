@@ -1,38 +1,7 @@
 import Phaser from 'phaser';
 import Card from '../objects/Card';
-
-interface CardData {
-  name: string;
-  type?: string;
-  cost: number;
-  damage?: number;
-  block?: number;
-  heal?: number;
-  energy?: number;
-  allEnemies?: boolean;
-  hits?: number;
-  selfDamage?: number;
-  description?: string;
-  [key: string]: unknown;
-}
-
-interface NormalizedCardData {
-  name: string;
-  type: string;
-  cost: number;
-  value: number;
-  allEnemies: boolean;
-  hits: number;
-  selfDamage: number;
-  description?: string;
-  rawData: CardData;
-}
-
-interface GameState {
-  deck: CardData[];
-  stagesCleared: number[];
-  [key: string]: unknown;
-}
+import { CardData, GameState } from '../../types';
+import { NormalizedCardData } from '../managers/BattleManager';
 
 interface CardsDataRegistry {
   rewards: CardData[];

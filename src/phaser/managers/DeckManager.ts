@@ -1,17 +1,5 @@
 import Phaser from 'phaser';
-
-interface CardData {
-  name: string;
-  damage?: number;
-  block?: number;
-  heal?: number;
-  energy?: number;
-  cost: number;
-  allEnemies?: boolean;
-  hits?: number;
-  selfDamage?: number;
-  description: string;
-}
+import { CardData } from '../../types';
 
 /**
  * 카드 덱, 핸드, 버린 카드 더미를 관리하는 클래스
@@ -127,6 +115,7 @@ export default class DeckManager {
   private deepCopyCard(card: CardData): CardData {
     return {
       name: card.name,
+      type: card.type,
       damage: card.damage,
       block: card.block,
       heal: card.heal,
@@ -135,7 +124,8 @@ export default class DeckManager {
       allEnemies: card.allEnemies,
       hits: card.hits,
       selfDamage: card.selfDamage,
-      description: card.description
+      description: card.description,
+      image: card.image
     };
   }
 }

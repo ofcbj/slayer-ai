@@ -1,19 +1,7 @@
 import Enemy from '../objects/Enemy';
+import { CardData, EnemyData, PlayerState, StageData, GameState } from '../../types';
 
-// Interfaces
-export interface CardData {
-  name: string;
-  damage?: number;
-  block?: number;
-  heal?: number;
-  energy?: number;
-  cost: number;
-  allEnemies?: boolean;
-  hits?: number;
-  selfDamage?: number;
-  description: string;
-}
-
+// BattleManager 전용 인터페이스
 export interface NormalizedCardData {
   name: string;
   type: string;
@@ -31,35 +19,8 @@ export interface EnemyIntent {
   value: number;
 }
 
-export interface EnemyData {
-  name: string;
-  attack?: number;
-  defense?: number;
-}
-
-export interface PlayerState {
-  health: number;
-  maxHealth: number;
-  energy: number;
-  maxEnergy: number;
-  defense: number;
-}
-
-export interface StageData {
-  id: string;
-  data: {
-    enemies: string[];
-    type: string;
-    nextStages?: string[];
-  };
-}
-
-export interface GameState {
-  player: PlayerState;
-  deck: CardData[];
-  stagesCleared: string[];
-  currentStage: string;
-}
+// 공통 타입 재 export (하위 호환성)
+export type { CardData, EnemyData, PlayerState, StageData, GameState };
 
 // Callbacks for UI updates
 export interface BattleCallbacks {

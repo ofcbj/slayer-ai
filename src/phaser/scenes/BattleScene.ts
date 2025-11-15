@@ -2,34 +2,11 @@ import Phaser from 'phaser';
 import Enemy from '../objects/Enemy';
 import Player from '../objects/Player';
 import DeckManager from '../managers/DeckManager';
-import BattleManager, { BattleCallbacks, CardData, EnemyData } from '../managers/BattleManager';
+import BattleManager, { BattleCallbacks, CardData, EnemyData, StageData, GameState } from '../managers/BattleManager';
 import BattleUIManager from '../managers/BattleUIManager';
 import CardHandManager from '../managers/CardHandManager';
 import CardViewManager from '../managers/CardViewManager';
 import BattleEventManager from '../managers/BattleEventManager';
-
-// Interfaces
-interface StageData {
-  id: string;
-  data: {
-    enemies: string[];
-    type: string;
-    nextStages?: string[];
-  };
-}
-
-interface GameState {
-  player: {
-    health: number;
-    maxHealth: number;
-    energy: number;
-    maxEnergy: number;
-    defense: number;
-  };
-  deck: CardData[];
-  stagesCleared: string[];
-  currentStage: string;
-}
 
 /**
  * 전투 씬
