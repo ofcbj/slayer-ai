@@ -19,7 +19,6 @@ export default class BattleEventManager {
   private deckManager: DeckManager;
   private uiManager: BattleUIManager;
   private playerCharacter: Player;
-  private enemies: Enemy[];
   private onDeckInfoUpdate?: () => void;
 
   constructor(
@@ -29,7 +28,6 @@ export default class BattleEventManager {
     deckManager: DeckManager,
     uiManager: BattleUIManager,
     playerCharacter: Player,
-    enemies: Enemy[],
     onDeckInfoUpdate?: () => void
   ) {
     this.scene = scene;
@@ -38,7 +36,6 @@ export default class BattleEventManager {
     this.deckManager = deckManager;
     this.uiManager = uiManager;
     this.playerCharacter = playerCharacter;
-    this.enemies = enemies;
     this.onDeckInfoUpdate = onDeckInfoUpdate;
   }
 
@@ -117,7 +114,7 @@ export default class BattleEventManager {
     const cardData: NormalizedCardData = (card as any).cardData;
 
     // BattleManager를 사용하여 카드 사용
-    const success = this.battleManager.useCard(cardData, target, this.enemies);
+    const success = this.battleManager.useCard(cardData, target, this.battleManager.getAllEnemies());
 
     if (!success) {
       this.uiManager.showMessage('Not enough energy!');
@@ -127,13 +124,9 @@ export default class BattleEventManager {
     // 애니메이션 처리
     if (cardData.type === '공격') {
       if (cardData.allEnemies) {
-        card.playEffect(this.scene.cameras.main.width / 2, 250, () => {
-          this.battleManager.checkBattleEnd();
-        });
+        card.playEffect(this.scene.cameras.main.width / 2, 250);
       } else if (target) {
-        card.playEffect(target.x, target.y, () => {
-          this.battleManager.checkBattleEnd();
-        });
+        card.playEffect(target.x, target.y);
       }
     } else if (cardData.type === '방어') {
       // 플레이어 캐릭터 방어 애니메이션

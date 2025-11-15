@@ -89,6 +89,7 @@ export default class BattleManager {
     // 배열 참조를 복사 (배열 자체를 복사하지 않음)
     this.enemies = enemies;
     this.callbacks = callbacks;
+    console.log(`[BattleManager] Created with ${enemies.length} enemies:`, enemies.map((e: any) => e.enemyData?.name));
   }
 
   /**
@@ -276,9 +277,14 @@ export default class BattleManager {
    * 적이 패배했을 때 호출됩니다.
    */
   public onEnemyDefeated(enemy: Enemy): void {
+    console.log(`[BattleManager] onEnemyDefeated - Enemy: ${(enemy as any).enemyData?.name}`);
     const index = this.enemies.indexOf(enemy);
+    console.log(`[BattleManager] onEnemyDefeated - Enemy index in array: ${index}, Total enemies before: ${this.enemies.length}`);
     if (index > -1) {
       this.enemies.splice(index, 1);
+      console.log(`[BattleManager] onEnemyDefeated - Removed enemy, Total enemies after: ${this.enemies.length}`);
+    } else {
+      console.warn(`[BattleManager] onEnemyDefeated - Enemy not found in enemies array!`);
     }
 
     if (this.callbacks.onEnemyDefeated) {
@@ -292,15 +298,19 @@ export default class BattleManager {
    * 전투 종료를 확인합니다.
    */
   public checkBattleEnd(): void {
+    console.log(`[BattleManager] checkBattleEnd - Total enemies: ${this.enemies.length}`);
     const aliveEnemies = this.enemies.filter(e => !e.isDead());
+    console.log(`[BattleManager] checkBattleEnd - Alive enemies: ${aliveEnemies.length}`, aliveEnemies.map((e: any) => ({ name: e.enemyData?.name, health: e.health })));
 
     if (aliveEnemies.length === 0) {
       // 승리
+      console.log('[BattleManager] Battle won!');
       if (this.callbacks.onBattleEnd) {
         this.callbacks.onBattleEnd(true);
       }
     } else if (this.playerState.health <= 0) {
       // 패배
+      console.log('[BattleManager] Battle lost!');
       if (this.callbacks.onBattleEnd) {
         this.callbacks.onBattleEnd(false);
       }

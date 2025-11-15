@@ -42,3 +42,5 @@ coverage/
 # OS
 Thumbs.db
 .DS_Store
+.chrome-debug-profile/
+.edge-debug-profile/

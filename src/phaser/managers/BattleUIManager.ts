@@ -344,18 +344,37 @@ export default class BattleUIManager {
 
     // Energy 구슬 상태 업데이트
     this.energyOrbs.forEach((orbData, index) => {
-      if (index < currentEnergy) {
-        // 활성 에너지
-        const isBonus = index >= maxEnergy;
-        orbData.orb.setFillStyle(isBonus ? 0xffcc00 : 0xf39c12); // 보너스 에너지는 더 밝은 색
+      if (index < maxEnergy) {
+        // maxEnergy 범위 내의 구슬만 표시
+        orbData.orb.setVisible(true);
+        orbData.glow.setVisible(true);
+
+        if (index < currentEnergy) {
+          // 활성 에너지
+          const isBonus = index >= maxEnergy;
+          orbData.orb.setFillStyle(isBonus ? 0xffcc00 : 0xf39c12); // 보너스 에너지는 더 밝은 색
+          orbData.orb.setAlpha(1);
+          orbData.glow.setAlpha(isBonus ? 0.5 : 0.3);
+          orbData.active = true;
+        } else {
+          // 비활성 에너지
+          orbData.orb.setFillStyle(0x666666);
+          orbData.orb.setAlpha(0.5);
+          orbData.glow.setAlpha(0);
+          orbData.active = false;
+        }
+      } else if (index < currentEnergy) {
+        // maxEnergy를 초과하는 보너스 에너지 (일시적으로 표시)
+        orbData.orb.setVisible(true);
+        orbData.glow.setVisible(true);
+        orbData.orb.setFillStyle(0xffcc00);
         orbData.orb.setAlpha(1);
-        orbData.glow.setAlpha(isBonus ? 0.5 : 0.3);
+        orbData.glow.setAlpha(0.5);
         orbData.active = true;
       } else {
-        // 비활성 에너지
-        orbData.orb.setFillStyle(0x666666);
-        orbData.orb.setAlpha(0.5);
-        orbData.glow.setAlpha(0);
+        // maxEnergy를 초과하고 currentEnergy도 넘는 구슬은 숨김
+        orbData.orb.setVisible(false);
+        orbData.glow.setVisible(false);
         orbData.active = false;
       }
     });

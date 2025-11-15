@@ -47,6 +47,8 @@ export default class BattleScene extends Phaser.Scene {
   private gameState!: GameState;
   private selectedStage!: StageData;
   private playerCharacter!: Player;
+  private debugOverlay: Phaser.GameObjects.Container | null = null;
+  private inspectButton!: Phaser.GameObjects.Container;
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -55,6 +57,41 @@ export default class BattleScene extends Phaser.Scene {
   init(): void {
     this.deckManager = new DeckManager();
     this.enemies = [];
+  }
+
+  shutdown(): void {
+    console.log('[BattleScene] shutdown called');
+
+    // 이벤트 리스너 정리
+    if (this.eventManager) {
+      this.eventManager.unregisterEventListeners();
+    }
+
+    // 적 객체 정리
+    this.enemies.forEach(enemy => {
+      if (enemy && enemy.scene) {
+        enemy.destroy();
+      }
+    });
+    this.enemies = [];
+
+    // 플레이어 캐릭터 정리
+    if (this.playerCharacter && this.playerCharacter.scene) {
+      this.playerCharacter.destroy();
+    }
+
+    // 카드 핸드 정리
+    if (this.cardHandManager) {
+      this.cardHandManager.clearHand();
+    }
+
+    // 매니저 참조 정리
+    this.battleManager = null as any;
+    this.eventManager = null as any;
+    this.uiManager = null as any;
+    this.cardHandManager = null as any;
+    this.cardViewManager = null as any;
+    this.deckManager = null as any;
   }
 
   create(): void {
@@ -80,6 +117,9 @@ export default class BattleScene extends Phaser.Scene {
     // UI 생성
     this.createUI();
 
+    // Inspect 버튼 생성
+    this.createInspectButton();
+
     // 적 생성 (BattleManager 초기화 전에 먼저 생성)
     this.createEnemies();
 
@@ -94,7 +134,6 @@ export default class BattleScene extends Phaser.Scene {
       this.deckManager,
       this.uiManager,
       this.playerCharacter,
-      this.enemies,
       () => this.updateDeckInfo()
     );
     this.eventManager.registerEventListeners();
@@ -210,13 +249,10 @@ export default class BattleScene extends Phaser.Scene {
         this.updateUI();
       },
       onEnemyDefeated: (_enemy: Enemy) => {
-        // 적 패배 처리 (이미 BattleManager에서 enemies 배열에서 제거됨)
-        // BattleScene의 enemies 배열도 동기화
-        const index = this.enemies.indexOf(_enemy);
-        if (index > -1) {
-          this.enemies.splice(index, 1);
-        }
-        this.battleManager.checkBattleEnd();
+        // BattleManager와 BattleScene이 같은 enemies 배열을 공유하므로
+        // BattleManager.onEnemyDefeated()에서 이미 배열 처리 완료
+        // 여기서는 추가 UI 업데이트만 필요하면 처리
+        console.log(`[BattleScene] onEnemyDefeated callback - Enemy removed, remaining: ${this.enemies.length}`);
       },
       onBattleEnd: (victory: boolean) => {
         if (victory) {
@@ -292,6 +328,8 @@ export default class BattleScene extends Phaser.Scene {
     const enemiesData: Record<string, EnemyData> = this.registry.get('enemiesData');
     const stageEnemies: string[] = this.selectedStage.data.enemies;
 
+    console.log(`[BattleScene] createEnemies - Stage: ${this.selectedStage.id}, Expected enemies:`, stageEnemies);
+
     const spacing = Math.min(300, width / (stageEnemies.length + 1));
     const startX = (width - (spacing * (stageEnemies.length - 1))) / 2;
 
@@ -305,6 +343,8 @@ export default class BattleScene extends Phaser.Scene {
         this.enemies.push(enemy);
       }
     });
+
+    console.log(`[BattleScene] createEnemies - Created ${this.enemies.length} enemies`);
   }
 
   private setupDeck(): void {
@@ -412,5 +452,250 @@ export default class BattleScene extends Phaser.Scene {
     const discardSize = this.deckManager.getDiscardPileSize();
 
     this.uiManager.updateDeckInfo(deckSize, handSize, discardSize);
+  }
+
+  private createInspectButton(): void {
+    const width = this.cameras.main.width;
+
+    const button = this.add.container(width - 200, 130);
+
+    const bg = this.add.rectangle(0, 0, 150, 50, 0x4ecdc4);
+    bg.setStrokeStyle(3, 0xffffff);
+
+    const text = this.add.text(0, 0, '🔍 Inspect', {
+      fontSize: '20px',
+      fontFamily: 'Arial, sans-serif',
+      fontStyle: 'bold',
+      color: '#ffffff'
+    });
+    text.setOrigin(0.5);
+
+    button.add([bg, text]);
+    button.setSize(150, 50);
+    button.setInteractive({ useHandCursor: true });
+
+    button.on('pointerover', () => {
+      this.tweens.add({
+        targets: button,
+        scaleX: 1.05,
+        scaleY: 1.05,
+        duration: 100
+      });
+      bg.setFillStyle(0x5ee4db);
+    });
+
+    button.on('pointerout', () => {
+      this.tweens.add({
+        targets: button,
+        scaleX: 1,
+        scaleY: 1,
+        duration: 100
+      });
+      bg.setFillStyle(0x4ecdc4);
+    });
+
+    button.on('pointerdown', () => {
+      this.toggleDebugOverlay();
+    });
+
+    this.inspectButton = button;
+  }
+
+  private toggleDebugOverlay(): void {
+    if (this.debugOverlay) {
+      // 오버레이가 이미 있으면 제거
+      this.debugOverlay.destroy();
+      this.debugOverlay = null;
+    } else {
+      // 오버레이 생성
+      this.createDebugOverlay();
+    }
+  }
+
+  private createDebugOverlay(): void {
+    const width = this.cameras.main.width;
+    const height = this.cameras.main.height;
+
+    // 반투명 배경이 있는 컨테이너
+    const overlay = this.add.container(0, 0);
+    overlay.setDepth(1000); // 최상위에 표시
+
+    // 반투명 배경
+    const darkBg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
+    darkBg.setInteractive();
+    overlay.add(darkBg);
+
+    // 메인 패널
+    const panelWidth = 700;
+    const panelHeight = 600;
+    const panel = this.add.rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x2c3e50);
+    panel.setStrokeStyle(4, 0x4ecdc4);
+    overlay.add(panel);
+
+    // 타이틀
+    const title = this.add.text(width / 2, height / 2 - panelHeight / 2 + 30, '🔍 Debug Inspector', {
+      fontSize: '28px',
+      fontFamily: 'Arial, sans-serif',
+      fontStyle: 'bold',
+      color: '#4ecdc4'
+    });
+    title.setOrigin(0.5);
+    overlay.add(title);
+
+    // 닫기 버튼
+    const closeBtn = this.add.text(width / 2 + panelWidth / 2 - 40, height / 2 - panelHeight / 2 + 30, '✕', {
+      fontSize: '32px',
+      fontFamily: 'Arial, sans-serif',
+      fontStyle: 'bold',
+      color: '#ff6b6b'
+    });
+    closeBtn.setOrigin(0.5);
+    closeBtn.setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => {
+      this.toggleDebugOverlay();
+    });
+    closeBtn.on('pointerover', () => {
+      closeBtn.setScale(1.2);
+    });
+    closeBtn.on('pointerout', () => {
+      closeBtn.setScale(1);
+    });
+    overlay.add(closeBtn);
+
+    // 디버그 정보 수집
+    const debugInfo = this.collectDebugInfo();
+
+    // 스크롤 가능한 텍스트 영역
+    const contentY = height / 2 - panelHeight / 2 + 80;
+    const content = this.add.text(width / 2 - panelWidth / 2 + 30, contentY, debugInfo, {
+      fontSize: '14px',
+      fontFamily: 'monospace',
+      color: '#ffffff',
+      lineSpacing: 4,
+      wordWrap: { width: panelWidth - 60 }
+    });
+    overlay.add(content);
+
+    this.debugOverlay = overlay;
+
+    // 배경 클릭시 닫기
+    darkBg.on('pointerdown', () => {
+      this.toggleDebugOverlay();
+    });
+  }
+
+  private collectDebugInfo(): string {
+    let info = '';
+
+    // BattleScene 정보
+    info += '═══════════════════════════════════════\n';
+    info += '📋 BATTLE SCENE\n';
+    info += '═══════════════════════════════════════\n';
+    info += `Current Stage: ${this.selectedStage?.id || 'N/A'}\n`;
+    info += `Scene Active: ${this.scene.isActive()}\n`;
+    info += `Scene Visible: ${this.scene.isVisible()}\n`;
+    info += '\n';
+
+    // BattleManager 정보
+    info += '═══════════════════════════════════════\n';
+    info += '⚔️  BATTLE MANAGER\n';
+    info += '═══════════════════════════════════════\n';
+    if (this.battleManager) {
+      const allEnemies = this.battleManager.getAllEnemies();
+      const aliveEnemies = this.battleManager.getAliveEnemies();
+      info += `Total Enemies in Array: ${allEnemies.length}\n`;
+      info += `Alive Enemies: ${aliveEnemies.length}\n`;
+      info += '\nEnemy Details:\n';
+      allEnemies.forEach((enemy, index) => {
+        const enemyData = (enemy as any).enemyData;
+        const isDead = enemy.isDead();
+        const hasScene = !!enemy.scene;
+        info += `  [${index}] ${enemyData?.name || 'Unknown'}\n`;
+        info += `      HP: ${enemy.health}/${enemy.maxHealth}\n`;
+        info += `      Dead: ${isDead}\n`;
+        info += `      Has Scene: ${hasScene}\n`;
+        info += `      Active: ${enemy.active}\n`;
+      });
+
+      const playerState = this.battleManager.getPlayerState();
+      info += `\nPlayer State:\n`;
+      info += `  HP: ${playerState.health}/${playerState.maxHealth}\n`;
+      info += `  Energy: ${playerState.energy}/${playerState.maxEnergy}\n`;
+      info += `  Defense: ${playerState.defense}\n`;
+      info += `  Turn: ${this.battleManager.getTurn()}\n`;
+    } else {
+      info += 'BattleManager not initialized!\n';
+    }
+    info += '\n';
+
+    // BattleScene.enemies 배열 정보
+    info += '═══════════════════════════════════════\n';
+    info += '👾 SCENE ENEMIES ARRAY\n';
+    info += '═══════════════════════════════════════\n';
+    info += `Scene.enemies.length: ${this.enemies.length}\n`;
+    this.enemies.forEach((enemy, index) => {
+      const enemyData = (enemy as any).enemyData;
+      info += `  [${index}] ${enemyData?.name || 'Unknown'} (HP: ${enemy.health})\n`;
+    });
+    info += '\n';
+
+    // BattleEventManager 정보
+    info += '═══════════════════════════════════════\n';
+    info += '🎯 BATTLE EVENT MANAGER\n';
+    info += '═══════════════════════════════════════\n';
+    if (this.eventManager) {
+      info += `EventManager initialized: Yes\n`;
+      info += `(EventManager no longer maintains enemies array)\n`;
+    } else {
+      info += 'EventManager not initialized!\n';
+    }
+    info += '\n';
+
+    // Scene Events 정보
+    info += '═══════════════════════════════════════\n';
+    info += '📡 SCENE EVENTS\n';
+    info += '═══════════════════════════════════════\n';
+    const sceneEvents = this.events as any;
+    const eventNames = ['cardClicked', 'enemyClicked', 'enemyDefeated'];
+    eventNames.forEach(eventName => {
+      const listeners = sceneEvents._events?.[eventName] || [];
+      const count = Array.isArray(listeners) ? listeners.length : (listeners ? 1 : 0);
+      info += `${eventName}: ${count} listener(s)\n`;
+    });
+    info += '\n';
+
+    // 카드 핸드 정보
+    info += '═══════════════════════════════════════\n';
+    info += '🎴 CARD HAND\n';
+    info += '═══════════════════════════════════════\n';
+    if (this.cardHandManager) {
+      const handSize = this.cardHandManager.getHandSize();
+      const hand = this.cardHandManager.getHand();
+      info += `Hand Size: ${handSize}\n`;
+      hand.forEach((card, index) => {
+        const cardData = (card as any).cardData;
+        info += `  [${index}] ${cardData?.name || 'Unknown'}\n`;
+      });
+    } else {
+      info += 'CardHandManager not initialized!\n';
+    }
+    info += '\n';
+
+    // 덱 정보
+    info += '═══════════════════════════════════════\n';
+    info += '📚 DECK MANAGER\n';
+    info += '═══════════════════════════════════════\n';
+    if (this.deckManager) {
+      info += `Deck Size: ${this.deckManager.getDeckSize()}\n`;
+      info += `Discard Size: ${this.deckManager.getDiscardPileSize()}\n`;
+      const totalCards = this.deckManager.getDeckSize() +
+                        this.deckManager.getDiscardPileSize() +
+                        (this.cardHandManager?.getHandSize() || 0);
+      info += `Total Cards: ${totalCards}\n`;
+    } else {
+      info += 'DeckManager not initialized!\n';
+    }
+
+    return info;
   }
 }

@@ -37,26 +37,32 @@ export default class CardHandManager {
    * 카드를 드로우합니다.
    */
   public drawCards(count: number, onComplete?: () => void): void {
-    let cardsDrawn = 0;
+    const cardsToDrawData: CardData[] = [];
 
+    // 먼저 모든 카드 데이터를 가져옴
     for (let i = 0; i < count; i++) {
       const cardData = this.deckManager.drawCard();
       if (cardData) {
-        // 애니메이션과 함께 카드 추가 (순차적으로)
-        this.scene.time.delayedCall(i * 150, () => {
-          this.addCardToHandWithAnimation(cardData);
-        });
-        cardsDrawn++;
+        cardsToDrawData.push(cardData);
       } else {
         // 덱이 비어있으면 중단 (DeckManager의 drawCard가 이미 리셔플 처리)
         break;
       }
     }
 
-    // 모든 카드가 드로우된 후 핸드 재배치
+    const cardsDrawn = cardsToDrawData.length;
+    const currentHandSize = this.hand.length;
+
+    // 순차적으로 카드 추가 애니메이션
+    cardsToDrawData.forEach((cardData, index) => {
+      this.scene.time.delayedCall(index * 150, () => {
+        this.addCardToHandWithAnimation(cardData, currentHandSize + index, currentHandSize + cardsDrawn);
+      });
+    });
+
+    // 모든 카드가 드로우된 후 콜백 실행
     // 마지막 카드의 애니메이션 시작 시간(cardsDrawn * 150) + 애니메이션 duration(400) + 여유시간(100)
     this.scene.time.delayedCall(cardsDrawn * 150 + 500, () => {
-      this.arrangeHand();
       if (onComplete) {
         onComplete();
       }
@@ -66,7 +72,7 @@ export default class CardHandManager {
   /**
    * 애니메이션과 함께 카드를 핸드에 추가합니다.
    */
-  private addCardToHandWithAnimation(cardData: CardData): void {
+  private addCardToHandWithAnimation(cardData: CardData, cardIndex: number, finalHandSize: number): void {
     // 카드 타입 정규화
     const normalizedCard = this.normalizeCardData(cardData);
 
@@ -85,10 +91,20 @@ export default class CardHandManager {
     // 덱 파일 애니메이션
     this.uiManager.animateDeckPile();
 
+    // 최종 위치 계산 (모든 카드가 드로우된 후의 핸드 배치 기준)
+    const spacing = 150;
+    const totalWidth = (finalHandSize - 1) * spacing;
+    const startHandX = -totalWidth / 2;
+
     // 핸드 컨테이너의 월드 좌표
     const handWorldPos = this.handContainer.getWorldTransformMatrix();
-    const targetX = handWorldPos.tx;
-    const targetY = handWorldPos.ty;
+    const handCenterX = handWorldPos.tx;
+    const handCenterY = handWorldPos.ty;
+
+    // 이 카드의 최종 로컬 및 월드 좌표
+    const finalLocalX = startHandX + (cardIndex * spacing);
+    const targetX = handCenterX + finalLocalX;
+    const targetY = handCenterY;
 
     this.scene.tweens.add({
       targets: card,
@@ -101,8 +117,9 @@ export default class CardHandManager {
       onComplete: () => {
         // 카드를 핸드 컨테이너로 이동
         this.handContainer.add(card);
-        // 핸드 컨테이너 내에서의 로컬 좌표는 (0, 0)으로 설정
-        card.setPosition(0, 0);
+        // 핸드 컨테이너 내에서의 로컬 좌표 설정
+        card.setPosition(finalLocalX, 0);
+        (card as any).originalY = 0;
       }
     });
   }

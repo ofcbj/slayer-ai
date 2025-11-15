@@ -36,9 +36,9 @@
       "name": "집중",
       "type": "스킬",
       "cost": 0,
-      "energy": 2,
+      "energy": 1,
       "image": "🧘",
-      "description": "<span class='card-energy'>2</span> 에너지를 얻습니다."
+      "description": "<span class='card-energy'>1</span> 에너지를 얻습니다."
     },
     {
       "name": "치유",
