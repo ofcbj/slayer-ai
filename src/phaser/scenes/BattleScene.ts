@@ -20,7 +20,6 @@ export default class BattleScene extends Phaser.Scene {
   private cardViewManager!: CardViewManager;
   private eventManager!: BattleEventManager;
 
-  private enemies: Enemy[] = [];
   private gameState!: GameState;
   private selectedStage!: StageData;
   private playerCharacter!: Player;
@@ -32,25 +31,27 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   init(): void {
+    console.log('[BattleScene] init called');
     this.deckManager = new DeckManager();
-    this.enemies = [];
   }
 
   shutdown(): void {
-    console.log('[BattleScene] shutdown called');
+    console.log('[BattleScene] shutdown called - START');
 
     // 이벤트 리스너 정리
     if (this.eventManager) {
       this.eventManager.unregisterEventListeners();
     }
 
-    // 적 객체 정리
-    this.enemies.forEach(enemy => {
-      if (enemy && enemy.scene) {
-        enemy.destroy();
-      }
-    });
-    this.enemies = [];
+    // 적 객체 정리 (BattleManager를 통해 접근)
+    if (this.battleManager) {
+      const enemies = this.battleManager.getAllEnemies();
+      enemies.forEach((enemy: Enemy) => {
+        if (enemy && enemy.scene) {
+          enemy.destroy();
+        }
+      });
+    }
 
     // 플레이어 캐릭터 정리
     if (this.playerCharacter && this.playerCharacter.scene) {
@@ -69,9 +70,12 @@ export default class BattleScene extends Phaser.Scene {
     this.cardHandManager = null as any;
     this.cardViewManager = null as any;
     this.deckManager = null as any;
+
+    console.log('[BattleScene] shutdown called - END');
   }
 
   create(): void {
+    console.log('[BattleScene] create called');
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
@@ -81,6 +85,7 @@ export default class BattleScene extends Phaser.Scene {
     // 게임 상태 가져오기
     this.gameState = this.registry.get('gameState');
     this.selectedStage = this.registry.get('selectedStage');
+    console.log('[BattleScene] create - Stage:', this.selectedStage?.id);
 
     // 플레이어 캐릭터 생성
     this.createPlayerCharacter();
@@ -97,11 +102,11 @@ export default class BattleScene extends Phaser.Scene {
     // Inspect 버튼 생성
     this.createInspectButton();
 
-    // 적 생성 (BattleManager 초기화 전에 먼저 생성)
-    this.createEnemies();
+    // 적 생성 (먼저 생성하여 BattleManager에 전달)
+    const enemies = this.createEnemies();
 
-    // BattleManager 초기화 (적이 생성된 후)
-    this.initializeBattleManager();
+    // BattleManager 초기화 (enemies를 받아서 생성)
+    this.initializeBattleManager(enemies);
 
     // Event Manager 초기화
     this.eventManager = new BattleEventManager(
@@ -119,7 +124,7 @@ export default class BattleScene extends Phaser.Scene {
     this.setupDeck();
 
     // 적 의도 설정
-    this.enemies.forEach(enemy => {
+    enemies.forEach((enemy: Enemy) => {
       const enemyData: EnemyData = (enemy as any).enemyData;
       this.battleManager.setEnemyIntent(enemy, enemyData, () => Phaser.Math.Between(0, 100) / 100);
     });
@@ -130,7 +135,7 @@ export default class BattleScene extends Phaser.Scene {
 
   // initializeManagers는 더 이상 사용하지 않음 (create에서 직접 처리)
 
-  private initializeBattleManager(): void {
+  private initializeBattleManager(enemies: Enemy[]): void {
     const callbacks: BattleCallbacks = {
       onPlayerTurnStart: () => {
         // 카드 뽑기 (5장)
@@ -226,10 +231,10 @@ export default class BattleScene extends Phaser.Scene {
         this.updateUI();
       },
       onEnemyDefeated: (_enemy: Enemy) => {
-        // BattleManager와 BattleScene이 같은 enemies 배열을 공유하므로
-        // BattleManager.onEnemyDefeated()에서 이미 배열 처리 완료
+        // BattleManager에서 enemies 배열 처리 완료
         // 여기서는 추가 UI 업데이트만 필요하면 처리
-        console.log(`[BattleScene] onEnemyDefeated callback - Enemy removed, remaining: ${this.enemies.length}`);
+        const remainingEnemies = this.battleManager.getAllEnemies();
+        console.log(`[BattleScene] onEnemyDefeated callback - Enemy removed, remaining: ${remainingEnemies.length}`);
       },
       onBattleEnd: (victory: boolean) => {
         if (victory) {
@@ -256,7 +261,7 @@ export default class BattleScene extends Phaser.Scene {
       }
     };
 
-    this.battleManager = new BattleManager(this.gameState.player, this.enemies, callbacks);
+    this.battleManager = new BattleManager(this.gameState.player, enemies, callbacks);
   }
 
   private createPlayerCharacter(): void {
@@ -300,7 +305,7 @@ export default class BattleScene extends Phaser.Scene {
     this.uiManager.createDeckInfoText();
   }
 
-  private createEnemies(): void {
+  private createEnemies(): Enemy[] {
     const width = this.cameras.main.width;
     const enemiesData: Record<string, EnemyData> = this.registry.get('enemiesData');
     const stageEnemies: string[] = this.selectedStage.data.enemies;
@@ -310,6 +315,7 @@ export default class BattleScene extends Phaser.Scene {
     const spacing = Math.min(300, width / (stageEnemies.length + 1));
     const startX = (width - (spacing * (stageEnemies.length - 1))) / 2;
 
+    const createdEnemies: Enemy[] = [];
     stageEnemies.forEach((enemyName: string, index: number) => {
       const enemyData = enemiesData[enemyName];
       if (enemyData) {
@@ -317,11 +323,12 @@ export default class BattleScene extends Phaser.Scene {
         const y = 220; // 적들을 상단에 배치
 
         const enemy = new Enemy(this, x, y, enemyData, index);
-        this.enemies.push(enemy);
+        createdEnemies.push(enemy);
       }
     });
 
-    console.log(`[BattleScene] createEnemies - Created ${this.enemies.length} enemies`);
+    console.log(`[BattleScene] createEnemies - Created ${createdEnemies.length} enemies`);
+    return createdEnemies;
   }
 
   private setupDeck(): void {
@@ -401,6 +408,8 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   private winBattle(): void {
+    console.log('[BattleScene] winBattle called - Stage:', this.selectedStage?.id);
+
     // BattleManager에서 승리 처리
     this.battleManager.winBattle(this.selectedStage, this.gameState);
 
@@ -408,6 +417,7 @@ export default class BattleScene extends Phaser.Scene {
     const playerState = this.battleManager.getPlayerState();
     this.gameState.player = { ...playerState };
 
+    console.log('[BattleScene] winBattle - Starting RewardScene');
     // 보상 씬으로
     this.scene.start('RewardScene');
   }
@@ -603,17 +613,6 @@ export default class BattleScene extends Phaser.Scene {
     } else {
       info += 'BattleManager not initialized!\n';
     }
-    info += '\n';
-
-    // BattleScene.enemies 배열 정보
-    info += '═══════════════════════════════════════\n';
-    info += '👾 SCENE ENEMIES ARRAY\n';
-    info += '═══════════════════════════════════════\n';
-    info += `Scene.enemies.length: ${this.enemies.length}\n`;
-    this.enemies.forEach((enemy, index) => {
-      const enemyData = (enemy as any).enemyData;
-      info += `  [${index}] ${enemyData?.name || 'Unknown'} (HP: ${enemy.health})\n`;
-    });
     info += '\n';
 
     // BattleEventManager 정보

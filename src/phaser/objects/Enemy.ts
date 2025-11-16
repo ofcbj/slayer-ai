@@ -334,7 +334,15 @@ export default class Enemy extends Character {
       duration: 800,
       ease: 'Power2',
       onComplete: () => {
-        this.scene.events.emit('enemyDefeated', this);
+        const sceneActive = this.scene && this.scene.scene && this.scene.scene.isActive('BattleScene');
+        console.log(`[Enemy] Death animation complete - ${this.enemyData?.name}, Scene active: ${sceneActive}, this.active: ${this.active}`);
+
+        // Scene이 여전히 활성화되어 있고, 이 Enemy가 파괴되지 않았을 때만 이벤트 발생
+        if (sceneActive && this.active) {
+          this.scene.events.emit('enemyDefeated', this);
+        } else {
+          console.warn(`[Enemy] Skipping enemyDefeated event - Scene or Enemy not active`);
+        }
       }
     });
 
@@ -366,5 +374,20 @@ export default class Enemy extends Character {
         onComplete: () => particle.destroy()
       });
     }
+  }
+
+  /**
+   * Enemy를 파괴할 때 모든 tween을 정리합니다.
+   */
+  destroy(fromScene?: boolean): void {
+    console.log(`[Enemy] destroy called for ${this.enemyData?.name}, fromScene: ${fromScene}`);
+
+    // 이 Enemy를 타겟으로 하는 모든 tween 제거
+    if (this.scene && this.scene.tweens) {
+      this.scene.tweens.killTweensOf(this);
+    }
+
+    // 부모 클래스의 destroy 호출
+    super.destroy(fromScene);
   }
 }

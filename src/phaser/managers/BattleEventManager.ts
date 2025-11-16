@@ -113,8 +113,8 @@ export default class BattleEventManager {
   public useCard(card: Card, target: Enemy | null = null): void {
     const cardData: NormalizedCardData = (card as any).cardData;
 
-    // BattleManager를 사용하여 카드 사용
-    const success = this.battleManager.useCard(cardData, target, this.battleManager.getAllEnemies());
+    // BattleManager를 사용하여 카드 사용 (BattleManager가 내부 enemies 배열을 직접 사용)
+    const success = this.battleManager.useCard(cardData, target);
 
     if (!success) {
       this.uiManager.showMessage('Not enough energy!');
