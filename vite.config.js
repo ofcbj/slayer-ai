@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+  plugins: [react()],
   // GitHub Pages에서 호스팅할 때 저장소 이름을 base로 설정
   base: process.env.NODE_ENV === 'production' ? '/slayer-ai/' : './',
   build: {
@@ -9,7 +11,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          phaser: ['phaser']
+          phaser: ['phaser'],
+          react: ['react', 'react-dom']
         }
       }
     }
@@ -19,6 +22,6 @@ export default defineConfig({
     open: true
   },
   resolve: {
-    extensions: ['.ts', '.js', '.json']
+    extensions: ['.tsx', '.ts', '.jsx', '.js', '.json']
   }
 });

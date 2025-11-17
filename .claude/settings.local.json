@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(npm run build:*)",
-      "Bash(/usr/local/workspace/slayer-ai/.gitignore)"
+      "Bash(/usr/local/workspace/slayer-ai/.gitignore)",
+      "Bash(npm install:*)",
+      "Bash(move:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

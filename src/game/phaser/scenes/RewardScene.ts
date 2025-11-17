@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import EventBus from '../../EventBus';
 import Card from '../objects/Card';
 import { CardData, GameState } from '../../types';
 import { NormalizedCardData } from '../managers/BattleManager';
@@ -16,6 +17,9 @@ export default class RewardScene extends Phaser.Scene {
   }
 
   create(): void {
+    // React에 현재 Scene이 준비되었음을 알림
+    EventBus.emit('current-scene-ready', this);
+
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 

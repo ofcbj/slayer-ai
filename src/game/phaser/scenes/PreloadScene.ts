@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import EventBus from '../../EventBus';
 
 interface GameState {
   player: {
@@ -33,6 +34,9 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create(): void {
+    // React에 현재 Scene이 준비되었음을 알림
+    EventBus.emit('current-scene-ready', this);
+
     // 로드된 데이터를 전역 레지스트리에 저장
     this.registry.set('cardsData', this.cache.json.get('cards'));
     this.registry.set('enemiesData', this.cache.json.get('enemies'));

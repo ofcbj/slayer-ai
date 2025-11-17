@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import EventBus from '../../EventBus';
 
 export default class MenuScene extends Phaser.Scene {
   constructor() {
@@ -6,6 +7,8 @@ export default class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    // React에 현재 Scene이 준비되었음을 알림
+    EventBus.emit('current-scene-ready', this);
     const width: number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
 

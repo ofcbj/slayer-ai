@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import EventBus from '../../EventBus';
 import Enemy from '../objects/Enemy';
 import Player from '../objects/Player';
 import DeckManager from '../managers/DeckManager';
@@ -76,6 +77,10 @@ export default class BattleScene extends Phaser.Scene {
 
   create(): void {
     console.log('[BattleScene] create called');
+
+    // React에 현재 Scene이 준비되었음을 알림
+    EventBus.emit('current-scene-ready', this);
+
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 

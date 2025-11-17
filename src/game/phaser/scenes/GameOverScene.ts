@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import EventBus from '../../EventBus';
 
 interface InitData {
   victory?: boolean;
@@ -29,6 +30,9 @@ export default class GameOverScene extends Phaser.Scene {
   }
 
   create(): void {
+    // React에 현재 Scene이 준비되었음을 알림
+    EventBus.emit('current-scene-ready', this);
+
     const width: number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
 
