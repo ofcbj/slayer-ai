@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import Character from './Character';
-import { EnemyData } from '../../types';
+import { EnemyData } from '../../../types';
 
 interface Intent {
   type: 'attack' | 'defend' | 'special' | string;

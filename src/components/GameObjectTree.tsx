@@ -101,6 +101,15 @@ function getTypeColor(type: string): 'primary' | 'secondary' | 'success' | 'erro
   switch (type) {
     case 'Scene':
       return 'primary';
+    case 'Managers':
+      return 'error';
+    case 'BattleManager':
+    case 'DeckManager':
+    case 'BattleUIManager':
+    case 'CardHandManager':
+    case 'CardViewManager':
+    case 'BattleEventManager':
+      return 'error';
     case 'Container':
       return 'secondary';
     case 'Text':

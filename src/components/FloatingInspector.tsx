@@ -57,6 +57,19 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
     };
   }, []);
 
+  // 인스펙터가 열릴 때 게임 입력 비활성화
+  useEffect(() => {
+    if (currentScene && currentScene.input) {
+      if (open) {
+        // 인스펙터가 열리면 게임 입력 비활성화
+        currentScene.input.enabled = false;
+      } else {
+        // 인스펙터가 닫히면 게임 입력 활성화
+        currentScene.input.enabled = true;
+      }
+    }
+  }, [open, currentScene]);
+
   // 선택한 노드가 변경되면 하이라이트
   useEffect(() => {
     if (selectedNode && selectedNode.gameObject) {
@@ -145,6 +158,16 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
           border: '2px solid',
           borderColor: 'primary.main',
           borderRadius: 2,
+          pointerEvents: 'auto', // 인스펙터 패널은 마우스 이벤트를 받음
+        }}
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseUp={(e) => e.stopPropagation()}
+        onMouseMove={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
         }}
       >
         {/* Header - Draggable */}

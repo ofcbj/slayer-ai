@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { CardData } from '../../types';
+import { CardData } from '../../../types';
 
 /**
  * 카드 덱, 핸드, 버린 카드 더미를 관리하는 클래스

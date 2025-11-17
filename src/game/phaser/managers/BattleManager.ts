@@ -1,5 +1,5 @@
 import Enemy from '../objects/Enemy';
-import { CardData, EnemyData, PlayerState, StageData, GameState } from '../../types';
+import { CardData, EnemyData, PlayerState, StageData, GameState } from '../../../types';
 
 // BattleManager 전용 인터페이스
 export interface NormalizedCardData {
