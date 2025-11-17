@@ -214,6 +214,14 @@ export default class Card extends Phaser.GameObjects.Container {
 
     this.bg.on('pointerdown', () => {
       this.scene.events.emit('cardClicked', this);
+      // EventBus에도 emit하여 EventLogger에서 캡처 가능하도록
+      if ((this.scene as any).eventBus) {
+        (this.scene as any).eventBus.emit('cardClicked', {
+          type: 'Card',
+          name: (this as any).cardData?.name || 'Unknown',
+          id: (this as any).id || 'N/A',
+        });
+      }
     });
   }
 

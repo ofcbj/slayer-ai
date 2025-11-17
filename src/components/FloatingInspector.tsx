@@ -9,6 +9,8 @@ import {
   AppBar,
   Toolbar,
   Paper,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -16,8 +18,13 @@ import BugReportIcon from '@mui/icons-material/BugReport';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import MaximizeIcon from '@mui/icons-material/Maximize';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import ListIcon from '@mui/icons-material/List';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import TerminalIcon from '@mui/icons-material/Terminal';
 import { GameObjectTree } from './GameObjectTree';
 import { PropertyPanel } from './PropertyPanel';
+import { EventLogger } from './EventLogger';
+import { ConsoleCommand } from './ConsoleCommand';
 import { GameObjectNode, SceneInspector } from '../game/utils/SceneInspector';
 import { ObjectHighlighter } from '../game/utils/ObjectHighlighter';
 import EventBus from '../game/EventBus';
@@ -37,6 +44,7 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [size, setSize] = useState({ width: 900, height: 700 });
   const [isResizing, setIsResizing] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
   const resizeRef = useRef<HTMLDivElement>(null);
   const nodeRef = useRef<HTMLDivElement>(null);
 
@@ -235,43 +243,70 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
 
             <Divider />
 
-            {/* Main Content */}
+            {/* Tabs */}
+            <Tabs
+              value={activeTab}
+              onChange={(_, newValue) => setActiveTab(newValue)}
+              variant="fullWidth"
+              sx={{ borderBottom: 1, borderColor: 'divider' }}
+            >
+              <Tab icon={<ListIcon />} label="Objects" iconPosition="start" />
+              <Tab icon={<EventNoteIcon />} label="Events" iconPosition="start" />
+              <Tab icon={<TerminalIcon />} label="Console" iconPosition="start" />
+            </Tabs>
+
+            {/* Tab Content */}
             <Box
               sx={{
-                display: 'flex',
                 flexGrow: 1,
                 overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
-              {/* Left Panel - Tree */}
-              <Box
-                sx={{
-                  width: '50%',
-                  borderRight: 1,
-                  borderColor: 'divider',
-                  overflow: 'auto',
-                  p: 1,
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ px: 1, py: 0.5, fontWeight: 'bold', fontSize: '0.875rem' }}>
-                  Game Objects
-                </Typography>
-                <GameObjectTree node={sceneData} onNodeSelect={handleNodeSelect} />
-              </Box>
+              {activeTab === 0 && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexGrow: 1,
+                    overflow: 'hidden',
+                  }}
+                >
+                  {/* Left Panel - Tree */}
+                  <Box
+                    sx={{
+                      width: '50%',
+                      borderRight: 1,
+                      borderColor: 'divider',
+                      overflow: 'auto',
+                      p: 1,
+                    }}
+                  >
+                    <Typography variant="subtitle2" sx={{ px: 1, py: 0.5, fontWeight: 'bold', fontSize: '0.875rem' }}>
+                      Game Objects
+                    </Typography>
+                    <GameObjectTree node={sceneData} onNodeSelect={handleNodeSelect} />
+                  </Box>
 
-              {/* Right Panel - Properties */}
-              <Box
-                sx={{
-                  width: '50%',
-                  overflow: 'auto',
-                  p: 2,
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold', fontSize: '0.875rem' }}>
-                  Properties
-                </Typography>
-                <PropertyPanel node={selectedNode} />
-              </Box>
+                  {/* Right Panel - Properties */}
+                  <Box
+                    sx={{
+                      width: '50%',
+                      overflow: 'auto',
+                      p: 2,
+                    }}
+                  >
+                    <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold', fontSize: '0.875rem' }}>
+                      Properties
+                    </Typography>
+                    <PropertyPanel node={selectedNode} />
+                  </Box>
+                </Box>
+              )}
+
+              {activeTab === 1 && <EventLogger maxLogs={500} scene={currentScene} />}
+
+              {activeTab === 2 && <ConsoleCommand scene={currentScene} />}
             </Box>
 
             {/* Resize Handle */}

@@ -174,6 +174,14 @@ export default class Enemy extends Character {
     this.bg.on('pointerdown', () => {
       if (!this.isDead()) {
         this.scene.events.emit('enemyClicked', this);
+        // EventBus에도 emit하여 EventLogger에서 캡처 가능하도록
+        if ((this.scene as any).eventBus) {
+          (this.scene as any).eventBus.emit('enemyClicked', {
+            type: 'Enemy',
+            name: (this as any).enemyData?.name || 'Unknown',
+            id: (this as any).id || 'N/A',
+          });
+        }
       }
     });
   }
@@ -340,6 +348,14 @@ export default class Enemy extends Character {
         // Scene이 여전히 활성화되어 있고, 이 Enemy가 파괴되지 않았을 때만 이벤트 발생
         if (sceneActive && this.active) {
           this.scene.events.emit('enemyDefeated', this);
+          // EventBus에도 emit하여 EventLogger에서 캡처 가능하도록
+          if ((this.scene as any).eventBus) {
+            (this.scene as any).eventBus.emit('enemyDefeated', {
+              type: 'Enemy',
+              name: (this as any).enemyData?.name || 'Unknown',
+              id: (this as any).id || 'N/A',
+            });
+          }
         } else {
           console.warn(`[Enemy] Skipping enemyDefeated event - Scene or Enemy not active`);
         }

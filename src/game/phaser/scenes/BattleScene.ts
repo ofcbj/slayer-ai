@@ -44,6 +44,9 @@ export default class BattleScene extends Phaser.Scene {
       this.eventManager.unregisterEventListeners();
     }
 
+    // 콘솔 명령어 이벤트 리스너 제거
+    this.unregisterConsoleCommands();
+
     // 적 객체 정리 (BattleManager를 통해 접근)
     if (this.battleManager) {
       const enemies = this.battleManager.getAllEnemies();
@@ -77,6 +80,9 @@ export default class BattleScene extends Phaser.Scene {
 
   create(): void {
     console.log('[BattleScene] create called');
+
+    // Scene에 EventBus 참조 추가 (Card, Enemy에서 사용)
+    (this as any).eventBus = EventBus;
 
     // React에 현재 Scene이 준비되었음을 알림
     EventBus.emit('current-scene-ready', this);
@@ -124,6 +130,9 @@ export default class BattleScene extends Phaser.Scene {
       () => this.updateDeckInfo()
     );
     this.eventManager.registerEventListeners();
+
+    // 콘솔 명령어 이벤트 리스너 등록
+    this.registerConsoleCommands();
 
     // 초기 덱 설정
     this.setupDeck();
@@ -678,5 +687,154 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     return info;
+  }
+
+  /**
+   * 콘솔 명령어 이벤트 리스너 등록
+   */
+  private registerConsoleCommands(): void {
+    // 플레이어 피해
+    EventBus.on('console-damage-player', (amount: number) => {
+      if (this.battleManager) {
+        this.battleManager.playerTakeDamage(amount);
+        this.updateUI();
+      }
+    });
+
+    // 플레이어 치유
+    EventBus.on('console-heal-player', (amount: number) => {
+      if (this.battleManager) {
+        const playerState = this.battleManager.getPlayerState();
+        playerState.health = Math.min(playerState.maxHealth, playerState.health + amount);
+        if (this.playerCharacter) {
+          this.playerCharacter.health = playerState.health;
+          this.playerCharacter.updateStats(playerState.health, playerState.defense);
+        }
+        this.gameState.player.health = playerState.health;
+        this.updateUI();
+      }
+    });
+
+    // 에너지 설정
+    EventBus.on('console-set-energy', (amount: number) => {
+      if (this.battleManager) {
+        const playerState = this.battleManager.getPlayerState();
+        playerState.energy = Math.max(0, Math.min(playerState.maxEnergy, amount));
+        this.gameState.player.energy = playerState.energy;
+        this.updateUI();
+      }
+    });
+
+    // 방어도 설정
+    EventBus.on('console-set-defense', (amount: number) => {
+      if (this.battleManager) {
+        const playerState = this.battleManager.getPlayerState();
+        playerState.defense = Math.max(0, amount);
+        if (this.playerCharacter) {
+          this.playerCharacter.defense = playerState.defense;
+          this.playerCharacter.updateStats(playerState.health, playerState.defense);
+        }
+        this.gameState.player.defense = playerState.defense;
+        this.updateUI();
+      }
+    });
+
+    // 카드 추가
+    EventBus.on('console-add-card', (cardName: string) => {
+      if (this.deckManager && this.cardHandManager) {
+        // 이미 로드된 카드 데이터 사용 (PreloadScene에서 로드됨)
+        const cardsData = this.cache.json.get('cards') as any[];
+        if (!cardsData) {
+          console.warn('[Console] Cards data not loaded');
+          return;
+        }
+        
+        const card = cardsData.find((c: any) => c.name === cardName || c.name.toLowerCase() === cardName.toLowerCase());
+        
+        if (card) {
+          // 카드를 핸드에 추가 (drawCards 메서드 사용)
+          const handSize = this.cardHandManager.getHandSize();
+          // 덱에 카드를 추가한 후 드로우
+          (this.deckManager as any).deck.push({ ...card });
+          this.cardHandManager.drawCards(1, () => {
+            this.updateDeckInfo();
+          });
+        } else {
+          console.warn(`[Console] Card not found: ${cardName}`);
+        }
+      }
+    });
+
+    // 카드 뽑기
+    EventBus.on('console-draw-cards', (count: number) => {
+      if (this.cardHandManager) {
+        this.cardHandManager.drawCards(count, () => {
+          this.updateUI();
+          this.updateDeckInfo();
+        });
+      }
+    });
+
+    // 적 피해
+    EventBus.on('console-damage-enemy', ({ index, amount }: { index: number; amount: number }) => {
+      if (this.battleManager) {
+        const enemies = this.battleManager.getAllEnemies();
+        if (enemies[index]) {
+          enemies[index].takeDamage(amount);
+          this.updateUI();
+        }
+      }
+    });
+
+    // 적 치유
+    EventBus.on('console-heal-enemy', ({ index, amount }: { index: number; amount: number }) => {
+      if (this.battleManager) {
+        const enemies = this.battleManager.getAllEnemies();
+        if (enemies[index]) {
+          const enemy = enemies[index] as any;
+          enemy.health = Math.min(enemy.maxHealth || 100, (enemy.health || 0) + amount);
+          enemy.updateHealthBar();
+          this.updateUI();
+        }
+      }
+    });
+
+    // 다음 턴
+    EventBus.on('console-next-turn', () => {
+      if (this.battleManager) {
+        if (this.battleManager.getTurn() === 'player') {
+          this.endPlayerTurn();
+        } else {
+          this.startPlayerTurn();
+        }
+      }
+    });
+
+    // 전투 승리
+    EventBus.on('console-win-battle', () => {
+      this.winBattle();
+    });
+
+    // 전투 패배
+    EventBus.on('console-lose-battle', () => {
+      this.checkGameOver();
+    });
+  }
+
+  /**
+   * 콘솔 명령어 이벤트 리스너 제거
+   */
+  private unregisterConsoleCommands(): void {
+    EventBus.off('console-damage-player');
+    EventBus.off('console-heal-player');
+    EventBus.off('console-set-energy');
+    EventBus.off('console-set-defense');
+    EventBus.off('console-add-card');
+    EventBus.off('console-draw-cards');
+    EventBus.off('console-damage-enemy');
+    EventBus.off('console-heal-enemy');
+    EventBus.off('console-next-turn');
+    EventBus.off('console-win-battle');
+    EventBus.off('console-lose-battle');
   }
 }
