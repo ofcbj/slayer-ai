@@ -33,6 +33,8 @@ export default class BattleScene extends Phaser.Scene {
 
   init(): void {
     console.log('[BattleScene] init called');
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
+    this.events.once(Phaser.Scenes.Events.DESTROY, this.shutdown, this);
     this.deckManager = new DeckManager();
   }
 
