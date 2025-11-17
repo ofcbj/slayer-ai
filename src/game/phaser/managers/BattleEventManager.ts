@@ -43,6 +43,7 @@ export default class BattleEventManager {
    * 이벤트 리스너를 등록합니다.
    */
   public registerEventListeners(): void {
+    this.unregisterEventListeners();
     this.scene.events.on('cardClicked', this.onCardClicked, this);
     this.scene.events.on('enemyClicked', this.onEnemyClicked, this);
     this.scene.events.on('enemyDefeated', this.onEnemyDefeated, this);
