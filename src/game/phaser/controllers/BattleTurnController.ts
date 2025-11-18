@@ -10,8 +10,8 @@ import { EnemyData } from '../managers/BattleManager';
  */
 export default class BattleTurnController {
   constructor(
-    private scene: Phaser.Scene,
-    private battleManager: BattleManager,
+    private scene         : Phaser.Scene,
+    private battleManager : BattleManager,
     private cardHandManager: CardHandManager,
     private updateDeckInfo: () => void
   ) {}

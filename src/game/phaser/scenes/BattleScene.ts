@@ -34,6 +34,9 @@ export default class BattleScene extends Phaser.Scene {
   private resultHandler!: BattleResultHandler;
   private consoleCommandHandler!: BattleConsoleCommandHandler;
 
+  // Observer cleanup
+  private unsubscribePlayerState?: () => void;
+
   // State
   private gameState!: GameState;
   private selectedStage!: any;
@@ -52,6 +55,11 @@ export default class BattleScene extends Phaser.Scene {
 
   shutdown(): void {
     console.log('[BattleScene] shutdown called - START');
+
+    // 옵저버 구독 해제
+    if (this.unsubscribePlayerState) {
+      this.unsubscribePlayerState();
+    }
 
     // 이벤트 리스너 정리
     if (this.eventManager) {
@@ -159,9 +167,6 @@ export default class BattleScene extends Phaser.Scene {
     );
 
     this.stateSynchronizer = new BattleStateSynchronizer(
-      this.gameState,
-      this.battleManager,
-      this.playerCharacter,
       this.uiManager,
       this.deckManager,
       this.cardHandManager
@@ -222,7 +227,6 @@ export default class BattleScene extends Phaser.Scene {
       onPlayerTurnStart: () => {
         // 카드 뽑기 (5장)
         this.cardHandManager.drawCards(5, () => {
-          this.stateSynchronizer.updateUI();
           this.stateSynchronizer.updateDeckInfo();
         });
       },
@@ -237,16 +241,7 @@ export default class BattleScene extends Phaser.Scene {
         }
       },
       onPlayerTakeDamage: (actualDamage: number, blockedDamage: number) => {
-        // BattleManager에서 이미 방어도 계산이 완료되었으므로
-        // playerCharacter의 상태만 동기화
-        const playerState = this.battleManager.getPlayerState();
-
-        // Player 객체의 상태 동기화
-        this.playerCharacter.health = playerState.health;
-        this.playerCharacter.defense = playerState.defense;
-        this.playerCharacter.updateStats(playerState.health, playerState.defense);
-
-        // 데미지 표시를 위해 직접 처리
+        // 데미지 표시만 담당 (상태는 옵저버가 처리)
         if (blockedDamage > 0) {
           // 방어도로 막은 데미지 표시
           const blockText = this.add.text(this.playerCharacter.x - 40, this.playerCharacter.y - 50, `🛡️-${blockedDamage}`, {
@@ -297,20 +292,15 @@ export default class BattleScene extends Phaser.Scene {
           this.playerCharacter.playDefendAnimation();
         }
 
-        // gameState 동기화
-        this.gameState.player.health = playerState.health;
-        this.gameState.player.defense = playerState.defense;
-
         // 체력이 0 이하면 화면 빨갛게 + 게임 오버 체크
-        if (this.playerCharacter.health <= 0) {
+        const playerState = this.battleManager.getPlayerState();
+        if (playerState.health <= 0) {
           this.cameras.main.flash(200, 255, 0, 0, false, (_camera: any, progress: number) => {
             if (progress === 1) {
               this.resultHandler.checkGameOver();
             }
           });
         }
-
-        this.stateSynchronizer.updateUI();
       },
       onEnemyDefeated: (_enemy: Enemy) => {
         // BattleManager에서 enemies 배열 처리 완료
@@ -328,22 +318,22 @@ export default class BattleScene extends Phaser.Scene {
             this.resultHandler.checkGameOver();
           });
         }
-      },
-      onPlayerEnergyChange: (energy: number) => {
-        this.gameState.player.energy = energy;
-        this.stateSynchronizer.updateUI();
-      },
-      onPlayerDefenseChange: (defense: number) => {
-        this.gameState.player.defense = defense;
-        this.stateSynchronizer.updateUI();
-      },
-      onPlayerHealthChange: (health: number) => {
-        this.gameState.player.health = health;
-        this.stateSynchronizer.updateUI();
       }
     };
 
     this.battleManager = new BattleManager(this.gameState.player, enemies, callbacks);
+
+    // 플레이어 상태 옵저버 구독
+    this.unsubscribePlayerState = this.battleManager.subscribeToPlayerState((state) => {
+      // 1. GameState 동기화 (React UI 및 씬 간 데이터 전달용)
+      this.gameState.player = { ...state };
+
+      // 2. Player 시각화 업데이트
+      this.playerCharacter.updateFromState(state);
+
+      // 3. UI 업데이트
+      this.uiManager.updateEnergyUI(state);
+    });
   }
 
   private onEndTurnButtonClick(): void {

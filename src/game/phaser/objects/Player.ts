@@ -1,7 +1,11 @@
 import Phaser from 'phaser';
-import Character from './Character';
+import { PlayerState } from '../../../types';
 
-export default class Player extends Character {
+/**
+ * Player - 플레이어 시각화 전용 클래스
+ * 상태는 BattleManager가 관리하며, 이 클래스는 표시와 애니메이션만 담당합니다.
+ */
+export default class Player extends Phaser.GameObjects.Container {
   private healthText: Phaser.GameObjects.Text;
   private defenseText: Phaser.GameObjects.Text;
   private bg: Phaser.GameObjects.Rectangle;
@@ -9,12 +13,12 @@ export default class Player extends Character {
   private hpContainer: Phaser.GameObjects.Container;
   private defContainer: Phaser.GameObjects.Container;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, maxHealth: number = 100) {
-    super(scene, x, y);
+  // 표시용 값만 유지
+  private currentHealth: number = 0;
+  private currentDefense: number = 0;
 
-    this.health = maxHealth;
-    this.maxHealth = maxHealth;
-    this.defense = 0;
+  constructor(scene: Phaser.Scene, x: number, y: number) {
+    super(scene, x, y);
 
     this.createPlayer();
     scene.add.existing(this);
@@ -98,38 +102,39 @@ export default class Player extends Character {
   }
 
   /**
-   * 체력과 방어력 업데이트 (외부에서 호출용)
+   * 상태 업데이트 (옵저버 콜백에서 호출)
    */
-  updateStats(health: number, defense: number): void {
-    this.health = health;
-    this.defense = defense;
-    this.updateHealthDisplay();
-    this.updateDefenseDisplay();
+  updateFromState(state: PlayerState): void {
+    const healthChanged = this.currentHealth !== state.health;
+    const defenseChanged = this.currentDefense !== state.defense;
+
+    this.currentHealth = state.health;
+    this.currentDefense = state.defense;
+
+    if (healthChanged) {
+      this.updateHealthDisplay();
+    }
+    if (defenseChanged) {
+      this.updateDefenseDisplay();
+    }
   }
 
   /**
-   * 체력 표시 업데이트 (Character 추상 메서드 구현)
+   * 체력 표시 업데이트
    */
-  protected updateHealthDisplay(): void {
-    this.healthText.setText(this.health.toString());
+  private updateHealthDisplay(): void {
+    this.healthText.setText(this.currentHealth.toString());
   }
 
   /**
-   * 방어력 표시 업데이트 (Character 추상 메서드 구현)
+   * 방어력 표시 업데이트
    */
-  protected updateDefenseDisplay(): void {
-    this.defenseText.setText(this.defense.toString());
+  private updateDefenseDisplay(): void {
+    this.defenseText.setText(this.currentDefense.toString());
   }
 
   /**
-   * 피격 애니메이션 (Character 추상 메서드 구현)
-   */
-  protected playHitAnimation(callback?: () => void): void {
-    this.playHitAnimationPublic(callback);
-  }
-
-  /**
-   * 피격 애니메이션 (public 버전)
+   * 피격 애니메이션
    */
   public playHitAnimationPublic(callback?: () => void): void {
     // 피격 애니메이션

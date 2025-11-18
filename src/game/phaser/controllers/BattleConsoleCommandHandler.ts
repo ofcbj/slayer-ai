@@ -68,16 +68,16 @@ export default class BattleConsoleCommandHandler {
    */
   unregisterEventListeners(): void {
     EventBus.off('console-damage-player', this.handleDamagePlayer);
-    EventBus.off('console-heal-player', this.handleHealPlayer);
-    EventBus.off('console-set-energy', this.handleSetEnergy);
-    EventBus.off('console-set-defense', this.handleSetDefense);
-    EventBus.off('console-add-card', this.handleAddCard);
-    EventBus.off('console-draw-cards', this.handleDrawCards);
-    EventBus.off('console-damage-enemy', this.handleDamageEnemy);
-    EventBus.off('console-heal-enemy', this.handleHealEnemy);
-    EventBus.off('console-next-turn', this.handleNextTurn);
-    EventBus.off('console-win-battle', this.handleWinBattle);
-    EventBus.off('console-lose-battle', this.handleLoseBattle);
+    EventBus.off('console-heal-player',   this.handleHealPlayer);
+    EventBus.off('console-set-energy',    this.handleSetEnergy);
+    EventBus.off('console-set-defense',   this.handleSetDefense);
+    EventBus.off('console-add-card',      this.handleAddCard);
+    EventBus.off('console-draw-cards',    this.handleDrawCards);
+    EventBus.off('console-damage-enemy',  this.handleDamageEnemy);
+    EventBus.off('console-heal-enemy',    this.handleHealEnemy);
+    EventBus.off('console-next-turn',     this.handleNextTurn);
+    EventBus.off('console-win-battle',    this.handleWinBattle);
+    EventBus.off('console-lose-battle',   this.handleLoseBattle);
   }
 
   private handleDamagePlayer = (amount: number) => {

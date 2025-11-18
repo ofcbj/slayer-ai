@@ -132,6 +132,195 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
     setIsMinimized(!isMinimized);
   };
 
+  // ============ UI 컴포넌트 함수들 ============
+
+  /**
+   * 헤더 - 드래그 가능한 타이틀 바
+   */
+  const renderHeader = () => (
+    <AppBar
+      position="static"
+      color="primary"
+      elevation={0}
+      className="drag-handle"
+      sx={{ cursor: 'move' }}
+    >
+      <Toolbar sx={{ minHeight: '48px !important' }}>
+        <DragIndicatorIcon sx={{ mr: 1 }} />
+        <BugReportIcon sx={{ mr: 1 }} />
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontSize: '1rem' }}>
+          Game Object Inspector
+        </Typography>
+        <IconButton
+          color="inherit"
+          size="small"
+          onClick={() => refreshSceneData()}
+          title="Refresh"
+          sx={{ mr: 0.5 }}
+        >
+          <RefreshIcon />
+        </IconButton>
+        <IconButton
+          color="inherit"
+          size="small"
+          onClick={toggleMinimize}
+          title={isMinimized ? 'Maximize' : 'Minimize'}
+          sx={{ mr: 0.5 }}
+        >
+          {isMinimized ? <MaximizeIcon /> : <MinimizeIcon />}
+        </IconButton>
+        <IconButton color="inherit" size="small" onClick={onClose} title="Close">
+          <CloseIcon />
+        </IconButton>
+      </Toolbar>
+    </AppBar>
+  );
+
+  /**
+   * 씬 정보 - 현재 씬 이름과 새로고침 버튼
+   */
+  const renderSceneInfo = () => {
+    if (!currentScene) return null;
+
+    return (
+      <Box sx={{ p: 1.5, backgroundColor: 'background.paper' }}>
+        <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+          Current Scene
+        </Typography>
+        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+          {currentScene.scene.key}
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => refreshSceneData()}
+            startIcon={<RefreshIcon />}
+          >
+            Refresh Data
+          </Button>
+        </Box>
+      </Box>
+    );
+  };
+
+  /**
+   * 탭 네비게이션 - Objects, Events, Console
+   */
+  const renderTabs = () => (
+    <Tabs
+      value={activeTab}
+      onChange={(_, newValue) => setActiveTab(newValue)}
+      variant="fullWidth"
+      sx={{ borderBottom: 1, borderColor: 'divider' }}
+    >
+      <Tab icon={<ListIcon />} label="Objects" iconPosition="start" />
+      <Tab icon={<EventNoteIcon />} label="Events" iconPosition="start" />
+      <Tab icon={<TerminalIcon />} label="Console" iconPosition="start" />
+    </Tabs>
+  );
+
+  /**
+   * Objects 탭 - 게임 오브젝트 트리와 프로퍼티 패널
+   */
+  const renderObjectsTab = () => (
+    <Box
+      sx={{
+        display: 'flex',
+        flexGrow: 1,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Left Panel - Tree */}
+      <Box
+        sx={{
+          width: '50%',
+          borderRight: 1,
+          borderColor: 'divider',
+          overflow: 'auto',
+          p: 1,
+        }}
+      >
+        <Typography variant="subtitle2" sx={{ px: 1, py: 0.5, fontWeight: 'bold', fontSize: '0.875rem' }}>
+          Game Objects
+        </Typography>
+        <GameObjectTree node={sceneData} onNodeSelect={handleNodeSelect} />
+      </Box>
+
+      {/* Right Panel - Properties */}
+      <Box
+        sx={{
+          width: '50%',
+          overflow: 'auto',
+          p: 2,
+        }}
+      >
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold', fontSize: '0.875rem' }}>
+          Properties
+        </Typography>
+        <PropertyPanel node={selectedNode} />
+      </Box>
+    </Box>
+  );
+
+  /**
+   * 탭 컨텐츠 - 활성화된 탭에 따라 다른 내용 표시
+   */
+  const renderTabContent = () => (
+    <Box
+      sx={{
+        flexGrow: 1,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {activeTab === 0 && renderObjectsTab()}
+      {activeTab === 1 && <EventLogger maxLogs={500} scene={currentScene} />}
+      {activeTab === 2 && <ConsoleCommand scene={currentScene} />}
+    </Box>
+  );
+
+  /**
+   * 리사이즈 핸들 - 패널 크기 조절
+   */
+  const renderResizeHandle = () => (
+    <Box
+      onMouseDown={() => setIsResizing(true)}
+      sx={{
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        width: 20,
+        height: 20,
+        cursor: 'nwse-resize',
+        backgroundColor: 'primary.main',
+        opacity: 0.5,
+        '&:hover': {
+          opacity: 1,
+        },
+        clipPath: 'polygon(100% 0, 100% 100%, 0 100%)',
+      }}
+    />
+  );
+
+  /**
+   * 패널 컨텐츠 - 최소화되지 않았을 때만 표시
+   */
+  const renderContent = () => {
+    if (isMinimized) return null;
+
+    return (
+      <>
+        {renderSceneInfo()}
+        <Divider />
+        {renderTabs()}
+        {renderTabContent()}
+        {renderResizeHandle()}
+      </>
+    );
+  };
+
   if (!open) return null;
 
   return (
@@ -158,166 +347,18 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
           borderRadius: 2,
           pointerEvents: 'auto', // 인스펙터 패널은 마우스 이벤트를 받음
         }}
-        onMouseDown={(e) => e.stopPropagation()}
-        onMouseUp={(e) => e.stopPropagation()}
-        onMouseMove={(e) => e.stopPropagation()}
-        onClick={(e) => e.stopPropagation()}
-        onWheel={(e) => e.stopPropagation()}
+        onMouseDown = {(e) => e.stopPropagation()}
+        onMouseUp   = {(e) => e.stopPropagation()}
+        onMouseMove = {(e) => e.stopPropagation()}
+        onClick     = {(e) => e.stopPropagation()}
+        onWheel     = {(e) => e.stopPropagation()}
         onContextMenu={(e) => {
           e.preventDefault();
           e.stopPropagation();
         }}
       >
-        {/* Header - Draggable */}
-        <AppBar
-          position="static"
-          color="primary"
-          elevation={0}
-          className="drag-handle"
-          sx={{ cursor: 'move' }}
-        >
-          <Toolbar sx={{ minHeight: '48px !important' }}>
-            <DragIndicatorIcon sx={{ mr: 1 }} />
-            <BugReportIcon sx={{ mr: 1 }} />
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontSize: '1rem' }}>
-              Game Object Inspector
-            </Typography>
-            <IconButton
-              color="inherit"
-              size="small"
-              onClick={() => refreshSceneData()}
-              title="Refresh"
-              sx={{ mr: 0.5 }}
-            >
-              <RefreshIcon />
-            </IconButton>
-            <IconButton
-              color="inherit"
-              size="small"
-              onClick={toggleMinimize}
-              title={isMinimized ? 'Maximize' : 'Minimize'}
-              sx={{ mr: 0.5 }}
-            >
-              {isMinimized ? <MaximizeIcon /> : <MinimizeIcon />}
-            </IconButton>
-            <IconButton color="inherit" size="small" onClick={onClose} title="Close">
-              <CloseIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-
-        {/* Content - Only show when not minimized */}
-        {!isMinimized && (
-          <>
-            {/* Scene Info */}
-            {currentScene && (
-              <Box sx={{ p: 1.5, backgroundColor: 'background.paper' }}>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                  Current Scene
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {currentScene.scene.key}
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => refreshSceneData()}
-                    startIcon={<RefreshIcon />}
-                  >
-                    Refresh Data
-                  </Button>
-                </Box>
-              </Box>
-            )}
-
-            <Divider />
-
-            {/* Tabs */}
-            <Tabs
-              value={activeTab}
-              onChange={(_, newValue) => setActiveTab(newValue)}
-              variant="fullWidth"
-              sx={{ borderBottom: 1, borderColor: 'divider' }}
-            >
-              <Tab icon={<ListIcon />} label="Objects" iconPosition="start" />
-              <Tab icon={<EventNoteIcon />} label="Events" iconPosition="start" />
-              <Tab icon={<TerminalIcon />} label="Console" iconPosition="start" />
-            </Tabs>
-
-            {/* Tab Content */}
-            <Box
-              sx={{
-                flexGrow: 1,
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              {activeTab === 0 && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexGrow: 1,
-                    overflow: 'hidden',
-                  }}
-                >
-                  {/* Left Panel - Tree */}
-                  <Box
-                    sx={{
-                      width: '50%',
-                      borderRight: 1,
-                      borderColor: 'divider',
-                      overflow: 'auto',
-                      p: 1,
-                    }}
-                  >
-                    <Typography variant="subtitle2" sx={{ px: 1, py: 0.5, fontWeight: 'bold', fontSize: '0.875rem' }}>
-                      Game Objects
-                    </Typography>
-                    <GameObjectTree node={sceneData} onNodeSelect={handleNodeSelect} />
-                  </Box>
-
-                  {/* Right Panel - Properties */}
-                  <Box
-                    sx={{
-                      width: '50%',
-                      overflow: 'auto',
-                      p: 2,
-                    }}
-                  >
-                    <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold', fontSize: '0.875rem' }}>
-                      Properties
-                    </Typography>
-                    <PropertyPanel node={selectedNode} />
-                  </Box>
-                </Box>
-              )}
-
-              {activeTab === 1 && <EventLogger maxLogs={500} scene={currentScene} />}
-              {activeTab === 2 && <ConsoleCommand scene={currentScene} />}
-            </Box>
-
-            {/* Resize Handle */}
-            <Box
-              onMouseDown={() => setIsResizing(true)}
-              sx={{
-                position: 'absolute',
-                bottom: 0,
-                right: 0,
-                width: 20,
-                height: 20,
-                cursor: 'nwse-resize',
-                backgroundColor: 'primary.main',
-                opacity: 0.5,
-                '&:hover': {
-                  opacity: 1,
-                },
-                clipPath: 'polygon(100% 0, 100% 100%, 0 100%)',
-              }}
-            />
-          </>
-        )}
+        {renderHeader()}
+        {renderContent()}
       </Paper>
     </Draggable>
   );

@@ -1,14 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Box,
-  Drawer,
-  IconButton,
-  Divider,
-  Typography,
-  Button,
-  Toolbar,
-  AppBar,
-} from '@mui/material';
+import { Box, Drawer, IconButton, Divider, Typography, Button, Toolbar, AppBar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import BugReportIcon from '@mui/icons-material/BugReport';
@@ -80,6 +71,103 @@ export function GameObjectInspector({ open, onClose }: GameObjectInspectorProps)
     setSelectedNode(node);
   };
 
+  // ============ UI 컴포넌트 함수들 ============
+
+  /**
+   * 헤더 - 타이틀 바와 제어 버튼
+   */
+  const renderHeader = () => (
+    <AppBar position="static" color="primary" elevation={0}>
+      <Toolbar>
+        <BugReportIcon sx={{ mr: 1 }} />
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Game Object Inspector
+        </Typography>
+        <IconButton
+          color="inherit"
+          onClick={() => refreshSceneData()}
+          title="Refresh"
+          sx={{ mr: 1 }}
+        >
+          <RefreshIcon />
+        </IconButton>
+        <IconButton color="inherit" onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+      </Toolbar>
+    </AppBar>
+  );
+
+  /**
+   * 씬 정보 - 현재 씬 이름과 새로고침 버튼
+   */
+  const renderSceneInfo = () => {
+    if (!currentScene) return null;
+
+    return (
+      <Box sx={{ p: 2, backgroundColor: 'background.paper' }}>
+        <Typography variant="subtitle2" color="text.secondary">
+          Current Scene
+        </Typography>
+        <Typography variant="h6">{currentScene.scene.key}</Typography>
+        <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => refreshSceneData()}
+            startIcon={<RefreshIcon />}
+          >
+            Refresh Data
+          </Button>
+        </Box>
+      </Box>
+    );
+  };
+
+  /**
+   * 메인 컨텐츠 - 게임 오브젝트 트리와 프로퍼티 패널
+   */
+  const renderMainContent = () => (
+    <Box
+      sx={{
+        display: 'flex',
+        flexGrow: 1,
+        height: 'calc(100vh - 200px)',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Left Panel - Tree */}
+      <Box
+        sx={{
+          width: '50%',
+          borderRight: 1,
+          borderColor: 'divider',
+          overflow: 'auto',
+          p: 1,
+        }}
+      >
+        <Typography variant="subtitle2" sx={{ px: 1, py: 0.5, fontWeight: 'bold' }}>
+          Game Objects
+        </Typography>
+        <GameObjectTree node={sceneData} onNodeSelect={handleNodeSelect} />
+      </Box>
+
+      {/* Right Panel - Properties */}
+      <Box
+        sx={{
+          width: '50%',
+          overflow: 'auto',
+          p: 2,
+        }}
+      >
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold' }}>
+          Properties
+        </Typography>
+        <PropertyPanel node={selectedNode} />
+      </Box>
+    </Box>
+  );
+
   return (
     <Drawer
       anchor="right"
@@ -92,88 +180,10 @@ export function GameObjectInspector({ open, onClose }: GameObjectInspectorProps)
         },
       }}
     >
-      {/* Header */}
-      <AppBar position="static" color="primary" elevation={0}>
-        <Toolbar>
-          <BugReportIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Game Object Inspector
-          </Typography>
-          <IconButton
-            color="inherit"
-            onClick={() => refreshSceneData()}
-            title="Refresh"
-            sx={{ mr: 1 }}
-          >
-            <RefreshIcon />
-          </IconButton>
-          <IconButton color="inherit" onClick={onClose}>
-            <CloseIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
-      {/* Scene Info */}
-      {currentScene && (
-        <Box sx={{ p: 2, backgroundColor: 'background.paper' }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            Current Scene
-          </Typography>
-          <Typography variant="h6">{currentScene.scene.key}</Typography>
-          <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => refreshSceneData()}
-              startIcon={<RefreshIcon />}
-            >
-              Refresh Data
-            </Button>
-          </Box>
-        </Box>
-      )}
-
+      {renderHeader()}
+      {renderSceneInfo()}
       <Divider />
-
-      {/* Main Content */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexGrow: 1,
-          height: 'calc(100vh - 200px)',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Left Panel - Tree */}
-        <Box
-          sx={{
-            width: '50%',
-            borderRight: 1,
-            borderColor: 'divider',
-            overflow: 'auto',
-            p: 1,
-          }}
-        >
-          <Typography variant="subtitle2" sx={{ px: 1, py: 0.5, fontWeight: 'bold' }}>
-            Game Objects
-          </Typography>
-          <GameObjectTree node={sceneData} onNodeSelect={handleNodeSelect} />
-        </Box>
-
-        {/* Right Panel - Properties */}
-        <Box
-          sx={{
-            width: '50%',
-            overflow: 'auto',
-            p: 2,
-          }}
-        >
-          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold' }}>
-            Properties
-          </Typography>
-          <PropertyPanel node={selectedNode} />
-        </Box>
-      </Box>
+      {renderMainContent()}
     </Drawer>
   );
 }

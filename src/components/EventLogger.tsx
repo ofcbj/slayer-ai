@@ -141,12 +141,12 @@ export function EventLogger({ maxLogs = 500, scene }: EventLoggerProps) {
       });
 
       const data = serializedArgs.length === 1 ? serializedArgs[0] : serializedArgs;
-      
+
       // 디버깅: 중요한 이벤트는 콘솔에도 출력
       if (event === 'cardClicked' || event === 'enemyClicked' || event === 'enemyDefeated') {
         console.log('[EventLogger] Captured Scene event:', event, data);
       }
-      
+
       addLog(event, data, 'Scene');
 
       // 원본 emit 호출
@@ -238,119 +238,158 @@ export function EventLogger({ maxLogs = 500, scene }: EventLoggerProps) {
     EventBus.emit(log.eventName, log.data);
   };
 
+  // ============ UI 컴포넌트 함수들 ============
+
+  /**
+   * 헤더 - 타이틀과 제어 버튼
+   */
+  const renderHeader = () => (
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+      <Typography variant="h6">Event Logger</Typography>
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <FormControlLabel
+          control={<Switch checked={!paused} onChange={(e) => setPaused(!e.target.checked)} size="small" />}
+          label={paused ? 'Paused' : 'Running'}
+        />
+        <IconButton size="small" onClick={handleClear} title="Clear Logs">
+          <ClearIcon />
+        </IconButton>
+      </Box>
+    </Box>
+  );
+
+  /**
+   * 필터 - 검색, 이벤트 타입 선택, 자동 스크롤
+   */
+  const renderFilters = () => (
+    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+      <TextField
+        size="small"
+        placeholder="Search events..."
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        sx={{ flexGrow: 1, minWidth: 200 }}
+        InputProps={{
+          startAdornment: <FilterListIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+        }}
+      />
+      <FormControl size="small" sx={{ minWidth: 150 }}>
+        <InputLabel>Event Type</InputLabel>
+        <Select value={selectedEvent} onChange={(e) => setSelectedEvent(e.target.value)} label="Event Type">
+          <MenuItem value="all">All Events</MenuItem>
+          {uniqueEventNames.map((name) => (
+            <MenuItem key={name} value={name}>
+              {name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControlLabel
+        control={<Switch checked={autoScroll} onChange={(e) => setAutoScroll(e.target.checked)} size="small" />}
+        label="Auto Scroll"
+      />
+    </Box>
+  );
+
+  /**
+   * 통계 - 전체/필터링/이벤트 수
+   */
+  const renderStats = () => (
+    <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+      <Chip label={`Total: ${logs.length}`} size="small" />
+      <Chip label={`Filtered: ${filteredLogs.length}`} size="small" color="primary" />
+      <Chip label={`Events: ${uniqueEventNames.length}`} size="small" color="secondary" />
+    </Box>
+  );
+
+  /**
+   * 빈 상태 - 로그가 없을 때
+   */
+  const renderEmptyState = () => (
+    <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
+      <Typography>No events logged yet</Typography>
+      {paused && <Typography variant="caption">Logger is paused</Typography>}
+    </Box>
+  );
+
+  /**
+   * 로그 항목 - 개별 로그 표시
+   */
+  const renderLogItem = (log: EventLogEntry) => (
+    <Paper key={log.id} sx={{ mb: 1, p: 1, backgroundColor: 'background.paper' }} elevation={1}>
+      <ListItem
+        sx={{
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          px: 0,
+          py: 0.5,
+        }}
+      >
+        {/* 로그 헤더 */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Chip label={log.eventName} size="small" color="primary" />
+            <Chip
+              label={log.source}
+              size="small"
+              color={log.source === 'EventBus' ? 'secondary' : 'default'}
+              sx={{ fontSize: '0.65rem', height: 18 }}
+            />
+            <Typography variant="caption" color="text.secondary">
+              {formatTimestamp(log.timestamp)}
+            </Typography>
+          </Box>
+          <IconButton size="small" onClick={() => handleReplayEvent(log)} title="Replay Event">
+            <PlayArrowIcon fontSize="small" />
+          </IconButton>
+        </Box>
+        {/* 로그 데이터 */}
+        <Box
+          sx={{
+            backgroundColor: 'background.default',
+            p: 1,
+            borderRadius: 1,
+            fontFamily: 'monospace',
+            fontSize: '0.75rem',
+            maxHeight: 150,
+            overflow: 'auto',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+          }}
+        >
+          {formatData(log.data)}
+        </Box>
+      </ListItem>
+    </Paper>
+  );
+
+  /**
+   * 로그 리스트 - 전체 로그 목록
+   */
+  const renderLogList = () => (
+    <Box sx={{ flexGrow: 1, overflow: 'auto', p: 1 }}>
+      {filteredLogs.length === 0 ? (
+        renderEmptyState()
+      ) : (
+        <List dense>
+          {filteredLogs.map((log) => renderLogItem(log))}
+          <div ref={logEndRef} />
+        </List>
+      )}
+    </Box>
+  );
+
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Typography variant="h6">Event Logger</Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <FormControlLabel
-              control={<Switch checked={!paused} onChange={(e) => setPaused(!e.target.checked)} size="small" />}
-              label={paused ? 'Paused' : 'Running'}
-            />
-            <IconButton size="small" onClick={handleClear} title="Clear Logs">
-              <ClearIcon />
-            </IconButton>
-          </Box>
-        </Box>
-
-        {/* Filters */}
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
-          <TextField
-            size="small"
-            placeholder="Search events..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            sx={{ flexGrow: 1, minWidth: 200 }}
-            InputProps={{
-              startAdornment: <FilterListIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-            }}
-          />
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Event Type</InputLabel>
-            <Select value={selectedEvent} onChange={(e) => setSelectedEvent(e.target.value)} label="Event Type">
-              <MenuItem value="all">All Events</MenuItem>
-              {uniqueEventNames.map((name) => (
-                <MenuItem key={name} value={name}>
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControlLabel
-            control={<Switch checked={autoScroll} onChange={(e) => setAutoScroll(e.target.checked)} size="small" />}
-            label="Auto Scroll"
-          />
-        </Box>
-
-        {/* Stats */}
-        <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-          <Chip label={`Total: ${logs.length}`} size="small" />
-          <Chip label={`Filtered: ${filteredLogs.length}`} size="small" color="primary" />
-          <Chip label={`Events: ${uniqueEventNames.length}`} size="small" color="secondary" />
-        </Box>
+        {renderHeader()}
+        {renderFilters()}
+        {renderStats()}
       </Box>
 
       {/* Log List */}
-      <Box sx={{ flexGrow: 1, overflow: 'auto', p: 1 }}>
-        {filteredLogs.length === 0 ? (
-          <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-            <Typography>No events logged yet</Typography>
-            {paused && <Typography variant="caption">Logger is paused</Typography>}
-          </Box>
-        ) : (
-          <List dense>
-            {filteredLogs.map((log) => (
-              <Paper key={log.id} sx={{ mb: 1, p: 1, backgroundColor: 'background.paper' }} elevation={1}>
-                <ListItem
-                  sx={{
-                    flexDirection: 'column',
-                    alignItems: 'stretch',
-                    px: 0,
-                    py: 0.5,
-                  }}
-                >
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                      <Chip label={log.eventName} size="small" color="primary" />
-                      <Chip 
-                        label={log.source} 
-                        size="small" 
-                        color={log.source === 'EventBus' ? 'secondary' : 'default'}
-                        sx={{ fontSize: '0.65rem', height: 18 }}
-                      />
-                      <Typography variant="caption" color="text.secondary">
-                        {formatTimestamp(log.timestamp)}
-                      </Typography>
-                    </Box>
-                    <IconButton size="small" onClick={() => handleReplayEvent(log)} title="Replay Event">
-                      <PlayArrowIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                  <Box
-                    sx={{
-                      backgroundColor: 'background.default',
-                      p: 1,
-                      borderRadius: 1,
-                      fontFamily: 'monospace',
-                      fontSize: '0.75rem',
-                      maxHeight: 150,
-                      overflow: 'auto',
-                      whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-word',
-                    }}
-                  >
-                    {formatData(log.data)}
-                  </Box>
-                </ListItem>
-              </Paper>
-            ))}
-            <div ref={logEndRef} />
-          </List>
-        )}
-      </Box>
+      {renderLogList()}
     </Box>
   );
 }
-

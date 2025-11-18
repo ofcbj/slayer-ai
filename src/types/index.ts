@@ -7,29 +7,29 @@
  * 플레이어 상태
  */
 export interface PlayerState {
-  maxHealth: number;
-  health: number;
-  energy: number;
-  maxEnergy: number;
-  defense: number;
+  maxHealth : number;
+  health    : number;
+  energy    : number;
+  maxEnergy : number;
+  defense   : number;
 }
 
 /**
  * 카드 데이터
  */
 export interface CardData {
-  name: string;
-  type?: string;
-  cost: number;
-  damage?: number;
-  block?: number;
-  heal?: number;
-  energy?: number;
-  allEnemies?: boolean;
-  hits?: number;
-  selfDamage?: number;
+  name        : string;
+  type?       : string;
+  cost        : number;
+  damage?     : number;
+  block?      : number;
+  heal?       : number;
+  energy?     : number;
+  allEnemies? : boolean;
+  hits?       : number;
+  selfDamage? : number;
   description?: string;
-  image?: string;
+  image?      : string;
   [key: string]: unknown;
 }
 
@@ -37,23 +37,23 @@ export interface CardData {
  * 적 데이터
  */
 export interface EnemyData {
-  name: string;
-  health?: number;
-  hp?: number;
-  attack?: number;
-  defense?: number;
-  image?: string;
+  name      : string;
+  health?   : number;
+  hp?       : number;
+  attack?   : number;
+  defense?  : number;
+  image?    : string;
 }
 
 /**
  * 스테이지 데이터
  */
 export interface StageData {
-  id: string;
+  id            : string;
   data: {
-    enemies: string[];
-    type: string;
-    nextStages?: string[];
+    enemies     : string[];
+    type        : string;
+    nextStages? : string[];
   };
 }
 
@@ -61,8 +61,8 @@ export interface StageData {
  * 게임 상태
  */
 export interface GameState {
-  player: PlayerState;
-  deck: CardData[];
-  stagesCleared: string[];
-  currentStage: string;
+  player        : PlayerState;
+  deck          : CardData[];
+  stagesCleared : string[];
+  currentStage  : string;
 }

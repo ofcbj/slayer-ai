@@ -8,10 +8,10 @@ import { GameState, StageData } from '../managers/BattleManager';
  */
 export default class BattleResultHandler {
   constructor(
-    private scene: Phaser.Scene,
-    private battleManager: BattleManager,
-    private gameState: GameState,
-    private selectedStage: StageData
+    private scene         : Phaser.Scene,
+    private battleManager : BattleManager,
+    private gameState     : GameState,
+    private selectedStage : StageData
   ) {}
 
   /**
