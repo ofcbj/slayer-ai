@@ -87,6 +87,9 @@ export default class CardHandManager {
     const card = new Card(this.scene, startX, startY, normalizedCard as any);
     card.setScale(0.8);
 
+    // 드로우 애니메이션 중에는 인터랙션 비활성화
+    card.disableInteraction();
+
     this.hand.push(card);
     this.scene.add.existing(card);
 
@@ -122,6 +125,9 @@ export default class CardHandManager {
         // 핸드 컨테이너 내에서의 로컬 좌표 설정
         card.setPosition(finalLocalX, 0);
         (card as any).originalY = 0;
+
+        // 애니메이션 완료 후 인터랙션 활성화
+        card.enableInteraction();
       }
     });
   }
