@@ -85,12 +85,12 @@ export class ObjectHighlighter {
    * 게임 오브젝트의 경계 상자 계산
    */
   private static getObjectBounds(obj: Phaser.GameObjects.GameObject): {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    centerX: number;
-    centerY: number;
+    x       : number;
+    y       : number;
+    width   : number;
+    height  : number;
+    centerX : number;
+    centerY : number;
   } | null {
     // Transform 컴포넌트가 있는지 확인
     if (!('x' in obj) || !('y' in obj)) {

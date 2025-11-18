@@ -34,7 +34,7 @@ interface InspectorWindowContentProps {
  * 별도 창에 렌더링되는 인스펙터 컨텐츠
  */
 function InspectorWindowContent({ onClose }: InspectorWindowContentProps) {
-  const [sceneData, setSceneData] = useState<GameObjectNode | null>(null);
+  const [sceneData, setSceneData]       = useState<GameObjectNode | null>(null);
   const [selectedNode, setSelectedNode] = useState<GameObjectNode | null>(null);
   const [currentScene, setCurrentScene] = useState<Phaser.Scene | null>(null);
 
@@ -122,7 +122,6 @@ function InspectorWindowContent({ onClose }: InspectorWindowContentProps) {
             </Box>
           </Box>
         )}
-
         <Divider />
 
         {/* Main Content */}

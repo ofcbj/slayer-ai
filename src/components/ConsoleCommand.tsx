@@ -1,25 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  TextField,
-  IconButton,
-  List,
-  ListItem,
-  Chip,
-  Autocomplete,
-} from '@mui/material';
+import { Box, Typography, Paper, TextField, IconButton, List, ListItem, Chip, Autocomplete } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import ClearIcon from '@mui/icons-material/Clear';
 import EventBus from '../game/EventBus';
 
 interface CommandHistory {
-  id: number;
-  timestamp: number;
-  command: string;
-  output: string;
-  success: boolean;
+  id        : number;
+  timestamp : number;
+  command   : string;
+  output    : string;
+  success   : boolean;
 }
 
 interface ConsoleCommandProps {
@@ -30,12 +20,13 @@ interface ConsoleCommandProps {
  * 게임 내 명령어를 실행할 수 있는 콘솔 컴포넌트
  */
 export function ConsoleCommand({ scene }: ConsoleCommandProps) {
-  const [input, setInput] = useState('');
-  const [history, setHistory] = useState<CommandHistory[]>([]);
+  const [input, setInput]               = useState('');
+  const [history, setHistory]           = useState<CommandHistory[]>([]);
   const [commandIndex, setCommandIndex] = useState(-1);
-  const inputRef = useRef<HTMLInputElement>(null);
+  
+  const inputRef      = useRef<HTMLInputElement>(null);
   const historyEndRef = useRef<HTMLDivElement>(null);
-  const idCounterRef = useRef(0);
+  const idCounterRef  = useRef(0);
 
   // 명령어 히스토리 (실제 실행된 명령어만)
   const executedCommandsRef = useRef<string[]>([]);

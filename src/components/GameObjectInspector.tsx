@@ -29,7 +29,7 @@ const DRAWER_WIDTH = 800;
  * 게임 오브젝트 인스펙터 메인 컴포넌트
  */
 export function GameObjectInspector({ open, onClose }: GameObjectInspectorProps) {
-  const [sceneData, setSceneData] = useState<GameObjectNode | null>(null);
+  const [sceneData, setSceneData]       = useState<GameObjectNode | null>(null);
   const [selectedNode, setSelectedNode] = useState<GameObjectNode | null>(null);
   const [currentScene, setCurrentScene] = useState<Phaser.Scene | null>(null);
 

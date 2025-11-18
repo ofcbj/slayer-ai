@@ -1,29 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
-import {
-  Box,
-  IconButton,
-  Divider,
-  Typography,
-  Button,
-  AppBar,
-  Toolbar,
-  Paper,
-  Tabs,
-  Tab,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import BugReportIcon from '@mui/icons-material/BugReport';
-import MinimizeIcon from '@mui/icons-material/Minimize';
-import MaximizeIcon from '@mui/icons-material/Maximize';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import ListIcon from '@mui/icons-material/List';
-import EventNoteIcon from '@mui/icons-material/EventNote';
-import TerminalIcon from '@mui/icons-material/Terminal';
+import { Box, IconButton, Divider, Typography, Button, AppBar, Toolbar, Paper, Tabs,Tab } from '@mui/material';
+import CloseIcon          from '@mui/icons-material/Close';
+import RefreshIcon        from '@mui/icons-material/Refresh';
+import BugReportIcon      from '@mui/icons-material/BugReport';
+import MinimizeIcon       from '@mui/icons-material/Minimize';
+import MaximizeIcon       from '@mui/icons-material/Maximize';
+import DragIndicatorIcon  from '@mui/icons-material/DragIndicator';
+import ListIcon           from '@mui/icons-material/List';
+import EventNoteIcon      from '@mui/icons-material/EventNote';
+import TerminalIcon       from '@mui/icons-material/Terminal';
+
 import { GameObjectTree } from './GameObjectTree';
-import { PropertyPanel } from './PropertyPanel';
-import { EventLogger } from './EventLogger';
+import { PropertyPanel }  from './PropertyPanel';
+import { EventLogger }    from './EventLogger';
 import { ConsoleCommand } from './ConsoleCommand';
 import { GameObjectNode, SceneInspector } from '../game/utils/SceneInspector';
 import { ObjectHighlighter } from '../game/utils/ObjectHighlighter';
@@ -305,7 +295,6 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
               )}
 
               {activeTab === 1 && <EventLogger maxLogs={500} scene={currentScene} />}
-
               {activeTab === 2 && <ConsoleCommand scene={currentScene} />}
             </Box>
 

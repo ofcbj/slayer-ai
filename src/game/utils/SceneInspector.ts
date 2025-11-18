@@ -1,12 +1,12 @@
 import Phaser from 'phaser';
 
 export interface GameObjectNode {
-  id: string;
-  type: string;
-  name?: string;
+  id        : string;
+  type      : string;
+  name      : string;
   properties: Record<string, any>;
-  children?: GameObjectNode[];
-  gameObject?: Phaser.GameObjects.GameObject; // 실제 게임 오브젝트 참조
+  children  : GameObjectNode[];
+  gameObject?: Phaser.GameObjects.GameObject; // 실제 게임 오브젝트 참조 (선택적)
 }
 
 /**
@@ -260,6 +260,7 @@ export class SceneInspector {
       type: obj.type,
       name: (obj as any).name || `${obj.type}_${index}`,
       properties: this.extractProperties(obj),
+      children: [],
       gameObject: obj, // 실제 오브젝트 참조 저장
     };
 
@@ -281,7 +282,7 @@ export class SceneInspector {
     const props: Record<string, any> = {
       type: obj.type,
       active: obj.active,
-      visible: obj.visible,
+      visible: (obj as any).visible !== undefined ? (obj as any).visible : true,
     };
 
     // Transform 속성
