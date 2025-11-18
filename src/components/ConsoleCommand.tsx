@@ -7,8 +7,6 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemText,
-  Divider,
   Chip,
   Autocomplete,
 } from '@mui/material';
@@ -44,19 +42,19 @@ export function ConsoleCommand({ scene }: ConsoleCommandProps) {
 
   // 자동완성 명령어 목록
   const availableCommands = [
-    { name: 'help', description: '사용 가능한 명령어 목록 표시' },
-    { name: 'damage', description: '플레이어에게 피해 입히기: damage <amount>' },
-    { name: 'heal', description: '플레이어 체력 회복: heal <amount>' },
-    { name: 'energy', description: '에너지 설정: energy <amount>' },
-    { name: 'defense', description: '방어도 설정: defense <amount>' },
-    { name: 'addCard', description: '손패에 카드 추가: addCard <cardName>' },
-    { name: 'drawCards', description: '카드 뽑기: drawCards <count>' },
-    { name: 'enemyDamage', description: '적에게 피해: enemyDamage <index> <amount>' },
-    { name: 'enemyHeal', description: '적 체력 회복: enemyHeal <index> <amount>' },
-    { name: 'nextTurn', description: '다음 턴으로 이동' },
-    { name: 'win', description: '전투 승리' },
-    { name: 'lose', description: '전투 패배' },
-    { name: 'clear', description: '콘솔 출력 지우기' },
+    { name: 'help',       description: '사용 가능한 명령어 목록 표시' },
+    { name: 'damage',     description: '플레이어에게 피해 입히기: damage <amount>' },
+    { name: 'heal',       description: '플레이어 체력 회복: heal <amount>' },
+    { name: 'energy',     description: '에너지 설정: energy <amount>' },
+    { name: 'defense',    description: '방어도 설정: defense <amount>' },
+    { name: 'addcard',    description: '손패에 카드 추가: addcard <cardName>' },
+    { name: 'drawcards',  description: '카드 뽑기: drawcards <count>' },
+    { name: 'enemydamage',description: '적에게 피해: enemydamage <index> <amount>' },
+    { name: 'enemyheal',  description: '적 체력 회복: enemyheal <index> <amount>' },
+    { name: 'nextturn',   description: '다음 턴으로 이동' },
+    { name: 'win',        description: '전투 승리' },
+    { name: 'lose',       description: '전투 패배' },
+    { name: 'clear',      description: '콘솔 출력 지우기' },
   ];
 
   // 스크롤을 맨 아래로
@@ -201,11 +199,11 @@ export function ConsoleCommand({ scene }: ConsoleCommandProps) {
 
     const result = executeCommand(input);
     const newHistory: CommandHistory = {
-      id: idCounterRef.current++,
-      timestamp: Date.now(),
-      command: input,
-      output: result.output,
-      success: result.success,
+      id        : idCounterRef.current++,
+      timestamp : Date.now(),
+      command   : input,
+      output    : result.output,
+      success   : result.success,
     };
 
     setHistory((prev) => [...prev, newHistory]);
@@ -242,9 +240,9 @@ export function ConsoleCommand({ scene }: ConsoleCommandProps) {
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+      hour    : '2-digit',
+      minute  : '2-digit',
+      second  : '2-digit',
     });
   };
 

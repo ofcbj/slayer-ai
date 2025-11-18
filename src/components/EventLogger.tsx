@@ -1,19 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  TextField,
-  IconButton,
-  Chip,
-  List,
-  ListItem,
-  FormControlLabel,
-  Switch,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+import { Box, Typography, Paper, TextField, IconButton, Chip, List, ListItem, FormControlLabel,
+  Switch, Select, MenuItem, FormControl, InputLabel,
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -33,32 +20,32 @@ const FILTERED_EVENTS = [
 ];
 
 interface EventLogEntry {
-  id: number;
-  timestamp: number;
-  eventName: string;
-  data: any;
-  source: 'EventBus' | 'Scene';
+  id        : number;
+  timestamp : number;
+  eventName : string;
+  data      : any;
+  source    : 'EventBus' | 'Scene';
 }
 
 interface EventLoggerProps {
   maxLogs?: number;
-  scene?: Phaser.Scene | null;
+  scene?  : Phaser.Scene | null;
 }
 
 /**
  * EventBus와 Phaser Scene의 모든 이벤트를 실시간으로 모니터링하고 표시하는 컴포넌트
  */
 export function EventLogger({ maxLogs = 500, scene }: EventLoggerProps) {
-  const [logs, setLogs] = useState<EventLogEntry[]>([]);
-  const [filter, setFilter] = useState<string>('');
+  const [logs, setLogs]                   = useState<EventLogEntry[]>([]);
+  const [filter, setFilter]               = useState<string>('');
   const [selectedEvent, setSelectedEvent] = useState<string>('all');
-  const [autoScroll, setAutoScroll] = useState(true);
-  const [paused, setPaused] = useState(false);
-  const logEndRef = useRef<HTMLDivElement>(null);
-  const idCounterRef = useRef(0);
-  const originalEmitRef = useRef<any>(null);
-  const originalSceneEmitRef = useRef<any>(null);
-  const pausedLogsRef = useRef<EventLogEntry[]>([]);
+  const [autoScroll, setAutoScroll]       = useState(true);
+  const [paused, setPaused]               = useState(false);
+  const logEndRef                         = useRef<HTMLDivElement>(null);
+  const idCounterRef                      = useRef(0);
+  const originalEmitRef                   = useRef<any>(null);
+  const originalSceneEmitRef              = useRef<any>(null);
+  const pausedLogsRef                     = useRef<EventLogEntry[]>([]);
 
   // 로그 추가 헬퍼 함수
   const addLog = useCallback((eventName: string, data: any, source: 'EventBus' | 'Scene') => {
@@ -218,12 +205,14 @@ export function EventLogger({ maxLogs = 500, scene }: EventLoggerProps) {
 
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
+    // fractionalSecondDigits is not available in some TypeScript DOM libs, so append milliseconds manually
+    const time = date.toLocaleTimeString('ko-KR', {
+      hour  : '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      fractionalSecondDigits: 3,
     });
+    const ms = String(date.getMilliseconds()).padStart(3, '0');
+    return `${time}.${ms}`;
   };
 
   const formatData = (data: any): string => {

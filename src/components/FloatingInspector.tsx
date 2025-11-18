@@ -38,15 +38,15 @@ interface FloatingInspectorProps {
  * 드래그 가능한 플로팅 인스펙터 패널
  */
 export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
-  const [sceneData, setSceneData] = useState<GameObjectNode | null>(null);
+  const [sceneData, setSceneData]       = useState<GameObjectNode | null>(null);
   const [selectedNode, setSelectedNode] = useState<GameObjectNode | null>(null);
   const [currentScene, setCurrentScene] = useState<Phaser.Scene | null>(null);
-  const [isMinimized, setIsMinimized] = useState(false);
-  const [size, setSize] = useState({ width: 900, height: 700 });
-  const [isResizing, setIsResizing] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
-  const resizeRef = useRef<HTMLDivElement>(null);
-  const nodeRef = useRef<HTMLDivElement>(null);
+  const [isMinimized, setIsMinimized]   = useState(false);
+  const [size, setSize]                 = useState({ width: 900, height: 700 });
+  const [isResizing, setIsResizing]     = useState(false);
+  const [activeTab, setActiveTab]       = useState(0);
+  const resizeRef                       = useRef<HTMLDivElement>(null);
+  const nodeRef                         = useRef<HTMLDivElement>(null);
 
   // Scene 변경 감지
   useEffect(() => {

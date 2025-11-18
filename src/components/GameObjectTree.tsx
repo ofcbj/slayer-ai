@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import { Box, Chip } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
@@ -23,7 +24,7 @@ export function GameObjectTree({ node, onNodeSelect }: GameObjectTreeProps) {
     );
   }
 
-  const renderTree = (nodeData: GameObjectNode): JSX.Element => (
+  const renderTree = (nodeData: GameObjectNode): React.JSX.Element => (
     <TreeItem
       key={nodeData.id}
       itemId={nodeData.id}
