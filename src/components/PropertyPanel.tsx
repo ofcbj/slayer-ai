@@ -1,16 +1,5 @@
-import {
-  Box,
-  Paper,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Chip,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+import { Box, Paper, Typography, Chip, Accordion, AccordionSummary, AccordionDetails,
+  Table, TableBody, TableCell, TableContainer, TableRow,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { GameObjectNode } from '../game/utils/SceneInspector';
@@ -77,31 +66,69 @@ export function PropertyPanel({ node }: PropertyPanelProps) {
     return String(value);
   };
 
-  const basicProperties = ['type', 'active', 'visible'];
-  const otherProperties = Object.keys(node.properties).filter(
-    (key) => !basicProperties.includes(key)
-  );
+  // 프로퍼티를 카테고리별로 그룹화
+  const propertyCategories = {
+    basic       : ['type', 'active', 'visible', 'name'],
+    transform   : ['position', 'x', 'y', 'scale', 'scaleX', 'scaleY', 'rotation', 'angle', 'originX', 'originY'],
+    rendering   : ['alpha', 'tint', 'depth', 'blendMode', 'visible', 'displayWidth', 'displayHeight'],
+    size        : ['width', 'height', 'displayWidth', 'displayHeight', 'radius', 'diameter'],
+    physics     : ['velocity', 'acceleration', 'body', 'mass', 'friction', 'bounce'],
+    interaction : ['interactive', 'input', 'inputEnabled', 'draggable'],
+    text        : ['text', 'fontSize', 'fontFamily', 'align', 'color', 'wordWrap'],
+    container   : ['length', 'list'],
+    state       : ['health', 'maxHealth', 'defense', 'intent', 'isDead'],
+    data        : ['cardData', 'enemyData', 'data'],
+  };
 
-  return (
-    <Box sx={{ height: '100%', overflow: 'auto' }}>
-      {/* Header */}
-      <Paper sx={{ p: 2, mb: 2, backgroundColor: 'primary.dark' }}>
-        <Typography variant="h6" sx={{ mb: 1 }}>
-          {node.name || node.id}
-        </Typography>
-        <Chip label={node.type} color="primary" size="small" />
-      </Paper>
+  // 각 카테고리에 속하는 프로퍼티들을 추출
+  const categorizedProps: Record<string, string[]> = {};
+  const uncategorized: string[] = [];
 
-      {/* Basic Properties */}
-      <Accordion defaultExpanded>
+  Object.keys(node.properties).forEach(key => {
+    let found = false;
+    for (const [category, keywords] of Object.entries(propertyCategories)) {
+      if (keywords.includes(key)) {
+        if (!categorizedProps[category]) {
+          categorizedProps[category] = [];
+        }
+        categorizedProps[category].push(key);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      uncategorized.push(key);
+    }
+  });
+
+  // 카테고리 표시 이름
+  const categoryLabels: Record<string, string> = {
+    basic       : 'Basic',
+    transform   : 'Transform',
+    rendering   : 'Rendering',
+    size        : 'Size',
+    physics     : 'Physics',
+    interaction : 'Interaction',
+    text        : 'Text',
+    container   : 'Container',
+    state       : 'State',
+    data        : 'Data',
+  };
+
+  // 프로퍼티 그룹을 렌더링하는 헬퍼 함수
+  const renderPropertyGroup = (title: string, properties: string[], defaultExpanded = false) => {
+    if (properties.length === 0) return null;
+
+    return (
+      <Accordion key={title} defaultExpanded={defaultExpanded}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="subtitle2">Basic Properties</Typography>
+          <Typography variant="subtitle2">{title} ({properties.length})</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <TableContainer>
             <Table size="small">
               <TableBody>
-                {basicProperties.map((key) => (
+                {properties.map((key) => (
                   <TableRow key={key}>
                     <TableCell component="th" sx={{ fontWeight: 'bold', width: '40%' }}>
                       {key}
@@ -114,80 +141,26 @@ export function PropertyPanel({ node }: PropertyPanelProps) {
           </TableContainer>
         </AccordionDetails>
       </Accordion>
+    );
+  };
 
-      {/* Transform */}
-      {(node.properties.position || node.properties.scale || node.properties.rotation) && (
-        <Accordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="subtitle2">Transform</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <TableContainer>
-              <Table size="small">
-                <TableBody>
-                  {node.properties.position && (
-                    <TableRow>
-                      <TableCell component="th" sx={{ fontWeight: 'bold' }}>
-                        Position
-                      </TableCell>
-                      <TableCell>{renderValue(node.properties.position)}</TableCell>
-                    </TableRow>
-                  )}
-                  {node.properties.scale && (
-                    <TableRow>
-                      <TableCell component="th" sx={{ fontWeight: 'bold' }}>
-                        Scale
-                      </TableCell>
-                      <TableCell>{renderValue(node.properties.scale)}</TableCell>
-                    </TableRow>
-                  )}
-                  {node.properties.rotation !== undefined && (
-                    <TableRow>
-                      <TableCell component="th" sx={{ fontWeight: 'bold' }}>
-                        Rotation
-                      </TableCell>
-                      <TableCell>{renderValue(node.properties.rotation)}</TableCell>
-                    </TableRow>
-                  )}
-                  {node.properties.angle !== undefined && (
-                    <TableRow>
-                      <TableCell component="th" sx={{ fontWeight: 'bold' }}>
-                        Angle
-                      </TableCell>
-                      <TableCell>{renderValue(node.properties.angle)}</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </AccordionDetails>
-        </Accordion>
+  return (
+    <Box sx={{ height: '100%', overflow: 'auto' }}>
+      {/* Header */}
+      <Paper sx={{ p: 2, mb: 2, backgroundColor: 'primary.dark' }}>
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          {node.name || node.id}
+        </Typography>
+        <Chip label={node.type} color="primary" size="small" />
+      </Paper>
+
+      {/* 카테고리별로 프로퍼티 그룹 렌더링 */}
+      {Object.entries(categorizedProps).map(([category, properties]) =>
+        renderPropertyGroup(categoryLabels[category] || category, properties, category === 'basic' || category === 'transform')
       )}
 
-      {/* Other Properties */}
-      {otherProperties.length > 0 && (
-        <Accordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="subtitle2">Other Properties</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <TableContainer>
-              <Table size="small">
-                <TableBody>
-                  {otherProperties.map((key) => (
-                    <TableRow key={key}>
-                      <TableCell component="th" sx={{ fontWeight: 'bold', width: '40%' }}>
-                        {key}
-                      </TableCell>
-                      <TableCell>{renderValue(node.properties[key])}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </AccordionDetails>
-        </Accordion>
-      )}
+      {/* 미분류 프로퍼티 */}
+      {renderPropertyGroup('Other', uncategorized, false)}
 
       {/* Children Info */}
       {node.children && node.children.length > 0 && (

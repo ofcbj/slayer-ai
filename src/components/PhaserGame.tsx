@@ -15,7 +15,7 @@ interface PhaserGameProps {
  * PhaserGame 컴포넌트
  * React와 Phaser를 연결하는 브릿지 역할을 합니다.
  */
-export const PhaserGame = forwardRef<IRefPhaserGame, PhaserGameProps>(
+export const PhaserGame = forwardRef<IRefPhaserGame, PhaserGameProps> (
   function PhaserGame({ currentActiveScene }, ref) {
     const gameRef = useRef<Phaser.Game | null>(null);
 

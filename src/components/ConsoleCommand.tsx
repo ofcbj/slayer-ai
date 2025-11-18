@@ -63,8 +63,8 @@ export function ConsoleCommand({ scene }: ConsoleCommandProps) {
     }
 
     const parts = trimmed.split(/\s+/);
-    const cmd = parts[0].toLowerCase();
-    const args = parts.slice(1);
+    const cmd   = parts[0].toLowerCase();
+    const args  = parts.slice(1);
 
     try {
       switch (cmd) {
