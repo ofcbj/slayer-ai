@@ -13,29 +13,29 @@ import BattleUIManager from './BattleUIManager';
  * 카드 클릭, 적 클릭, 카드 사용 등을 처리합니다.
  */
 export default class BattleEventManager {
-  private scene: Phaser.Scene;
-  private battleManager: BattleManager;
-  private cardHandManager: CardHandManager;
-  private deckManager: DeckManager;
-  private uiManager: BattleUIManager;
-  private playerCharacter: Player;
+  private scene           : Phaser.Scene;
+  private battleManager   : BattleManager;
+  private cardHandManager : CardHandManager;
+  private deckManager     : DeckManager;
+  private uiManager       : BattleUIManager;
+  private playerCharacter : Player;
   private onDeckInfoUpdate?: () => void;
 
   constructor(
-    scene: Phaser.Scene,
-    battleManager: BattleManager,
-    cardHandManager: CardHandManager,
-    deckManager: DeckManager,
-    uiManager: BattleUIManager,
-    playerCharacter: Player,
+    scene           : Phaser.Scene,
+    battleManager   : BattleManager,
+    cardHandManager : CardHandManager,
+    deckManager     : DeckManager,
+    uiManager       : BattleUIManager,
+    playerCharacter : Player,
     onDeckInfoUpdate?: () => void
   ) {
-    this.scene = scene;
-    this.battleManager = battleManager;
-    this.cardHandManager = cardHandManager;
-    this.deckManager = deckManager;
-    this.uiManager = uiManager;
-    this.playerCharacter = playerCharacter;
+    this.scene            = scene;
+    this.battleManager    = battleManager;
+    this.cardHandManager  = cardHandManager;
+    this.deckManager      = deckManager;
+    this.uiManager        = uiManager;
+    this.playerCharacter  = playerCharacter;
     this.onDeckInfoUpdate = onDeckInfoUpdate;
   }
 
@@ -143,16 +143,12 @@ export default class BattleEventManager {
 
     // 핸드에서 제거
     this.cardHandManager.removeCardFromHand(card);
-
     // DeckManager를 사용하여 버린 카드 더미에 추가
     this.deckManager.discardCard(cardData.rawData);
-
     // 카드를 버린 카드 더미로 이동 애니메이션
     this.cardHandManager.discardCardWithAnimation(card);
-
     // 핸드 재배치
     this.cardHandManager.arrangeHand();
-
     // 덱 정보 업데이트
     if (this.onDeckInfoUpdate) {
       this.onDeckInfoUpdate();

@@ -1,18 +1,10 @@
 import Phaser from 'phaser';
-import BattleManager from './BattleManager';
+import { PlayerState } from '../../../types';
 
 interface EnergyOrbData {
-  orb: Phaser.GameObjects.Arc;
-  glow: Phaser.GameObjects.Arc;
+  orb   : Phaser.GameObjects.Arc;
+  glow  : Phaser.GameObjects.Arc;
   active: boolean;
-}
-
-interface PlayerState {
-  health: number;
-  maxHealth: number;
-  energy: number;
-  maxEnergy: number;
-  defense: number;
 }
 
 /**
@@ -23,7 +15,6 @@ export default class BattleUIManager {
   private scene: Phaser.Scene;
   private energyContainer!: Phaser.GameObjects.Container;
   private energyOrbs: EnergyOrbData[] = [];
-  private endTurnButton!: Phaser.GameObjects.Container;
   private deckPileContainer!: Phaser.GameObjects.Container;
   private discardPileContainer!: Phaser.GameObjects.Container;
   private deckText!: Phaser.GameObjects.Text;
@@ -127,8 +118,6 @@ export default class BattleUIManager {
         this.onEndTurnClick();
       }
     });
-
-    this.endTurnButton = button;
   }
 
   /**

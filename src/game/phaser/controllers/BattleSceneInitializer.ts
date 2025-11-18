@@ -3,7 +3,6 @@ import Enemy from '../objects/Enemy';
 import Player from '../objects/Player';
 import DeckManager from '../managers/DeckManager';
 import BattleUIManager from '../managers/BattleUIManager';
-import CardViewManager from '../managers/CardViewManager';
 import { CardData, EnemyData, GameState, StageData } from '../managers/BattleManager';
 
 /**
@@ -17,7 +16,6 @@ export default class BattleSceneInitializer {
     private selectedStage   : StageData,
     private deckManager     : DeckManager,
     private uiManager       : BattleUIManager,
-    private cardViewManager : CardViewManager
   ) {}
 
   /**

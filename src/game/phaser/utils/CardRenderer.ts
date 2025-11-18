@@ -124,7 +124,7 @@ export default class CardRenderer {
   /**
    * 카드 타입 가져오기
    */
-  static getCardType(cardData: CardData | NormalizedCardData): string {
+  static getCardType(cardData: CardData | NormalizedCardData): string | undefined {
     // NormalizedCardData인 경우 (rawData 속성으로 구분)
     if ('rawData' in cardData && cardData.rawData) {
       return cardData.type;

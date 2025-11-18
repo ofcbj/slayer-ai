@@ -214,13 +214,11 @@ export default class BattleManager {
       // 방어도로 막을 수 있는 데미지 계산
       blockedDamage = Math.min(state.defense, amount);
       // 실제 체력에 들어가는 데미지
-      actualDamage = Math.max(0, amount - state.defense);
-
+      actualDamage  = Math.max(0, amount - state.defense);
       // 방어도는 실제로 막은 데미지만큼만 감소
       state.defense = Math.max(0, state.defense - blockedDamage);
-
       // 체력 감소
-      state.health = Math.max(0, state.health - actualDamage);
+      state.health  = Math.max(0, state.health - actualDamage);
     });
 
     if (this.callbacks.onPlayerTakeDamage) {
@@ -277,7 +275,7 @@ export default class BattleManager {
       if (this.callbacks.onBattleEnd) {
         this.callbacks.onBattleEnd(true);
       }
-    } else if (this.playerState.health <= 0) {
+    } else if (this.playerStateObservable.getState().health <= 0) {
       // 패배
       console.log('[BattleManager] Battle lost!');
       if (this.callbacks.onBattleEnd) {
@@ -316,6 +314,33 @@ export default class BattleManager {
    */
   public getPlayerState(): PlayerState {
     return this.playerStateObservable.getState();
+  }
+
+  /**
+   * 플레이어를 치유합니다.
+   */
+  public healPlayer(amount: number): void {
+    this.playerStateObservable.setState(state => {
+      state.health = Math.min(state.maxHealth, state.health + amount);
+    });
+  }
+
+  /**
+   * 플레이어 에너지를 설정합니다.
+   */
+  public setEnergy(amount: number): void {
+    this.playerStateObservable.setState(state => {
+      state.energy = Math.max(0, Math.min(state.maxEnergy, amount));
+    });
+  }
+
+  /**
+   * 플레이어 방어도를 설정합니다.
+   */
+  public setDefense(amount: number): void {
+    this.playerStateObservable.setState(state => {
+      state.defense = Math.max(0, amount);
+    });
   }
 
   /**

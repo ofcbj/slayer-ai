@@ -138,8 +138,7 @@ export default class BattleScene extends Phaser.Scene {
       this.gameState,
       this.selectedStage,
       this.deckManager,
-      this.uiManager,
-      this.cardViewManager
+      this.uiManager
     );
 
     // 플레이어 캐릭터 생성
@@ -184,9 +183,7 @@ export default class BattleScene extends Phaser.Scene {
       this.battleManager,
       this.deckManager,
       this.cardHandManager,
-      this.playerCharacter,
-      this.gameState,
-      () => this.stateSynchronizer.updateUI(),
+      () => this.stateSynchronizer.updateDeckInfo(), // updateUI: 덱 정보 업데이트 (옵저버 패턴으로 플레이어 상태는 자동 업데이트됨)
       () => this.stateSynchronizer.updateDeckInfo(),
       () => this.resultHandler.winBattle(),
       () => this.resultHandler.checkGameOver(),

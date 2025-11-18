@@ -237,100 +237,114 @@ export function ConsoleCommand({ scene }: ConsoleCommandProps) {
     });
   };
 
-  return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">Console</Typography>
-          <IconButton size="small" onClick={() => setHistory([])} title="Clear History">
-            <ClearIcon />
-          </IconButton>
-        </Box>
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
-          Type "help" for available commands
-        </Typography>
+  // 렌더링 함수들
+  const renderConsoleHeader = () => (
+    <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6">Console</Typography>
+        <IconButton size="small" onClick={() => setHistory([])} title="Clear History">
+          <ClearIcon />
+        </IconButton>
       </Box>
+      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+        Type "help" for available commands
+      </Typography>
+    </Box>
+  );
 
-      {/* Command History */}
-      <Box sx={{ flexGrow: 1, overflow: 'auto', p: 1, backgroundColor: 'background.default' }}>
-        {history.length === 0 ? (
-          <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-            <Typography>No commands executed yet</Typography>
-            <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
-              Try: help, damage 10, heal 20, energy 5
+  const renderEmptyHistory = () => (
+    <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
+      <Typography>No commands executed yet</Typography>
+      <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
+        Try: help, damage 10, heal 20, energy 5
+      </Typography>
+    </Box>
+  );
+
+  const renderCommandHistoryItem = (item: CommandHistory) => (
+    <Paper key={item.id} sx={{ mb: 1, p: 1, backgroundColor: 'background.paper' }} elevation={1}>
+      <ListItem sx={{ flexDirection: 'column', alignItems: 'stretch', px: 0, py: 0.5 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Chip label="$" size="small" color="primary" sx={{ fontFamily: 'monospace' }} />
+            <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+              {item.command}
             </Typography>
           </Box>
-        ) : (
-          <List dense>
-            {history.map((item) => (
-              <Paper key={item.id} sx={{ mb: 1, p: 1, backgroundColor: 'background.paper' }} elevation={1}>
-                <ListItem sx={{ flexDirection: 'column', alignItems: 'stretch', px: 0, py: 0.5 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                      <Chip label="$" size="small" color="primary" sx={{ fontFamily: 'monospace' }} />
-                      <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                        {item.command}
-                      </Typography>
-                    </Box>
-                    <Typography variant="caption" color="text.secondary">
-                      {formatTimestamp(item.timestamp)}
-                    </Typography>
-                  </Box>
-                  {item.output && (
-                    <Box
-                      sx={{
-                        backgroundColor: item.success ? 'success.dark' : 'error.dark',
-                        p: 1,
-                        borderRadius: 1,
-                        fontFamily: 'monospace',
-                        fontSize: '0.75rem',
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word',
-                        opacity: 0.8,
-                      }}
-                    >
-                      {item.output}
-                    </Box>
-                  )}
-                </ListItem>
-              </Paper>
-            ))}
-            <div ref={historyEndRef} />
-          </List>
-        )}
-      </Box>
-
-      {/* Input */}
-      <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Autocomplete
-            freeSolo
-            options={availableCommands.map((c) => c.name)}
-            inputValue={input}
-            onInputChange={(_, newValue) => setInput(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                inputRef={inputRef}
-                placeholder="Enter command..."
-                size="small"
-                fullWidth
-                onKeyDown={handleKeyDown}
-                sx={{
-                  '& .MuiInputBase-root': {
-                    fontFamily: 'monospace',
-                  },
-                }}
-              />
-            )}
-            sx={{ flexGrow: 1 }}
-          />
-          <IconButton color="primary" onClick={handleSubmit} title="Execute Command">
-            <SendIcon />
-          </IconButton>
+          <Typography variant="caption" color="text.secondary">
+            {formatTimestamp(item.timestamp)}
+          </Typography>
         </Box>
+        {item.output && (
+          <Box
+            sx={{
+              backgroundColor: item.success ? 'success.dark' : 'error.dark',
+              p: 1,
+              borderRadius: 1,
+              fontFamily: 'monospace',
+              fontSize: '0.75rem',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+              opacity: 0.8,
+            }}
+          >
+            {item.output}
+          </Box>
+        )}
+      </ListItem>
+    </Paper>
+  );
+
+  const renderCommandHistory = () => (
+    <Box sx={{ flexGrow: 1, overflow: 'auto', p: 1, backgroundColor: 'background.default' }}>
+      {history.length === 0 ? (
+        renderEmptyHistory()
+      ) : (
+        <List dense>
+          {history.map(renderCommandHistoryItem)}
+          <div ref={historyEndRef} />
+        </List>
+      )}
+    </Box>
+  );
+
+  const renderConsoleInput = () => (
+    <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <Autocomplete
+          freeSolo
+          options={availableCommands.map((c) => c.name)}
+          inputValue={input}
+          onInputChange={(_, newValue) => setInput(newValue)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              inputRef={inputRef}
+              placeholder="Enter command..."
+              size="small"
+              fullWidth
+              onKeyDown={handleKeyDown}
+              sx={{
+                '& .MuiInputBase-root': {
+                  fontFamily: 'monospace',
+                },
+              }}
+            />
+          )}
+          sx={{ flexGrow: 1 }}
+        />
+        <IconButton color="primary" onClick={handleSubmit} title="Execute Command">
+          <SendIcon />
+        </IconButton>
       </Box>
+    </Box>
+  );
+
+  return (
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {renderConsoleHeader()}
+      {renderCommandHistory()}
+      {renderConsoleInput()}
     </Box>
   );
 }

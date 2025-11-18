@@ -3,7 +3,6 @@ import EventBus from '../../EventBus';
 import BattleManager from '../managers/BattleManager';
 import DeckManager from '../managers/DeckManager';
 import CardHandManager from '../managers/CardHandManager';
-import Player from '../objects/Player';
 
 /**
  * 콘솔 명령어 처리를 담당하는 컨트롤러
@@ -15,8 +14,7 @@ export default class BattleConsoleCommandHandler {
     private battleManager: BattleManager,
     private deckManager: DeckManager,
     private cardHandManager: CardHandManager,
-    private playerCharacter: Player,
-    private gameState: any,
+
     private updateUI: () => void,
     private updateDeckInfo: () => void,
     private winBattle: () => void,
@@ -89,35 +87,27 @@ export default class BattleConsoleCommandHandler {
 
   private handleHealPlayer = (amount: number) => {
     if (this.battleManager) {
-      const playerState = this.battleManager.getPlayerState();
-      playerState.health = Math.min(playerState.maxHealth, playerState.health + amount);
-      if (this.playerCharacter) {
-        this.playerCharacter.health = playerState.health;
-        this.playerCharacter.updateStats(playerState.health, playerState.defense);
-      }
-      this.gameState.player.health = playerState.health;
+      // BattleManager의 메서드를 통해 상태 변경 (옵저버 패턴으로 자동 업데이트됨)
+      this.battleManager.healPlayer(amount);
+      // gameState는 BattleScene의 옵저버에서 자동 동기화됨
       this.updateUI();
     }
   };
 
   private handleSetEnergy = (amount: number) => {
     if (this.battleManager) {
-      const playerState = this.battleManager.getPlayerState();
-      playerState.energy = Math.max(0, Math.min(playerState.maxEnergy, amount));
-      this.gameState.player.energy = playerState.energy;
+      // BattleManager의 메서드를 통해 상태 변경 (옵저버 패턴으로 자동 업데이트됨)
+      this.battleManager.setEnergy(amount);
+      // gameState는 BattleScene의 옵저버에서 자동 동기화됨
       this.updateUI();
     }
   };
 
   private handleSetDefense = (amount: number) => {
     if (this.battleManager) {
-      const playerState = this.battleManager.getPlayerState();
-      playerState.defense = Math.max(0, amount);
-      if (this.playerCharacter) {
-        this.playerCharacter.defense = playerState.defense;
-        this.playerCharacter.updateStats(playerState.health, playerState.defense);
-      }
-      this.gameState.player.defense = playerState.defense;
+      // BattleManager의 메서드를 통해 상태 변경 (옵저버 패턴으로 자동 업데이트됨)
+      this.battleManager.setDefense(amount);
+      // gameState는 BattleScene의 옵저버에서 자동 동기화됨
       this.updateUI();
     }
   };
