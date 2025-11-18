@@ -20,6 +20,8 @@ export default class CardHandManager {
     this.scene = scene;
     this.deckManager = deckManager;
     this.uiManager = uiManager;
+
+    this.initializeHandContainer();
   }
 
   /**

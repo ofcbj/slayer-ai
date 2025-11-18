@@ -5,7 +5,8 @@
       "Bash(/usr/local/workspace/slayer-ai/.gitignore)",
       "Bash(npm install:*)",
       "Bash(move:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

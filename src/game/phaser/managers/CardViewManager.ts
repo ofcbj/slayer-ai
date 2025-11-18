@@ -259,10 +259,10 @@ export default class CardViewManager {
    * 카드 데이터에서 색상을 가져옵니다.
    */
   private getCardColorFromData(cardData: CardData): number {
-    if (cardData.damage) return 0xff6b6b; // 공격
-    if (cardData.block) return 0x4ecdc4; // 방어
-    if (cardData.heal) return 0x95e1d3; // 치유
-    if (cardData.energy) return 0xf39c12; // 에너지
+    if (cardData.damage)  return 0xff6b6b; // 공격
+    if (cardData.block)   return 0x4ecdc4; // 방어
+    if (cardData.heal)    return 0x95e1d3; // 치유
+    if (cardData.energy)  return 0xf39c12; // 에너지
     return 0x9b59b6; // 스킬
   }
 
