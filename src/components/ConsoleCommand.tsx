@@ -70,7 +70,7 @@ export function ConsoleCommand({ scene }: ConsoleCommandProps) {
       switch (cmd) {
         case 'help':
           return {
-            output: availableCommands.map((c) => `  ${c.name.padEnd(15)} - ${c.description}`).join('\n'),
+            output: availableCommands.map((c) => `${c.name.padEnd(15)} - ${c.description}`).join('\n'),
             success: true,
           };
 

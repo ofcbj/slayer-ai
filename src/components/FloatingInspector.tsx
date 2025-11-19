@@ -90,12 +90,12 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
 
     const handleMouseMove = (e: MouseEvent) => {
       if (resizeRef.current) {
-        const rect = resizeRef.current.getBoundingClientRect();
-        const newWidth = e.clientX - rect.left;
+        const rect      = resizeRef.current.getBoundingClientRect();
+        const newWidth  = e.clientX - rect.left;
         const newHeight = e.clientY - rect.top;
 
         setSize({
-          width: Math.max(600, Math.min(newWidth, window.innerWidth - 100)),
+          width : Math.max(600, Math.min(newWidth, window.innerWidth - 100)),
           height: Math.max(400, Math.min(newHeight, window.innerHeight - 100)),
         });
       }
@@ -332,20 +332,20 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
         }}
         elevation={8}
         sx={{
-          position: 'fixed',
-          top: 100,
-          right: 100,
-          width: size.width,
-          height: isMinimized ? 'auto' : size.height,
-          zIndex: 2000,
-          display: 'flex',
-          flexDirection: 'column',
+          position      : 'fixed',
+          top           : 100,
+          right         : 100,
+          width         : size.width,
+          height        : isMinimized ? 'auto' : size.height,
+          zIndex        : 2000,
+          display       : 'flex',
+          flexDirection : 'column',
           backgroundColor: 'background.default',
-          overflow: 'hidden',
-          border: '2px solid',
-          borderColor: 'primary.main',
-          borderRadius: 2,
-          pointerEvents: 'auto', // 인스펙터 패널은 마우스 이벤트를 받음
+          overflow      : 'hidden',
+          border        : '2px solid',
+          borderColor   : 'primary.main',
+          borderRadius  : 2,
+          pointerEvents : 'auto', // 인스펙터 패널은 마우스 이벤트를 받음
         }}
         onMouseDown = {(e) => e.stopPropagation()}
         onMouseUp   = {(e) => e.stopPropagation()}
