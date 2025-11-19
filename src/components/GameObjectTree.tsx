@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Box, Chip } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
+
 import { GameObjectNode } from '../game/utils/SceneInspector';
 
 interface GameObjectTreeProps {

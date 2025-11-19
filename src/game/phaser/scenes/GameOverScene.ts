@@ -53,9 +53,8 @@ export default class GameOverScene extends Phaser.Scene {
   private createVictoryScreen(): void {
     const width : number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
-
     // 타이틀
-    const title: Phaser.GameObjects.Text = this.add.text(
+    const title : Phaser.GameObjects.Text = this.add.text(
       width / 2,
       height / 3,
       'VICTORY!',

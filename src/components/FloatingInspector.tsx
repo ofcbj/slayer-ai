@@ -105,12 +105,12 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
       setIsResizing(false);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove',handleMouseMove);
+    document.addEventListener('mouseup',  handleMouseUp);
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup',   handleMouseUp);
     };
   }, [isResizing]);
 
@@ -288,18 +288,18 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
     <Box
       onMouseDown={() => setIsResizing(true)}
       sx={{
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        width: 20,
-        height: 20,
-        cursor: 'nwse-resize',
+        position  : 'absolute',
+        bottom    : 0,
+        right     : 0,
+        width     : 20,
+        height    : 20,
+        cursor    : 'nwse-resize',
         backgroundColor: 'primary.main',
-        opacity: 0.5,
-        '&:hover': {
-          opacity: 1,
+        opacity   : 0.5,
+        '&:hover' : {
+          opacity : 1,
         },
-        clipPath: 'polygon(100% 0, 100% 100%, 0 100%)',
+        clipPath  : 'polygon(100% 0, 100% 100%, 0 100%)',
       }}
     />
   );

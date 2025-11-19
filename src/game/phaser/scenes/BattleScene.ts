@@ -1,18 +1,21 @@
 import Phaser from 'phaser';
+
 import EventBus from '../../EventBus';
-import Enemy from '../objects/Enemy';
-import Player from '../objects/Player';
-import DeckManager from '../managers/DeckManager';
-import BattleManager, { BattleCallbacks, EnemyData, GameState } from '../managers/BattleManager';
-import BattleUIManager from '../managers/BattleUIManager';
-import CardHandManager from '../managers/CardHandManager';
-import CardViewManager from '../managers/CardViewManager';
+import Enemy    from '../objects/Enemy';
+import Player   from '../objects/Player';
+
+import DeckManager        from '../managers/DeckManager';
+import BattleUIManager    from '../managers/BattleUIManager';
+import CardHandManager    from '../managers/CardHandManager';
+import CardViewManager    from '../managers/CardViewManager';
 import BattleEventManager from '../managers/BattleEventManager';
-import BattleSceneInitializer from '../controllers/BattleSceneInitializer';
-import BattleTurnController from '../controllers/BattleTurnController';
-import BattleStateSynchronizer from '../controllers/BattleStateSynchronizer';
-import BattleResultHandler from '../controllers/BattleResultHandler';
-import BattleConsoleCommandHandler from '../controllers/BattleConsoleCommandHandler';
+import BattleManager, { BattleCallbacks, EnemyData, GameState } from '../managers/BattleManager';
+
+import BattleSceneInitializer       from '../controllers/BattleSceneInitializer';
+import BattleTurnController         from '../controllers/BattleTurnController';
+import BattleStateSynchronizer      from '../controllers/BattleStateSynchronizer';
+import BattleResultHandler          from '../controllers/BattleResultHandler';
+import BattleConsoleCommandHandler  from '../controllers/BattleConsoleCommandHandler';
 
 /**
  * 전투 씬
@@ -20,27 +23,27 @@ import BattleConsoleCommandHandler from '../controllers/BattleConsoleCommandHand
  */
 export default class BattleScene extends Phaser.Scene {
   // Managers
-  private deckManager!: DeckManager;
-  private battleManager!: BattleManager;
-  private uiManager!: BattleUIManager;
-  private cardHandManager!: CardHandManager;
-  private cardViewManager!: CardViewManager;
-  private eventManager!: BattleEventManager;
+  private deckManager!          : DeckManager;
+  private battleManager!        : BattleManager;
+  private uiManager!            : BattleUIManager;
+  private cardHandManager!      : CardHandManager;
+  private cardViewManager!      : CardViewManager;
+  private eventManager!         : BattleEventManager;
 
   // Controllers
-  private initializer!: BattleSceneInitializer;
-  private turnController!: BattleTurnController;
-  private stateSynchronizer!: BattleStateSynchronizer;
-  private resultHandler!: BattleResultHandler;
+  private initializer!          : BattleSceneInitializer;
+  private turnController!       : BattleTurnController;
+  private stateSynchronizer!    : BattleStateSynchronizer;
+  private resultHandler!        : BattleResultHandler;
   private consoleCommandHandler!: BattleConsoleCommandHandler;
 
   // Observer cleanup
   private unsubscribePlayerState?: () => void;
 
   // State
-  private gameState!: GameState;
-  private selectedStage!: any;
-  private playerCharacter!: Player;
+  private gameState!            : GameState;
+  private selectedStage!        : any;
+  private playerCharacter!      : Player;
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -60,17 +63,14 @@ export default class BattleScene extends Phaser.Scene {
     if (this.unsubscribePlayerState) {
       this.unsubscribePlayerState();
     }
-
     // 이벤트 리스너 정리
     if (this.eventManager) {
       this.eventManager.unregisterEventListeners();
     }
-
     // 콘솔 명령어 이벤트 리스너 제거
     if (this.consoleCommandHandler) {
       this.consoleCommandHandler.unregisterEventListeners();
     }
-
     // 적 객체 정리 (BattleManager를 통해 접근)
     if (this.battleManager) {
       const enemies = this.battleManager.getAllEnemies();
@@ -80,12 +80,10 @@ export default class BattleScene extends Phaser.Scene {
         }
       });
     }
-
     // 플레이어 캐릭터 정리
     if (this.playerCharacter && this.playerCharacter.scene) {
       this.playerCharacter.destroy();
     }
-
     // 카드 핸드 정리
     if (this.cardHandManager) {
       this.cardHandManager.clearHand();
@@ -116,15 +114,14 @@ export default class BattleScene extends Phaser.Scene {
     // React에 현재 Scene이 준비되었음을 알림
     EventBus.emit('current-scene-ready', this);
 
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
-
+    const width   = this.cameras.main.width;
+    const height  = this.cameras.main.height;
     // 배경
     this.add.rectangle(0, 0, width, height, 0x0f0f1e).setOrigin(0);
 
     // 게임 상태 가져오기
-    this.gameState = this.registry.get('gameState');
-    this.selectedStage = this.registry.get('selectedStage');
+    this.gameState      = this.registry.get('gameState');
+    this.selectedStage  = this.registry.get('selectedStage');
     console.log('[BattleScene] create - Stage:', this.selectedStage?.id);
 
     // UI Manager와 Card Managers 먼저 초기화
@@ -153,7 +150,6 @@ export default class BattleScene extends Phaser.Scene {
 
     // 적 생성 (먼저 생성하여 BattleManager에 전달)
     const enemies = this.initializer.createEnemies();
-
     // BattleManager 초기화 (enemies를 받아서 생성)
     this.initializeBattleManager(enemies);
 
@@ -201,19 +197,15 @@ export default class BattleScene extends Phaser.Scene {
       () => this.stateSynchronizer.updateDeckInfo()
     );
     this.eventManager.registerEventListeners();
-
     // 콘솔 명령어 이벤트 리스너 등록
     this.consoleCommandHandler.registerEventListeners();
-
     // 초기 덱 설정
     this.initializer.setupDeck();
-
     // 적 의도 설정
     enemies.forEach((enemy: Enemy) => {
       const enemyData: EnemyData = (enemy as any).enemyData;
       this.battleManager.setEnemyIntent(enemy, enemyData, () => Phaser.Math.Between(0, 100) / 100);
     });
-
     // 첫 턴 시작
     this.turnController.startPlayerTurn();
   }
@@ -241,21 +233,21 @@ export default class BattleScene extends Phaser.Scene {
         if (blockedDamage > 0) {
           // 방어도로 막은 데미지 표시
           const blockText = this.add.text(this.playerCharacter.x - 40, this.playerCharacter.y - 50, `🛡️-${blockedDamage}`, {
-            fontSize: '28px',
+            fontSize  : '28px',
             fontFamily: 'Arial, sans-serif',
-            fontStyle: 'bold',
-            color: '#4ecdc4',
-            stroke: '#000000',
-            strokeThickness: 4
+            fontStyle : 'bold',
+            color     : '#4ecdc4',
+            stroke    : '#000000',
+            strokeThickness : 4
           });
           blockText.setOrigin(0.5);
 
           this.tweens.add({
-            targets: blockText,
-            y: blockText.y - 40,
-            alpha: 0,
-            duration: 1000,
-            ease: 'Power2',
+            targets   : blockText,
+            y         : blockText.y - 40,
+            alpha     : 0,
+            duration  : 1000,
+            ease      : 'Power2',
             onComplete: () => blockText.destroy()
           });
         }
@@ -263,21 +255,21 @@ export default class BattleScene extends Phaser.Scene {
         if (actualDamage > 0) {
           // 실제 체력 데미지 표시
           const damageText = this.add.text(this.playerCharacter.x + 40, this.playerCharacter.y - 50, `-${actualDamage} HP`, {
-            fontSize: '36px',
+            fontSize  : '36px',
             fontFamily: 'Arial, sans-serif',
-            fontStyle: 'bold',
-            color: '#ff6b6b',
-            stroke: '#000000',
+            fontStyle : 'bold',
+            color     : '#ff6b6b',
+            stroke    : '#000000',
             strokeThickness: 5
           });
           damageText.setOrigin(0.5);
 
           this.tweens.add({
-            targets: damageText,
-            y: damageText.y - 60,
-            alpha: 0,
-            duration: 1000,
-            ease: 'Power2',
+            targets   : damageText,
+            y         : damageText.y - 60,
+            alpha     : 0,
+            duration  : 1000,
+            ease      : 'Power2',
             onComplete: () => damageText.destroy()
           });
 
@@ -318,15 +310,12 @@ export default class BattleScene extends Phaser.Scene {
     };
 
     this.battleManager = new BattleManager(this.gameState.player, enemies, callbacks);
-
     // 플레이어 상태 옵저버 구독
     this.unsubscribePlayerState = this.battleManager.subscribeToPlayerState((state) => {
       // 1. GameState 동기화 (React UI 및 씬 간 데이터 전달용)
       this.gameState.player = { ...state };
-
       // 2. Player 시각화 업데이트
       this.playerCharacter.updateFromState(state);
-
       // 3. UI 업데이트
       this.uiManager.updateEnergyUI(state);
     });

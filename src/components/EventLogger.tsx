@@ -127,7 +127,7 @@ export function EventLogger({ maxLogs = 500, scene }: EventLoggerProps) {
             return {
               type: arg.type,
               name: (arg as any).name || (arg as any).cardData?.name || 'Unknown',
-              id: (arg as any).id || 'N/A',
+              id  : (arg as any).id || 'N/A',
             };
           }
           // 일반 객체는 JSON으로 직렬화 시도
