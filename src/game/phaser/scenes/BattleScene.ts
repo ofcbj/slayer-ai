@@ -183,7 +183,6 @@ export default class BattleScene extends Phaser.Scene {
       this.battleManager,
       this.deckManager,
       this.cardHandManager,
-      () => this.stateSynchronizer.updateDeckInfo(), // updateUI: 덱 정보 업데이트 (옵저버 패턴으로 플레이어 상태는 자동 업데이트됨)
       () => this.stateSynchronizer.updateDeckInfo(),
       () => this.resultHandler.winBattle(),
       () => this.resultHandler.checkGameOver(),

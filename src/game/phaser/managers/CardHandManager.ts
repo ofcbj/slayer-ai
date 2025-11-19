@@ -64,11 +64,11 @@ export default class CardHandManager {
 
     // 모든 카드가 드로우된 후 콜백 실행
     // 마지막 카드의 애니메이션 시작 시간(cardsDrawn * 150) + 애니메이션 duration(400) + 여유시간(100)
-    this.scene.time.delayedCall(cardsDrawn * 150 + 500, () => {
-      if (onComplete) {
+    if (onComplete) {
+      this.scene.time.delayedCall(cardsDrawn * 150 + 500, () => {
         onComplete();
-      }
-    });
+      });
+    }
   }
 
   /**

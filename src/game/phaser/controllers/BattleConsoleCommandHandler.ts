@@ -10,17 +10,16 @@ import CardHandManager from '../managers/CardHandManager';
  */
 export default class BattleConsoleCommandHandler {
   constructor(
-    private scene: Phaser.Scene,
-    private battleManager: BattleManager,
-    private deckManager: DeckManager,
-    private cardHandManager: CardHandManager,
+    private scene           : Phaser.Scene,
+    private battleManager   : BattleManager,
+    private deckManager     : DeckManager,
+    private cardHandManager : CardHandManager,
 
-    private updateUI: () => void,
-    private updateDeckInfo: () => void,
-    private winBattle: () => void,
-    private checkGameOver: () => void,
-    private endPlayerTurn: () => void,
-    private startPlayerTurn: () => void
+    private updateDeckInfo  : () => void,
+    private winBattle       : () => void,
+    private checkGameOver   : () => void,
+    private endPlayerTurn   : () => void,
+    private startPlayerTurn : () => void
   ) {}
 
   /**
@@ -28,37 +27,27 @@ export default class BattleConsoleCommandHandler {
    */
   registerEventListeners(): void {
     // 플레이어 피해
-    EventBus.on('console-damage-player', this.handleDamagePlayer);
-
+    EventBus.on('console-damage-player',this.handleDamagePlayer);
     // 플레이어 치유
-    EventBus.on('console-heal-player', this.handleHealPlayer);
-
+    EventBus.on('console-heal-player',  this.handleHealPlayer);
     // 에너지 설정
-    EventBus.on('console-set-energy', this.handleSetEnergy);
-
+    EventBus.on('console-set-energy',   this.handleSetEnergy);
     // 방어도 설정
-    EventBus.on('console-set-defense', this.handleSetDefense);
-
+    EventBus.on('console-set-defense',  this.handleSetDefense);
     // 카드 추가
-    EventBus.on('console-add-card', this.handleAddCard);
-
+    EventBus.on('console-add-card',     this.handleAddCard);
     // 카드 뽑기
-    EventBus.on('console-draw-cards', this.handleDrawCards);
-
+    EventBus.on('console-draw-cards',   this.handleDrawCards);
     // 적 피해
     EventBus.on('console-damage-enemy', this.handleDamageEnemy);
-
     // 적 치유
-    EventBus.on('console-heal-enemy', this.handleHealEnemy);
-
+    EventBus.on('console-heal-enemy',   this.handleHealEnemy);
     // 다음 턴
-    EventBus.on('console-next-turn', this.handleNextTurn);
-
+    EventBus.on('console-next-turn',    this.handleNextTurn);
     // 전투 승리
-    EventBus.on('console-win-battle', this.handleWinBattle);
-
+    EventBus.on('console-win-battle',   this.handleWinBattle);
     // 전투 패배
-    EventBus.on('console-lose-battle', this.handleLoseBattle);
+    EventBus.on('console-lose-battle',  this.handleLoseBattle);
   }
 
   /**
@@ -79,101 +68,70 @@ export default class BattleConsoleCommandHandler {
   }
 
   private handleDamagePlayer = (amount: number) => {
-    if (this.battleManager) {
-      this.battleManager.playerTakeDamage(amount);
-      this.updateUI();
-    }
+    this.battleManager.playerTakeDamage(amount);
   };
 
   private handleHealPlayer = (amount: number) => {
-    if (this.battleManager) {
-      // BattleManager의 메서드를 통해 상태 변경 (옵저버 패턴으로 자동 업데이트됨)
-      this.battleManager.healPlayer(amount);
-      // gameState는 BattleScene의 옵저버에서 자동 동기화됨
-      this.updateUI();
-    }
+    this.battleManager.healPlayer(amount);
   };
 
   private handleSetEnergy = (amount: number) => {
-    if (this.battleManager) {
-      // BattleManager의 메서드를 통해 상태 변경 (옵저버 패턴으로 자동 업데이트됨)
-      this.battleManager.setEnergy(amount);
-      // gameState는 BattleScene의 옵저버에서 자동 동기화됨
-      this.updateUI();
-    }
+    this.battleManager.setEnergy(amount);
   };
 
   private handleSetDefense = (amount: number) => {
-    if (this.battleManager) {
-      // BattleManager의 메서드를 통해 상태 변경 (옵저버 패턴으로 자동 업데이트됨)
-      this.battleManager.setDefense(amount);
-      // gameState는 BattleScene의 옵저버에서 자동 동기화됨
-      this.updateUI();
-    }
+    this.battleManager.setDefense(amount);
   };
 
   private handleAddCard = (cardName: string) => {
-    if (this.deckManager && this.cardHandManager) {
-      // 이미 로드된 카드 데이터 사용 (PreloadScene에서 로드됨)
-      const cardsData = this.scene.cache.json.get('cards') as any[];
-      if (!cardsData) {
-        console.warn('[Console] Cards data not loaded');
-        return;
-      }
+    // 이미 로드된 카드 데이터 사용 (PreloadScene에서 로드됨)
+    const cardsData = this.scene.cache.json.get('cards') as any[];
+    if (!cardsData) {
+      console.warn('[Console] Cards data not loaded');
+      return;
+    }
 
-      const card = cardsData.find((c: any) => c.name === cardName || c.name.toLowerCase() === cardName.toLowerCase());
+    const card = cardsData.find((c: any) => c.name === cardName || c.name.toLowerCase() === cardName.toLowerCase());
 
-      if (card) {
-        // 카드를 핸드에 추가 (drawCards 메서드 사용)
-        // 덱에 카드를 추가한 후 드로우
-        (this.deckManager as any).deck.push({ ...card });
-        this.cardHandManager.drawCards(1, () => {
-          this.updateDeckInfo();
-        });
-      } else {
-        console.warn(`[Console] Card not found: ${cardName}`);
-      }
+    if (card) {
+      // 카드를 핸드에 추가 (drawCards 메서드 사용)
+      // 덱에 카드를 추가한 후 드로우
+      (this.deckManager as any).deck.push({ ...card });
+      this.cardHandManager.drawCards(1, () => {
+        this.updateDeckInfo();
+      });
+    } else {
+      console.warn(`[Console] Card not found: ${cardName}`);
     }
   };
 
   private handleDrawCards = (count: number) => {
-    if (this.cardHandManager) {
-      this.cardHandManager.drawCards(count, () => {
-        this.updateUI();
-        this.updateDeckInfo();
-      });
-    }
+    this.cardHandManager.drawCards(count, () => {
+      this.updateDeckInfo();
+    });
   };
 
   private handleDamageEnemy = ({ index, amount }: { index: number; amount: number }) => {
-    if (this.battleManager) {
-      const enemies = this.battleManager.getAllEnemies();
-      if (enemies[index]) {
-        enemies[index].takeDamage(amount);
-        this.updateUI();
-      }
+    const enemies = this.battleManager.getAllEnemies();
+    if (enemies[index]) {
+      enemies[index].takeDamage(amount);
     }
   };
 
   private handleHealEnemy = ({ index, amount }: { index: number; amount: number }) => {
-    if (this.battleManager) {
-      const enemies = this.battleManager.getAllEnemies();
-      if (enemies[index]) {
-        const enemy = enemies[index] as any;
-        enemy.health = Math.min(enemy.maxHealth || 100, (enemy.health || 0) + amount);
-        enemy.updateHealthBar();
-        this.updateUI();
-      }
+    const enemies = this.battleManager.getAllEnemies();
+    if (enemies[index]) {
+      const enemy = enemies[index] as any;
+      enemy.health = Math.min(enemy.maxHealth || 100, (enemy.health || 0) + amount);
+      enemy.updateHealthBar();
     }
   };
 
   private handleNextTurn = () => {
-    if (this.battleManager) {
-      if (this.battleManager.getTurn() === 'player') {
-        this.endPlayerTurn();
-      } else {
-        this.startPlayerTurn();
-      }
+    if (this.battleManager.getTurn() === 'player') {
+      this.endPlayerTurn();
+    } else {
+      this.startPlayerTurn();
     }
   };
 

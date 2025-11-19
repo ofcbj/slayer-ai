@@ -41,15 +41,15 @@ export interface BattleCallbacks {
  * 모든 상태 변경은 자동으로 구독자들에게 통지됩니다.
  */
 export default class BattleManager {
-  private turn: 'player' | 'enemy' = 'player';
-  private playerStateObservable: PlayerStateObservable;
-  private enemies: Enemy[];
-  private callbacks: BattleCallbacks;
+  private turn                  : 'player' | 'enemy' = 'player';
+  private playerStateObservable : PlayerStateObservable;
+  private enemies               : Enemy[];
+  private callbacks             : BattleCallbacks;
 
   constructor(playerState: PlayerState, enemies: Enemy[], callbacks: BattleCallbacks = {}) {
     this.playerStateObservable = new PlayerStateObservable(playerState);
-    this.enemies = enemies;
-    this.callbacks = callbacks;
+    this.enemies              = enemies;
+    this.callbacks            = callbacks;
     console.log(`[BattleManager] Created with ${enemies.length} enemies:`, enemies.map((e: any) => e.enemyData?.name));
   }
 

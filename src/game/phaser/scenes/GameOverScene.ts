@@ -7,15 +7,15 @@ interface InitData {
 
 interface GameState {
   player: {
-    maxHealth: number;
-    health: number;
-    energy: number;
-    maxEnergy: number;
-    defense: number;
+    maxHealth : number;
+    health    : number;
+    energy    : number;
+    maxEnergy : number;
+    defense   : number;
   };
-  deck: any[];
-  currentStage: number;
-  stagesCleared: any[];
+  deck          : any[];
+  currentStage  : number;
+  stagesCleared : any[];
 }
 
 export default class GameOverScene extends Phaser.Scene {
@@ -33,7 +33,7 @@ export default class GameOverScene extends Phaser.Scene {
     // React에 현재 Scene이 준비되었음을 알림
     EventBus.emit('current-scene-ready', this);
 
-    const width: number = this.cameras.main.width;
+    const width : number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
 
     // 배경
@@ -51,7 +51,7 @@ export default class GameOverScene extends Phaser.Scene {
   }
 
   private createVictoryScreen(): void {
-    const width: number = this.cameras.main.width;
+    const width : number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
 
     // 타이틀
@@ -60,11 +60,11 @@ export default class GameOverScene extends Phaser.Scene {
       height / 3,
       'VICTORY!',
       {
-        fontSize: '96px',
+        fontSize  : '96px',
         fontFamily: 'Arial, sans-serif',
-        fontStyle: 'bold',
-        color: '#2ecc71',
-        stroke: '#ffffff',
+        fontStyle : 'bold',
+        color     : '#2ecc71',
+        stroke    : '#ffffff',
         strokeThickness: 8
       }
     );
@@ -72,21 +72,21 @@ export default class GameOverScene extends Phaser.Scene {
 
     // 애니메이션
     this.tweens.add({
-      targets: title,
-      scaleX: 1.1,
-      scaleY: 1.1,
+      targets : title,
+      scaleX  : 1.1,
+      scaleY  : 1.1,
       duration: 1000,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut'
+      yoyo    : true,
+      repeat  : -1,
+      ease    : 'Sine.easeInOut'
     });
 
     // 메시지
     this.add.text(width / 2, height / 2, 'You have defeated the Demon Lord!', {
-      fontSize: '32px',
+      fontSize  : '32px',
       fontFamily: 'Arial, sans-serif',
-      color: '#ffffff',
-      align: 'center'
+      color     : '#ffffff',
+      align     : 'center'
     }).setOrigin(0.5);
 
     // 승리 파티클
@@ -94,7 +94,7 @@ export default class GameOverScene extends Phaser.Scene {
   }
 
   private createDefeatScreen(): void {
-    const width: number = this.cameras.main.width;
+    const width : number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
 
     // 타이틀
@@ -102,12 +102,12 @@ export default class GameOverScene extends Phaser.Scene {
       width / 2,
       height / 3,
       'DEFEAT',
-      {
-        fontSize: '96px',
+      { 
+        fontSize  : '96px',
         fontFamily: 'Arial, sans-serif',
-        fontStyle: 'bold',
-        color: '#ff6b6b',
-        stroke: '#000000',
+        fontStyle : 'bold',
+        color     : '#ff6b6b',
+        stroke    : '#000000',
         strokeThickness: 8
       }
     );
@@ -115,10 +115,10 @@ export default class GameOverScene extends Phaser.Scene {
 
     // 메시지
     this.add.text(width / 2, height / 2, 'Your journey ends here...', {
-      fontSize: '32px',
+      fontSize  : '32px',
       fontFamily: 'Arial, sans-serif',
-      color: '#cccccc',
-      align: 'center'
+      color     : '#cccccc',
+      align     : 'center'
     }).setOrigin(0.5);
 
     // 게임 상태
@@ -126,10 +126,10 @@ export default class GameOverScene extends Phaser.Scene {
     const statsText: string = `Stages Cleared: ${gameState.stagesCleared.length}\nDeck Size: ${gameState.deck.length} cards`;
 
     this.add.text(width / 2, height / 2 + 80, statsText, {
-      fontSize: '24px',
+      fontSize  : '24px',
       fontFamily: 'monospace',
-      color: '#aaaaaa',
-      align: 'center'
+      color     : '#aaaaaa',
+      align     : 'center'
     }).setOrigin(0.5);
   }
 
@@ -146,11 +146,11 @@ export default class GameOverScene extends Phaser.Scene {
         // 게임 상태 리셋
         const initialGameState: GameState = {
           player: {
-            maxHealth: 100,
-            health: 100,
-            energy: 3,
-            maxEnergy: 3,
-            defense: 0
+            maxHealth : 100,
+            health    : 100,
+            energy    : 3,
+            maxEnergy : 3,
+            defense   : 0
           },
           deck: [],
           currentStage: 1,
