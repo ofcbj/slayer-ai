@@ -55,14 +55,23 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
     };
   }, []);
 
-  // 인스펙터가 열릴 때 게임 입력 비활성화
+  // 인스펙터 영역에서만 게임 입력 비활성화
+  const handleMouseEnter = () => {
+    if (currentScene && currentScene.input) {
+      currentScene.input.enabled = false;
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (currentScene && currentScene.input) {
+      currentScene.input.enabled = true;
+    }
+  };
+
+  // 인스펙터가 닫히면 게임 입력 활성화
   useEffect(() => {
     if (currentScene && currentScene.input) {
-      if (open) {
-        // 인스펙터가 열리면 게임 입력 비활성화
-        currentScene.input.enabled = false;
-      } else {
-        // 인스펙터가 닫히면 게임 입력 활성화
+      if (!open) {
         currentScene.input.enabled = true;
       }
     }
@@ -340,13 +349,16 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
           zIndex        : 2000,
           display       : 'flex',
           flexDirection : 'column',
-          backgroundColor: 'background.default',
+          backgroundColor: 'rgba(18, 18, 18, 0.25)', // 반투명 배경
+          backdropFilter: 'blur(4px)', // 뒷배경 블러 효과
           overflow      : 'hidden',
           border        : '2px solid',
           borderColor   : 'primary.main',
           borderRadius  : 2,
           pointerEvents : 'auto', // 인스펙터 패널은 마우스 이벤트를 받음
         }}
+        onMouseEnter  = {handleMouseEnter}
+        onMouseLeave  = {handleMouseLeave}
         onMouseDown = {(e) => e.stopPropagation()}
         onMouseUp   = {(e) => e.stopPropagation()}
         onMouseMove = {(e) => e.stopPropagation()}

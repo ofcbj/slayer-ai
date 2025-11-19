@@ -246,12 +246,25 @@ export function EventLogger({ maxLogs = 500, scene }: EventLoggerProps) {
   const renderHeader = () => (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
       <Typography variant="h6">Event Logger</Typography>
-      <Box sx={{ display: 'flex', gap: 1 }}>
+      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
         <FormControlLabel
           control={<Switch checked={!paused} onChange={(e) => setPaused(!e.target.checked)} size="small" />}
           label={paused ? 'Paused' : 'Running'}
         />
-        <IconButton size="small" onClick={handleClear} title="Clear Logs">
+        <IconButton
+          size="small"
+          onClick={handleClear}
+          title="Clear Logs"
+          color="error"
+          sx={{
+            border: 1,
+            borderColor: 'error.main',
+            '&:hover': {
+              backgroundColor: 'error.main',
+              color: 'white'
+            }
+          }}
+        >
           <ClearIcon />
         </IconButton>
       </Box>
