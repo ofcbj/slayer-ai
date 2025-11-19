@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import Card from '../objects/Card';
 import DeckManager from './DeckManager';
 import BattleUIManager from './BattleUIManager';
+import SoundManager from './SoundManager';
 import { CardData, NormalizedCardData } from './BattleManager';
 
 /**
@@ -12,14 +13,16 @@ export default class CardHandManager {
   private scene: Phaser.Scene;
   private deckManager: DeckManager;
   private uiManager: BattleUIManager;
+  private soundManager?: SoundManager;
   private hand: Card[] = [];
   private selectedCard: Card | null = null;
   private handContainer!: Phaser.GameObjects.Container;
 
-  constructor(scene: Phaser.Scene, deckManager: DeckManager, uiManager: BattleUIManager) {
+  constructor(scene: Phaser.Scene, deckManager: DeckManager, uiManager: BattleUIManager, soundManager?: SoundManager) {
     this.scene = scene;
     this.deckManager = deckManager;
     this.uiManager = uiManager;
+    this.soundManager = soundManager;
 
     this.initializeHandContainer();
   }
@@ -59,6 +62,10 @@ export default class CardHandManager {
     cardsToDrawData.forEach((cardData, index) => {
       this.scene.time.delayedCall(index * 150, () => {
         this.addCardToHandWithAnimation(cardData, currentHandSize + index, currentHandSize + cardsDrawn);
+        // 카드 드로우 사운드 재생
+        if (this.soundManager) {
+          this.soundManager.playCardDraw();
+        }
       });
     });
 

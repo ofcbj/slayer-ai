@@ -10,6 +10,7 @@ import CardHandManager    from '../managers/CardHandManager';
 import CardViewManager    from '../managers/CardViewManager';
 import BattleEventManager from '../managers/BattleEventManager';
 import BattleManager, { BattleCallbacks, EnemyData, GameState } from '../managers/BattleManager';
+import SoundManager       from '../managers/SoundManager';
 
 import BattleSceneInitializer       from '../controllers/BattleSceneInitializer';
 import BattleTurnController         from '../controllers/BattleTurnController';
@@ -29,6 +30,7 @@ export default class BattleScene extends Phaser.Scene {
   private cardHandManager!      : CardHandManager;
   private cardViewManager!      : CardViewManager;
   private eventManager!         : BattleEventManager;
+  private soundManager!         : SoundManager;
 
   // Controllers
   private initializer!          : BattleSceneInitializer;
@@ -124,9 +126,13 @@ export default class BattleScene extends Phaser.Scene {
     this.selectedStage  = this.registry.get('selectedStage');
     console.log('[BattleScene] create - Stage:', this.selectedStage?.id);
 
+    // Sound Manager 초기화
+    this.soundManager = new SoundManager(this);
+    this.soundManager.initialize();
+
     // UI Manager와 Card Managers 먼저 초기화
     this.uiManager      = new BattleUIManager(this);
-    this.cardHandManager= new CardHandManager(this, this.deckManager, this.uiManager);
+    this.cardHandManager= new CardHandManager(this, this.deckManager, this.uiManager, this.soundManager);
     this.cardViewManager= new CardViewManager(this);
 
     // Initializer 생성 및 초기화
@@ -194,7 +200,8 @@ export default class BattleScene extends Phaser.Scene {
       this.deckManager,
       this.uiManager,
       this.playerCharacter,
-      () => this.stateSynchronizer.updateDeckInfo()
+      () => this.stateSynchronizer.updateDeckInfo(),
+      this.soundManager
     );
     this.eventManager.registerEventListeners();
     // 콘솔 명령어 이벤트 리스너 등록
@@ -206,6 +213,9 @@ export default class BattleScene extends Phaser.Scene {
       const enemyData: EnemyData = (enemy as any).enemyData;
       this.battleManager.setEnemyIntent(enemy, enemyData, () => Phaser.Math.Between(0, 100) / 100);
     });
+    // 게임 시작 사운드 재생
+    this.soundManager.playGameStart();
+
     // 첫 턴 시작
     this.turnController.startPlayerTurn();
   }

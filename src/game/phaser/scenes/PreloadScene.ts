@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
+import SoundManager from '../managers/SoundManager';
 
 interface GameState {
   player: {
@@ -27,10 +28,12 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.json('stages', `${basePath}data/stages.json`);
     this.load.json('bossPatterns', `${basePath}data/boss-patterns.json`);
 
+    // 사운드 파일 로드
+    SoundManager.preloadSounds(this);
+
     // 에셋 로드 (나중에 추가)
     // this.load.image('card-bg', '/assets/card-bg.png');
     // this.load.image('enemy-bg', '/assets/enemy-bg.png');
-    // this.load.audio('attack', '/assets/sounds/attack.mp3');
   }
 
   create(): void {

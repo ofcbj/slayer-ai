@@ -77,6 +77,11 @@ export default class Card extends Phaser.GameObjects.Container {
     });
 
     this.bg.on('pointerdown', () => {
+      // 카드 클릭 사운드 재생
+      if ((this.scene as any).soundManager) {
+        (this.scene as any).soundManager.playCardClick();
+      }
+
       this.scene.events.emit('cardClicked', this);
       // EventBus에도 emit하여 EventLogger에서 캡처 가능하도록
       if ((this.scene as any).eventBus) {

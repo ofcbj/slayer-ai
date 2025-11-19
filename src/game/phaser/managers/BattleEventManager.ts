@@ -6,6 +6,7 @@ import BattleManager, { NormalizedCardData } from './BattleManager';
 import CardHandManager from './CardHandManager';
 import DeckManager from './DeckManager';
 import BattleUIManager from './BattleUIManager';
+import SoundManager from './SoundManager';
 
 
 /**
@@ -19,6 +20,7 @@ export default class BattleEventManager {
   private deckManager     : DeckManager;
   private uiManager       : BattleUIManager;
   private playerCharacter : Player;
+  private soundManager?   : SoundManager;
   private onDeckInfoUpdate?: () => void;
 
   constructor(
@@ -28,7 +30,8 @@ export default class BattleEventManager {
     deckManager     : DeckManager,
     uiManager       : BattleUIManager,
     playerCharacter : Player,
-    onDeckInfoUpdate?: () => void
+    onDeckInfoUpdate?: () => void,
+    soundManager?   : SoundManager
   ) {
     this.scene            = scene;
     this.battleManager    = battleManager;
@@ -37,6 +40,7 @@ export default class BattleEventManager {
     this.uiManager        = uiManager;
     this.playerCharacter  = playerCharacter;
     this.onDeckInfoUpdate = onDeckInfoUpdate;
+    this.soundManager     = soundManager;
   }
 
   /**
@@ -124,12 +128,23 @@ export default class BattleEventManager {
 
     // 애니메이션 처리
     if (cardData.type === '공격') {
+      // 공격 사운드 재생
+      const isHeavy = cardData.value >= 10;
+      if (this.soundManager) {
+        this.soundManager.playAttack(isHeavy);
+      }
+
       if (cardData.allEnemies) {
         card.playEffect(this.scene.cameras.main.width / 2, 250);
       } else if (target) {
         card.playEffect(target.x, target.y);
       }
     } else if (cardData.type === '방어') {
+      // 방어 사운드 재생
+      if (this.soundManager) {
+        this.soundManager.playDefend();
+      }
+
       // 플레이어 캐릭터 방어 애니메이션
       this.playerCharacter.playDefendAnimation();
       card.playEffect(this.playerCharacter.x, this.playerCharacter.y, undefined);
@@ -139,6 +154,11 @@ export default class BattleEventManager {
       card.playEffect(this.playerCharacter.x, this.playerCharacter.y, undefined);
     } else if (cardData.type === '에너지') {
       card.playEffect(this.playerCharacter.x, this.playerCharacter.y, undefined);
+    }
+
+    // 카드 사용 사운드 재생
+    if (this.soundManager) {
+      this.soundManager.playCardPlay();
     }
 
     // 핸드에서 제거

@@ -39,6 +39,11 @@ export default abstract class Character extends Phaser.GameObjects.Container {
       // 막힌 데미지 표시
       if (blockedDamage > 0) {
         this.showBlockedDamage(blockedDamage);
+        // 방어 성공 사운드
+        const soundManager = (this.scene as any).soundManager;
+        if (soundManager) {
+          soundManager.playBlock();
+        }
       }
 
       // 모든 데미지를 방어로 막았는지 확인
@@ -50,6 +55,17 @@ export default abstract class Character extends Phaser.GameObjects.Container {
       this.health = Math.max(0, this.health - damageToHealth);
       console.log(`  -> Health damage: ${damageToHealth}, New health: ${this.health}`);
       this.showDamageNumber(damageToHealth);
+
+      // 피격 사운드 재생 (플레이어인지 적인지에 따라 다른 사운드)
+      const soundManager = (this.scene as any).soundManager;
+      if (soundManager) {
+        if (this.constructor.name === 'Player') {
+          soundManager.playPlayerDamage();
+        } else {
+          soundManager.playEnemyDamage();
+        }
+      }
+
       // 피격 애니메이션 (체력 데미지를 받았을 때)
       this.playHitAnimation();
     } else if (fullBlock) {
