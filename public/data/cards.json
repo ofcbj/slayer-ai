@@ -1,197 +1,266 @@
 {
   "basic": [
     {
-      "name": "강타",
-      "type": "공격",
+      "id": "heavy_strike",
+      "type": "attack",
       "cost": 1,
       "damage": 6,
       "image": "⚔️",
-      "description": "적에게 <span class='card-damage'>6</span> 피해를 줍니다."
+      "name_ko": "강타",
+      "name_ja": "強打",
+      "description_ko": "적에게 <span class='card-damage'>6</span> 피해를 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>6</span>ダメージを与える."
     },
     {
-      "name": "방어",
-      "type": "스킬",
+      "id": "defend",
+      "type": "skill",
       "cost": 1,
       "block": 5,
       "image": "🛡️",
-      "description": "<span class='card-block'>5</span> 방어도를 얻습니다."
+      "name_ko": "방어",
+      "name_ja": "防御",
+      "description_ko": "<span class='card-block'>5</span> 방어도를 얻습니다.",
+      "description_ja": "<span class='card-block'>5</span>防御力を得る."
     },
     {
-      "name": "분노",
-      "type": "공격",
+      "id": "anger",
+      "type": "attack",
       "cost": 0,
       "damage": 4,
       "image": "😡",
-      "description": "적에게 <span class='card-damage'>4</span> 피해를 줍니다."
+      "name_ko": "분노",
+      "name_ja": "怒り",
+      "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>4</span>ダメージを与える."
     },
     {
-      "name": "베기",
-      "type": "공격",
+      "id": "slash",
+      "type": "attack",
       "cost": 1,
       "damage": 7,
       "image": "🗡️",
-      "description": "적에게 <span class='card-damage'>7</span> 피해를 줍니다."
+      "name_ko": "베기",
+      "name_ja": "斬撃",
+      "description_ko": "적에게 <span class='card-damage'>7</span> 피해를 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>7</span>ダメージを与える."
     },
     {
-      "name": "집중",
-      "type": "스킬",
+      "id": "focus",
+      "type": "skill",
       "cost": 0,
       "energy": 1,
       "image": "🧘",
-      "description": "<span class='card-energy'>1</span> 에너지를 얻습니다."
+      "name_ko": "집중",
+      "name_ja": "集中",
+      "description_ko": "<span class='card-energy'>1</span> 에너지를 얻습니다.",
+      "description_ja": "<span class='card-energy'>1</span>エネルギーを得る."
     },
     {
-      "name": "치유",
-      "type": "스킬",
+      "id": "heal",
+      "type": "skill",
       "cost": 1,
       "heal": 8,
       "image": "💚",
-      "description": "체력을 <span class='card-energy'>8</span> 회복합니다."
+      "name_ko": "치유",
+      "name_ja": "治癒",
+      "description_ko": "체력을 <span class='card-energy'>8</span> 회복합니다.",
+      "description_ja": "HPを<span class='card-energy'>8</span>回復する."
     },
     {
-      "name": "철벽",
-      "type": "스킬",
+      "id": "iron_wall",
+      "type": "skill",
       "cost": 1,
       "block": 8,
       "image": "🏰",
-      "description": "<span class='card-block'>8</span> 방어도를 얻습니다."
+      "name_ko": "철벽",
+      "name_ja": "鉄壁",
+      "description_ko": "<span class='card-block'>8</span> 방어도를 얻습니다.",
+      "description_ja": "<span class='card-block'>8</span>防御力を得る."
     }
   ],
   "rewards": [
     {
-      "name": "검풍",
-      "type": "공격",
+      "id": "sword_wind",
+      "type": "attack",
       "cost": 1,
       "damage": 6,
       "allEnemies": true,
       "image": "🌪️",
-      "description": "모든 적에게 <span class='card-damage'>6</span> 피해를 줍니다."
+      "name_ko": "검풍",
+      "name_ja": "剣風",
+      "description_ko": "모든 적에게 <span class='card-damage'>6</span> 피해를 줍니다.",
+      "description_ja": "すべての敵に<span class='card-damage'>6</span>ダメージを与える."
     },
     {
-      "name": "화염구",
-      "type": "공격",
+      "id": "fireball",
+      "type": "attack",
       "cost": 2,
       "damage": 14,
       "image": "🔥",
-      "description": "적에게 <span class='card-damage'>14</span> 피해를 줍니다."
+      "name_ko": "화염구",
+      "name_ja": "火炎球",
+      "description_ko": "적에게 <span class='card-damage'>14</span> 피해를 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>14</span>ダメージを与える."
     },
     {
-      "name": "얼음창",
-      "type": "공격",
+      "id": "ice_lance",
+      "type": "attack",
       "cost": 1,
       "damage": 10,
       "image": "🧊",
-      "description": "적에게 <span class='card-damage'>10</span> 피해를 줍니다."
+      "name_ko": "얼음창",
+      "name_ja": "氷槍",
+      "description_ko": "적에게 <span class='card-damage'>10</span> 피해를 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>10</span>ダメージを与える."
     },
     {
-      "name": "번개",
-      "type": "공격",
+      "id": "lightning",
+      "type": "attack",
       "cost": 2,
       "damage": 8,
       "allEnemies": true,
       "image": "⚡",
-      "description": "모든 적에게 <span class='card-damage'>8</span> 피해를 줍니다."
+      "name_ko": "번개",
+      "name_ja": "雷",
+      "description_ko": "모든 적에게 <span class='card-damage'>8</span> 피해를 줍니다.",
+      "description_ja": "すべての敵に<span class='card-damage'>8</span>ダメージを与える."
     },
     {
-      "name": "마법 방패",
-      "type": "스킬",
+      "id": "magic_shield",
+      "type": "skill",
       "cost": 1,
       "block": 12,
       "image": "🔮",
-      "description": "<span class='card-block'>12</span> 방어도를 얻습니다."
+      "name_ko": "마법 방패",
+      "name_ja": "魔法の盾",
+      "description_ko": "<span class='card-block'>12</span> 방어도를 얻습니다.",
+      "description_ja": "<span class='card-block'>12</span>防御力を得る."
     },
     {
-      "name": "폭풍검",
-      "type": "공격",
+      "id": "storm_sword",
+      "type": "attack",
       "cost": 2,
       "damage": 18,
       "image": "🌩️",
-      "description": "적에게 <span class='card-damage'>18</span> 피해를 줍니다."
+      "name_ko": "폭풍검",
+      "name_ja": "嵐剣",
+      "description_ko": "적에게 <span class='card-damage'>18</span> 피해를 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>18</span>ダメージを与える."
     },
     {
-      "name": "재생",
-      "type": "스킬",
+      "id": "regenerate",
+      "type": "skill",
       "cost": 1,
       "heal": 8,
       "block": 8,
       "image": "✨",
-      "description": "체력을 <span class='card-energy'>8</span> 회복하고 <span class='card-block'>8</span> 방어도를 얻습니다."
+      "name_ko": "재생",
+      "name_ja": "再生",
+      "description_ko": "체력을 <span class='card-energy'>8</span> 회복하고 <span class='card-block'>8</span> 방어도를 얻습니다.",
+      "description_ja": "HPを<span class='card-energy'>8</span>回復し、<span class='card-block'>8</span>防御力を得る."
     },
     {
-      "name": "화살 난사",
-      "type": "공격",
+      "id": "arrow_barrage",
+      "type": "attack",
       "cost": 1,
       "damage": 4,
       "hits": 3,
       "image": "🏹",
-      "description": "적에게 <span class='card-damage'>4</span> 피해를 3번 줍니다."
+      "name_ko": "화살 난사",
+      "name_ja": "矢の乱射",
+      "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 3번 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>4</span>ダメージを3回与える."
     },
     {
-      "name": "광전사의 일격",
-      "type": "공격",
+      "id": "berserker_strike",
+      "type": "attack",
       "cost": 0,
       "damage": 12,
       "selfDamage": 2,
       "image": "💀",
-      "description": "적에게 <span class='card-damage'>12</span> 피해를 주고 자신이 2 피해를 받습니다."
+      "name_ko": "광전사의 일격",
+      "name_ja": "狂戦士の一撃",
+      "description_ko": "적에게 <span class='card-damage'>12</span> 피해를 주고 자신이 2 피해를 받습니다.",
+      "description_ja": "敵に<span class='card-damage'>12</span>ダメージを与え、自身が2ダメージを受ける."
     },
     {
-      "name": "암흑 구체",
-      "type": "공격",
+      "id": "dark_orb",
+      "type": "attack",
       "cost": 3,
       "damage": 24,
       "image": "🌑",
-      "description": "적에게 <span class='card-damage'>24</span> 피해를 줍니다."
+      "name_ko": "암흑 구체",
+      "name_ja": "暗黒球",
+      "description_ko": "적에게 <span class='card-damage'>24</span> 피해를 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>24</span>ダメージを与える."
     },
     {
-      "name": "치료술",
-      "type": "스킬",
+      "id": "healing_spell",
+      "type": "skill",
       "cost": 1,
       "heal": 12,
       "image": "💖",
-      "description": "체력을 <span class='card-energy'>12</span> 회복합니다."
+      "name_ko": "치료술",
+      "name_ja": "治療術",
+      "description_ko": "체력을 <span class='card-energy'>12</span> 회복합니다.",
+      "description_ja": "HPを<span class='card-energy'>12</span>回復する."
     },
     {
-      "name": "연속 베기",
-      "type": "공격",
+      "id": "double_slash",
+      "type": "attack",
       "cost": 1,
       "damage": 6,
       "hits": 2,
       "image": "⚡",
-      "description": "적에게 <span class='card-damage'>6</span> 피해를 2번 줍니다."
+      "name_ko": "연속 베기",
+      "name_ja": "連続斬撃",
+      "description_ko": "적에게 <span class='card-damage'>6</span> 피해를 2번 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>6</span>ダメージを2回与える."
     },
     {
-      "name": "완전 방어",
-      "type": "스킬",
+      "id": "absolute_defense",
+      "type": "skill",
       "cost": 2,
       "block": 18,
       "image": "🏛️",
-      "description": "<span class='card-block'>18</span> 방어도를 얻습니다."
+      "name_ko": "완전 방어",
+      "name_ja": "完全防御",
+      "description_ko": "<span class='card-block'>18</span> 방어도를 얻습니다.",
+      "description_ja": "<span class='card-block'>18</span>防御力を得る."
     },
     {
-      "name": "신성한 일격",
-      "type": "공격",
+      "id": "holy_strike",
+      "type": "attack",
       "cost": 2,
       "damage": 16,
       "heal": 4,
       "image": "✨",
-      "description": "적에게 <span class='card-damage'>16</span> 피해를 주고 체력을 <span class='card-energy'>4</span> 회복합니다."
+      "name_ko": "신성한 일격",
+      "name_ja": "神聖なる一撃",
+      "description_ko": "적에게 <span class='card-damage'>16</span> 피해를 주고 체력을 <span class='card-energy'>4</span> 회복합니다.",
+      "description_ja": "敵に<span class='card-damage'>16</span>ダメージを与え、HPを<span class='card-energy'>4</span>回復する."
     },
     {
-      "name": "집중 타격",
-      "type": "공격",
+      "id": "focused_strike",
+      "type": "attack",
       "cost": 1,
       "damage": 12,
       "image": "🎯",
-      "description": "적에게 <span class='card-damage'>12</span> 피해를 줍니다."
+      "name_ko": "집중 타격",
+      "name_ja": "集中打撃",
+      "description_ko": "적에게 <span class='card-damage'>12</span> 피해를 줍니다.",
+      "description_ja": "敵に<span class='card-damage'>12</span>ダメージを与える."
     },
     {
-      "name": "에너지 파동",
-      "type": "스킬",
+      "id": "energy_wave",
+      "type": "skill",
       "cost": 0,
       "energy": 3,
       "image": "💫",
-      "description": "<span class='card-energy'>3</span> 에너지를 얻습니다."
+      "name_ko": "에너지 파동",
+      "name_ja": "エネルギー波動",
+      "description_ko": "<span class='card-energy'>3</span> 에너지를 얻습니다.",
+      "description_ja": "<span class='card-energy'>3</span>エネルギーを得る."
     }
   ]
 }

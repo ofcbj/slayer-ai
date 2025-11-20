@@ -49,6 +49,18 @@ export default class MenuScene extends Phaser.Scene {
       }
     );
 
+    // 언어 선택 버튼
+    const languageButton: Phaser.GameObjects.Container = this.createButton(
+      width / 2,
+      height / 2 + 130,
+      langManager.t('menu.selectLanguage'),
+      () => {
+        // 언어 선택 화면으로 이동
+        this.scene.start('LanguageSelectScene');
+      }
+    );
+    languageButton.setScale(0.8);
+
     // 설명 텍스트
     const description: Phaser.GameObjects.Text = this.add.text(
       width / 2,

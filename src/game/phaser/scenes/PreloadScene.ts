@@ -22,11 +22,8 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload(): void {
-    // 게임 데이터 로드
+    // 보스 패턴 데이터 로드 (기존 파일 유지)
     const basePath: string = import.meta.env.BASE_URL;
-    this.load.json('cards', `${basePath}data/cards.json`);
-    this.load.json('enemies', `${basePath}data/enemies.json`);
-    this.load.json('stages', `${basePath}data/stages.json`);
     this.load.json('bossPatterns', `${basePath}data/boss-patterns.json`);
 
     // 사운드 파일 로드
@@ -37,14 +34,21 @@ export default class PreloadScene extends Phaser.Scene {
     // this.load.image('enemy-bg', '/assets/enemy-bg.png');
   }
 
-  create(): void {
+  async create(): Promise<void> {
     // React에 현재 Scene이 준비되었음을 알림
     EventBus.emit('current-scene-ready', this);
 
-    // 로드된 데이터를 전역 레지스트리에 저장
-    this.registry.set('cardsData', this.cache.json.get('cards'));
-    this.registry.set('enemiesData', this.cache.json.get('enemies'));
-    this.registry.set('stagesData', this.cache.json.get('stages'));
+    // 게임 데이터 로드 (LanguageManager를 통해)
+    const langManager = LanguageManager.getInstance();
+
+    try {
+      await langManager.loadGameData();
+    } catch (error) {
+      console.error('Failed to load game data:', error);
+      return;
+    }
+
+    // 보스 패턴 데이터는 레지스트리에 저장 (기존 방식 유지)
     this.registry.set('bossPatternsData', this.cache.json.get('bossPatterns'));
 
     // 게임 상태 초기화
@@ -64,7 +68,6 @@ export default class PreloadScene extends Phaser.Scene {
     this.registry.set('gameState', gameState);
 
     // 언어가 이미 선택되었는지 확인
-    const langManager = LanguageManager.getInstance();
     const savedLanguage = localStorage.getItem('language');
 
     if (savedLanguage) {

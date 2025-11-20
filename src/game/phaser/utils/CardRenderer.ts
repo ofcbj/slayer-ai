@@ -195,6 +195,12 @@ export default class CardRenderer {
    * 효과 설명 가져오기
    */
   static getEffectDescription(cardData: CardData | NormalizedCardData): string {
+    // description이 있으면 우선 사용 (HTML 태그 제거)
+    if (cardData.description) {
+      return this.stripHtmlTags(cardData.description);
+    }
+
+    // description이 없으면 기본 텍스트 사용
     const type = this.getCardType(cardData);
     const value = this.getCardValue(cardData);
 
@@ -203,8 +209,7 @@ export default class CardRenderer {
     if (type === '치유') return `Heal ${value} HP`;
     if (type === '에너지') return `Gain ${value} energy`;
 
-    // HTML 태그 제거
-    return this.stripHtmlTags(cardData.description || '');
+    return '';
   }
 
   /**

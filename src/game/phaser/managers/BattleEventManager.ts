@@ -7,7 +7,6 @@ import CardHandManager from './CardHandManager';
 import DeckManager from './DeckManager';
 import BattleUIManager from './BattleUIManager';
 import SoundManager from './SoundManager';
-import LanguageManager from '../../../i18n/LanguageManager';
 
 
 /**
@@ -78,15 +77,24 @@ export default class BattleEventManager {
       return;
     }
 
-    // 카드 선택
-    this.cardHandManager.selectCard(card);
+    const currentSelected = this.cardHandManager.getSelectedCard();
 
-    // 공격 카드인 경우 적 선택 대기, 아니면 즉시 사용
-    const langManager = LanguageManager.getInstance();
-    if (cardData.type === langManager.t('cardTypes.공격') && !cardData.allEnemies) {
+    // rawData에서 원본 type 확인 (언어 독립적)
+    const isAttackCard = cardData.rawData.type === 'attack';
+    const needsTarget = isAttackCard && !cardData.allEnemies;
+
+    // 공격 카드이고 타겟이 필요한 경우
+    if (needsTarget) {
+      // 이미 같은 카드가 선택되어 있으면 선택 해제
+      if (currentSelected === card) {
+        this.cardHandManager.deselectCard();
+        return;
+      }
+      // 다른 카드를 선택
+      this.cardHandManager.selectCard(card);
       this.uiManager.showMessage('Select a target');
     } else {
-      // 자동 사용 (방어, 치유, 전체 공격 등)
+      // 방어, 치유, 전체 공격 등은 즉시 사용
       this.useCard(card);
     }
   };
@@ -101,8 +109,8 @@ export default class BattleEventManager {
     if (!selectedCard) return;
 
     const cardData: NormalizedCardData = (selectedCard as any).cardData;
-    const langManager = LanguageManager.getInstance();
-    if (cardData.type !== langManager.t('cardTypes.공격')) return;
+    // rawData에서 원본 type 확인 (언어 독립적)
+    if (cardData.rawData.type !== 'attack') return;
 
     this.useCard(selectedCard, enemy);
   };
@@ -121,6 +129,15 @@ export default class BattleEventManager {
   public useCard(card: Card, target: Enemy | null = null): void {
     const cardData: NormalizedCardData = (card as any).cardData;
 
+    // rawData에서 원본 type 확인 (언어 독립적)
+    const rawType = cardData.rawData.type;
+
+    // 공격 카드이고 타겟이 필요한데 타겟이 없으면 사용 불가
+    if (rawType === 'attack' && !cardData.allEnemies && !target) {
+      this.uiManager.showMessage('Select a target');
+      return;
+    }
+
     // BattleManager를 사용하여 카드 사용 (BattleManager가 내부 enemies 배열을 직접 사용)
     const success = this.battleManager.useCard(cardData, target);
 
@@ -130,7 +147,7 @@ export default class BattleEventManager {
     }
 
     // 애니메이션 처리
-    if (cardData.type === '공격') {
+    if (rawType === 'attack') {
       // 공격 사운드 재생
       const isHeavy = cardData.value >= 10;
       if (this.soundManager) {
@@ -142,7 +159,8 @@ export default class BattleEventManager {
       } else if (target) {
         card.playEffect(target.x, target.y);
       }
-    } else if (cardData.type === '방어') {
+    } else if (cardData.rawData.block) {
+      // 방어 카드 (block 속성으로 판단)
       // 방어 사운드 재생
       if (this.soundManager) {
         this.soundManager.playDefend();
@@ -151,11 +169,13 @@ export default class BattleEventManager {
       // 플레이어 캐릭터 방어 애니메이션
       this.playerCharacter.playDefendAnimation();
       card.playEffect(this.playerCharacter.x, this.playerCharacter.y, undefined);
-    } else if (cardData.type === '치유') {
+    } else if (cardData.rawData.heal) {
+      // 치유 카드 (heal 속성으로 판단)
       // 플레이어 캐릭터 치유 애니메이션
       this.playerCharacter.playHealAnimation();
       card.playEffect(this.playerCharacter.x, this.playerCharacter.y, undefined);
-    } else if (cardData.type === '에너지') {
+    } else if (cardData.rawData.energy) {
+      // 에너지 카드 (rawData의 energy 속성으로 판단)
       card.playEffect(this.playerCharacter.x, this.playerCharacter.y, undefined);
     }
 

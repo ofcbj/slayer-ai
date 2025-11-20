@@ -1,72 +1,92 @@
 {
   "1": {
-    "name": "고블린 소굴",
-    "type": "일반",
+    "type": "normal",
     "enemies": ["고블린 전사", "오크 방패병", "마법사"],
     "nextStages": [2, 3],
-    "description": "초보자용 던전"
+    "name_ko": "고블린 소굴",
+    "name_ja": "ゴブリンの巣",
+    "description_ko": "초보자용 던전",
+    "description_ja": "初心者用ダンジョン"
   },
   "2": {
-    "name": "오크 요새",
-    "type": "일반",
+    "type": "normal",
     "enemies": ["강화 고블린", "엘리트 오크", "대마법사"],
     "nextStages": [4, 5],
-    "description": "오크들의 거점"
+    "name_ko": "오크 요새",
+    "name_ja": "オーク要塞",
+    "description_ko": "오크들의 거점",
+    "description_ja": "オークの拠点"
   },
   "3": {
-    "name": "마법사의 탑",
-    "type": "일반",
+    "type": "normal",
     "enemies": ["마법사", "마법 골렘", "마법사"],
     "nextStages": [4, 6],
-    "description": "신비로운 마법의 탑"
+    "name_ko": "마법사의 탑",
+    "name_ja": "魔法使いの塔",
+    "description_ko": "신비로운 마법의 탑",
+    "description_ja": "神秘的な魔法の塔"
   },
   "4": {
-    "name": "중보스: 드래곤 라이더",
-    "type": "중보스",
+    "type": "mid_boss",
     "enemies": ["드래곤 라이더"],
     "nextStages": [7, 8],
-    "description": "강력한 드래곤 라이더"
+    "name_ko": "중보스: 드래곤 라이더",
+    "name_ja": "中ボス: ドラゴンライダー",
+    "description_ko": "강력한 드래곤 라이더",
+    "description_ja": "強力なドラゴンライダー"
   },
   "5": {
-    "name": "어둠의 숲",
-    "type": "일반",
+    "type": "normal",
     "enemies": ["어둠의 늑대", "그림자 마법사", "어둠의 늑대"],
     "nextStages": [7],
-    "description": "어둠이 깃든 숲"
+    "name_ko": "어둠의 숲",
+    "name_ja": "闇の森",
+    "description_ko": "어둠이 깃든 숲",
+    "description_ja": "闇に包まれた森"
   },
   "6": {
-    "name": "불의 동굴",
-    "type": "일반",
+    "type": "normal",
     "enemies": ["화염 정령", "용암 골렘", "화염 정령"],
     "nextStages": [8],
-    "description": "불꽃이 타오르는 동굴"
+    "name_ko": "불의 동굴",
+    "name_ja": "火の洞窟",
+    "description_ko": "불꽃이 타오르는 동굴",
+    "description_ja": "炎が燃え上がる洞窟"
   },
   "7": {
-    "name": "중보스: 그림자 군주",
-    "type": "중보스",
+    "type": "mid_boss",
     "enemies": ["그림자 군주"],
     "nextStages": [9],
-    "description": "어둠의 힘을 다루는 군주"
+    "name_ko": "중보스: 그림자 군주",
+    "name_ja": "中ボス: 影の君主",
+    "description_ko": "어둠의 힘을 다루는 군주",
+    "description_ja": "闇の力を操る君主"
   },
   "8": {
-    "name": "중보스: 화염 대마법사",
-    "type": "중보스",
+    "type": "mid_boss",
     "enemies": ["화염 대마법사"],
     "nextStages": [9],
-    "description": "불꽃의 마법을 구사하는 대마법사"
+    "name_ko": "중보스: 화염 대마법사",
+    "name_ja": "中ボス: 火炎大魔法使い",
+    "description_ko": "불꽃의 마법을 구사하는 대마법사",
+    "description_ja": "炎の魔法を使う大魔法使い"
   },
   "9": {
-    "name": "최종 던전",
-    "type": "일반",
+    "type": "normal",
     "enemies": ["고대 수호자", "마법 기사", "고대 수호자"],
     "nextStages": [10],
-    "description": "최종 보스로 가는 길"
+    "name_ko": "최종 던전",
+    "name_ja": "最終ダンジョン",
+    "description_ko": "최종 보스로 가는 길",
+    "description_ja": "最終ボスへの道"
   },
   "10": {
-    "name": "최종 보스: 마왕",
-    "type": "보스",
+    "type": "boss",
     "enemies": ["마왕"],
     "nextStages": [],
-    "description": "모든 악의 근원, 마왕"
+    "name_ko": "최종 보스: 마왕",
+    "name_ja": "最終ボス: 魔王",
+    "description_ko": "모든 악의 근원, 마왕",
+    "description_ja": "すべての悪の根源、魔王"
   }
 }
