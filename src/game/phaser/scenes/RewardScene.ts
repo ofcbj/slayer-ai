@@ -4,6 +4,7 @@ import Card from '../objects/Card';
 import { CardData, GameState } from '../../types';
 import { NormalizedCardData } from '../managers/BattleManager';
 import LanguageManager from '../../../i18n/LanguageManager';
+import { tweenConfig } from '../managers/TweenConfigManager';
 
 interface CardsDataRegistry {
   rewards: CardData[];
@@ -84,14 +85,8 @@ export default class RewardScene extends Phaser.Scene {
       card.setAlpha(0);
       card.setScale(0.8);
 
-      this.tweens.add({
-        targets: card,
-        alpha: 1,
-        scaleX: 1,
-        scaleY: 1,
-        duration: 500,
-        delay: index * 200,
-        ease: 'Back.easeOut'
+      tweenConfig.apply(this, 'transitions.cardAppear', card, {
+        delay: index * 200
       });
     });
   }

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import LanguageManager from '../../../i18n/LanguageManager';
+import { tweenConfig } from '../managers/TweenConfigManager';
 
 interface StageData {
   id: number;
@@ -447,21 +448,12 @@ export default class StageSelectScene extends Phaser.Scene {
       nodeBg.setInteractive({ useHandCursor: true });
 
       nodeBg.on('pointerover', () => {
-        this.tweens.add({
-          targets: nodeBg,
-          scale: 1.15,
-          duration: 200,
-          ease: 'Back.easeOut'
-        });
+        tweenConfig.apply(this, 'transitions.stageNodeHover', nodeBg);
         nodeBg.setStrokeStyle(4, 0xfbbf24);
       });
 
       nodeBg.on('pointerout', () => {
-        this.tweens.add({
-          targets: nodeBg,
-          scale: 1,
-          duration: 200
-        });
+        tweenConfig.apply(this, 'transitions.stageNodeHoverOut', nodeBg);
         nodeBg.setStrokeStyle(4, borderColor);
       });
 
@@ -482,14 +474,7 @@ export default class StageSelectScene extends Phaser.Scene {
       });
 
       // 펄스 애니메이션 (현재 가능한 스테이지만)
-      this.tweens.add({
-        targets: nodeBg,
-        scale: 1.08,
-        duration: 800,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut'
-      });
+      tweenConfig.apply(this, 'transitions.stageNodePulse', nodeBg);
     }
 
     this.stageNodes.set(stageId, node);

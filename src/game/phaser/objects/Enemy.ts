@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Character from './Character';
 import { EnemyData } from '../../../types';
+import { tweenConfig } from '../managers/TweenConfigManager';
 
 interface Intent {
   type: 'attack' | 'defend' | 'special' | string;
@@ -176,24 +177,14 @@ export default class Enemy extends Character {
     this.isTargeted = true;
     this.bg.setStrokeStyle(5, 0xffff00);
 
-    this.scene.tweens.add({
-      targets: this,
-      scaleX: 1.05,
-      scaleY: 1.05,
-      duration: 200
-    });
+    tweenConfig.apply(this.scene, 'combat.targetHighlight', this);
   }
 
   untarget(): void {
     this.isTargeted = false;
     this.bg.setStrokeStyle(3, 0xff6b6b);
 
-    this.scene.tweens.add({
-      targets: this,
-      scaleX: 1,
-      scaleY: 1,
-      duration: 200
-    });
+    tweenConfig.apply(this.scene, 'combat.untargetHighlight', this);
   }
 
   setIntent(intent: Intent): void {

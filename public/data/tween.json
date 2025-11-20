@@ -201,6 +201,46 @@
       "properties": {
         "alpha": 0
       }
+    },
+    "cardAppear": {
+      "duration": 500,
+      "ease": "Back.easeOut",
+      "properties": {
+        "alpha": 1,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    "cardSelect": {
+      "duration": 300,
+      "ease": "Power2",
+      "properties": {
+        "scaleX": 1.1,
+        "scaleY": 1.1,
+        "y": -20
+      }
+    },
+    "stageNodeHover": {
+      "duration": 200,
+      "ease": "Back.easeOut",
+      "properties": {
+        "scale": 1.15
+      }
+    },
+    "stageNodeHoverOut": {
+      "duration": 200,
+      "properties": {
+        "scale": 1
+      }
+    },
+    "stageNodePulse": {
+      "duration": 800,
+      "yoyo": true,
+      "repeat": -1,
+      "ease": "Sine.easeInOut",
+      "properties": {
+        "scale": 1.08
+      }
     }
   },
   "particles": {

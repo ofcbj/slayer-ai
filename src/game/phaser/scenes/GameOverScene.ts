@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
+import { tweenConfig } from '../managers/TweenConfigManager';
 
 interface InitData {
   victory?: boolean;
@@ -70,14 +71,9 @@ export default class GameOverScene extends Phaser.Scene {
     title.setOrigin(0.5);
 
     // 애니메이션
-    this.tweens.add({
-      targets : title,
-      scaleX  : 1.1,
-      scaleY  : 1.1,
-      duration: 1000,
-      yoyo    : true,
-      repeat  : -1,
-      ease    : 'Sine.easeInOut'
+    tweenConfig.apply(this, 'transitions.titleBreathing', title, {
+      scaleX: 1.1,
+      scaleY: 1.1
     });
 
     // 메시지
@@ -196,22 +192,12 @@ export default class GameOverScene extends Phaser.Scene {
     button.setInteractive({ useHandCursor: true });
 
     button.on('pointerover', (): void => {
-      this.tweens.add({
-        targets: button,
-        scaleX: 1.1,
-        scaleY: 1.1,
-        duration: 100
-      });
+      tweenConfig.apply(this, 'interactive.buttonHover', button);
       bg.setFillStyle(0x5fddd5);
     });
 
     button.on('pointerout', (): void => {
-      this.tweens.add({
-        targets: button,
-        scaleX: 1,
-        scaleY: 1,
-        duration: 100
-      });
+      tweenConfig.apply(this, 'interactive.buttonHoverOut', button);
       bg.setFillStyle(0x4ecdc4);
     });
 
