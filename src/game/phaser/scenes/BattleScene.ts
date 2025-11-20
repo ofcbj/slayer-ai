@@ -219,6 +219,9 @@ export default class BattleScene extends Phaser.Scene {
 
     // 첫 턴 시작
     this.turnController.startPlayerTurn();
+
+    // 키보드 단축키 등록
+    this.registerKeyboardShortcuts();
   }
 
   private initializeBattleManager(enemies: Enemy[]): void {
@@ -352,5 +355,125 @@ export default class BattleScene extends Phaser.Scene {
     this.cardViewManager.showDiscardPileView(discardPile, () => {
       this.uiManager.showMessage(langManager.t('battle.discardEmpty'));
     });
+  }
+
+  /**
+   * 키보드 단축키를 등록합니다.
+   */
+  private registerKeyboardShortcuts(): void {
+    const keyboard = this.input.keyboard;
+    if (!keyboard) return;
+
+    // 숫자 키 1-5: 카드 선택/사용
+    const numberKeys = [
+      Phaser.Input.Keyboard.KeyCodes.ONE,
+      Phaser.Input.Keyboard.KeyCodes.TWO,
+      Phaser.Input.Keyboard.KeyCodes.THREE,
+      Phaser.Input.Keyboard.KeyCodes.FOUR,
+      Phaser.Input.Keyboard.KeyCodes.FIVE
+    ];
+    numberKeys.forEach((keyCode, index) => {
+      const key = keyboard.addKey(keyCode);
+      key.on('down', () => {
+        this.handleCardShortcut(index);
+      });
+    });
+
+    // F1-F3: 적 선택
+    const functionKeys = [
+      Phaser.Input.Keyboard.KeyCodes.F1,
+      Phaser.Input.Keyboard.KeyCodes.F2,
+      Phaser.Input.Keyboard.KeyCodes.F3
+    ];
+    functionKeys.forEach((keyCode, index) => {
+      const key = keyboard.addKey(keyCode);
+      key.on('down', () => {
+        this.handleEnemyShortcut(index);
+      });
+    });
+
+    // 스페이스바: 턴 종료
+    const spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    spaceKey.on('down', () => {
+      this.handleEndTurnShortcut();
+    });
+  }
+
+  /**
+   * 카드 단축키 처리 (1-5)
+   */
+  private handleCardShortcut(cardIndex: number): void {
+    if (this.battleManager.getTurn() !== 'player') return;
+
+    const hand = this.cardHandManager.getHand();
+    if (cardIndex < 0 || cardIndex >= hand.length) return;
+
+    const card = hand[cardIndex];
+    if (!card) return;
+
+    // BattleEventManager의 onCardClicked 로직과 동일하게 처리
+    const cardData: any = (card as any).cardData;
+    const playerState = this.battleManager.getPlayerState();
+
+    // 에너지가 부족한 경우
+    if (playerState.energy < cardData.cost) {
+      this.uiManager.showMessage('Not enough energy!');
+      return;
+    }
+
+    const currentSelected = this.cardHandManager.getSelectedCard();
+    const isAttackCard = cardData.rawData.type === 'attack';
+    const needsTarget = isAttackCard && !cardData.allEnemies;
+
+    // 공격 카드이고 타겟이 필요한 경우
+    if (needsTarget) {
+      // 이미 같은 카드가 선택되어 있으면 선택 해제
+      if (currentSelected === card) {
+        this.cardHandManager.deselectCard();
+        return;
+      }
+      // 다른 카드를 선택 (selectCard가 자동으로 이전 선택 해제)
+      this.cardHandManager.selectCard(card);
+      this.uiManager.showMessage('Select a target');
+    } else {
+      // 방어, 치유, 전체 공격 등은 즉시 사용
+      // 사용하기 전에 이전 선택 해제 (다른 카드가 선택되어 있을 수 있음)
+      if (currentSelected) {
+        this.cardHandManager.deselectCard();
+      }
+      this.eventManager.useCard(card);
+    }
+  }
+
+  /**
+   * 적 단축키 처리 (F1-F3)
+   */
+  private handleEnemyShortcut(enemyIndex: number): void {
+    if (this.battleManager.getTurn() !== 'player') return;
+
+    const selectedCard = this.cardHandManager.getSelectedCard();
+    if (!selectedCard) return;
+
+    const aliveEnemies = this.battleManager.getAliveEnemies();
+    if (enemyIndex < 0 || enemyIndex >= aliveEnemies.length) return;
+
+    const enemy = aliveEnemies[enemyIndex];
+    if (!enemy || enemy.isDead()) return;
+
+    const cardData: any = (selectedCard as any).cardData;
+    // rawData에서 원본 type 확인 (언어 독립적)
+    if (cardData.rawData.type !== 'attack') return;
+
+    // BattleEventManager의 onEnemyClicked 로직과 동일하게 처리
+    this.eventManager.useCard(selectedCard, enemy);
+  }
+
+  /**
+   * 턴 종료 단축키 처리 (스페이스바)
+   */
+  private handleEndTurnShortcut(): void {
+    if (this.battleManager.getTurn() === 'player') {
+      this.turnController.endPlayerTurn();
+    }
   }
 }

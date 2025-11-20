@@ -40,14 +40,16 @@ export default abstract class Character extends Phaser.GameObjects.Container {
       if (blockedDamage > 0) {
         this.showBlockedDamage(blockedDamage);
         // 방어 성공 사운드
+      }
+
+      // 모든 데미지를 방어로 막았는지 확인
+      fullBlock = damageToHealth === 0;
+      if (fullBlock) {
         const soundManager = (this.scene as any).soundManager;
         if (soundManager) {
           soundManager.playBlock();
         }
       }
-
-      // 모든 데미지를 방어로 막았는지 확인
-      fullBlock = damageToHealth === 0;
     }
 
     // 방어력으로 막지 못한 나머지 데미지만 체력에서 차감
