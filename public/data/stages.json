@@ -1,7 +1,7 @@
 {
   "1": {
     "type": "normal",
-    "enemies": ["고블린 전사", "오크 방패병", "마법사"],
+    "enemies": ["goblin_warrior", "orc_shield", "mage"],
     "nextStages": [2, 3],
     "name_ko": "고블린 소굴",
     "name_ja": "ゴブリンの巣",
@@ -10,7 +10,7 @@
   },
   "2": {
     "type": "normal",
-    "enemies": ["강화 고블린", "엘리트 오크", "대마법사"],
+    "enemies": ["enhanced_goblin", "elite_orc", "archmage"],
     "nextStages": [4, 5],
     "name_ko": "오크 요새",
     "name_ja": "オーク要塞",
@@ -19,7 +19,7 @@
   },
   "3": {
     "type": "normal",
-    "enemies": ["마법사", "마법 골렘", "마법사"],
+    "enemies": ["mage", "magic_golem", "mage"],
     "nextStages": [4, 6],
     "name_ko": "마법사의 탑",
     "name_ja": "魔法使いの塔",
@@ -28,7 +28,7 @@
   },
   "4": {
     "type": "mid_boss",
-    "enemies": ["드래곤 라이더"],
+    "enemies": ["dragon_rider"],
     "nextStages": [7, 8],
     "name_ko": "중보스: 드래곤 라이더",
     "name_ja": "中ボス: ドラゴンライダー",
@@ -37,7 +37,7 @@
   },
   "5": {
     "type": "normal",
-    "enemies": ["어둠의 늑대", "그림자 마법사", "어둠의 늑대"],
+    "enemies": ["dark_wolf", "shadow_mage", "dark_wolf"],
     "nextStages": [7],
     "name_ko": "어둠의 숲",
     "name_ja": "闇の森",
@@ -46,7 +46,7 @@
   },
   "6": {
     "type": "normal",
-    "enemies": ["화염 정령", "용암 골렘", "화염 정령"],
+    "enemies": ["fire_spirit", "lava_golem", "fire_spirit"],
     "nextStages": [8],
     "name_ko": "불의 동굴",
     "name_ja": "火の洞窟",
@@ -55,7 +55,7 @@
   },
   "7": {
     "type": "mid_boss",
-    "enemies": ["그림자 군주"],
+    "enemies": ["shadow_lord"],
     "nextStages": [9],
     "name_ko": "중보스: 그림자 군주",
     "name_ja": "中ボス: 影の君主",
@@ -64,7 +64,7 @@
   },
   "8": {
     "type": "mid_boss",
-    "enemies": ["화염 대마법사"],
+    "enemies": ["fire_archmage"],
     "nextStages": [9],
     "name_ko": "중보스: 화염 대마법사",
     "name_ja": "中ボス: 火炎大魔法使い",
@@ -73,7 +73,7 @@
   },
   "9": {
     "type": "normal",
-    "enemies": ["고대 수호자", "마법 기사", "고대 수호자"],
+    "enemies": ["ancient_guardian", "magic_knight", "ancient_guardian"],
     "nextStages": [10],
     "name_ko": "최종 던전",
     "name_ja": "最終ダンジョン",
@@ -82,7 +82,7 @@
   },
   "10": {
     "type": "boss",
-    "enemies": ["마왕"],
+    "enemies": ["demon_lord"],
     "nextStages": [],
     "name_ko": "최종 보스: 마왕",
     "name_ja": "最終ボス: 魔王",

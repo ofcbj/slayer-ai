@@ -117,15 +117,24 @@ class LanguageManager {
     const lang = this.currentLanguage;
     const suffix = lang === 'ko' ? '_ko' : '_ja';
 
-    const translateCard = (card: any) => ({
+    const translateCard = (cardId: string, card: any) => ({
+      id: cardId,
       ...card,
       name: card[`name${suffix}`],
       description: card[`description${suffix}`],
     });
 
+    // 객체를 배열로 변환
+    const basicCards = Object.entries(this.gameData.cards.basic).map(([id, card]) =>
+      translateCard(id, card)
+    );
+    const rewardCards = Object.entries(this.gameData.cards.rewards).map(([id, card]) =>
+      translateCard(id, card)
+    );
+
     return {
-      basic: this.gameData.cards.basic.map(translateCard),
-      rewards: this.gameData.cards.rewards.map(translateCard),
+      basic: basicCards,
+      rewards: rewardCards,
     };
   }
 

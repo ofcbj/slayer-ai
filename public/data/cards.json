@@ -1,7 +1,6 @@
 {
-  "basic": [
-    {
-      "id": "heavy_strike",
+  "basic": {
+    "heavy_strike": {
       "type": "attack",
       "cost": 1,
       "damage": 6,
@@ -11,8 +10,7 @@
       "description_ko": "적에게 <span class='card-damage'>6</span> 피해를 줍니다.",
       "description_ja": "敵に<span class='card-damage'>6</span>ダメージを与える."
     },
-    {
-      "id": "defend",
+    "defend": {
       "type": "skill",
       "cost": 1,
       "block": 5,
@@ -22,8 +20,7 @@
       "description_ko": "<span class='card-block'>5</span> 방어도를 얻습니다.",
       "description_ja": "<span class='card-block'>5</span>防御力を得る."
     },
-    {
-      "id": "anger",
+    "anger": {
       "type": "attack",
       "cost": 0,
       "damage": 4,
@@ -33,8 +30,7 @@
       "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 줍니다.",
       "description_ja": "敵に<span class='card-damage'>4</span>ダメージを与える."
     },
-    {
-      "id": "slash",
+    "slash": {
       "type": "attack",
       "cost": 1,
       "damage": 7,
@@ -44,8 +40,7 @@
       "description_ko": "적에게 <span class='card-damage'>7</span> 피해를 줍니다.",
       "description_ja": "敵に<span class='card-damage'>7</span>ダメージを与える."
     },
-    {
-      "id": "focus",
+    "focus": {
       "type": "skill",
       "cost": 0,
       "energy": 1,
@@ -55,8 +50,7 @@
       "description_ko": "<span class='card-energy'>1</span> 에너지를 얻습니다.",
       "description_ja": "<span class='card-energy'>1</span>エネルギーを得る."
     },
-    {
-      "id": "heal",
+    "heal": {
       "type": "skill",
       "cost": 1,
       "heal": 8,
@@ -66,8 +60,7 @@
       "description_ko": "체력을 <span class='card-energy'>8</span> 회복합니다.",
       "description_ja": "HPを<span class='card-energy'>8</span>回復する."
     },
-    {
-      "id": "iron_wall",
+    "iron_wall": {
       "type": "skill",
       "cost": 1,
       "block": 8,
@@ -77,10 +70,9 @@
       "description_ko": "<span class='card-block'>8</span> 방어도를 얻습니다.",
       "description_ja": "<span class='card-block'>8</span>防御力を得る."
     }
-  ],
-  "rewards": [
-    {
-      "id": "sword_wind",
+  },
+  "rewards": {
+    "sword_wind": {
       "type": "attack",
       "cost": 1,
       "damage": 6,
@@ -91,8 +83,7 @@
       "description_ko": "모든 적에게 <span class='card-damage'>6</span> 피해를 줍니다.",
       "description_ja": "すべての敵に<span class='card-damage'>6</span>ダメージを与える."
     },
-    {
-      "id": "fireball",
+    "fireball": {
       "type": "attack",
       "cost": 2,
       "damage": 14,
@@ -102,8 +93,7 @@
       "description_ko": "적에게 <span class='card-damage'>14</span> 피해를 줍니다.",
       "description_ja": "敵に<span class='card-damage'>14</span>ダメージを与える."
     },
-    {
-      "id": "ice_lance",
+    "ice_lance": {
       "type": "attack",
       "cost": 1,
       "damage": 10,
@@ -113,8 +103,7 @@
       "description_ko": "적에게 <span class='card-damage'>10</span> 피해를 줍니다.",
       "description_ja": "敵に<span class='card-damage'>10</span>ダメージを与える."
     },
-    {
-      "id": "lightning",
+    "lightning": {
       "type": "attack",
       "cost": 2,
       "damage": 8,
@@ -125,8 +114,7 @@
       "description_ko": "모든 적에게 <span class='card-damage'>8</span> 피해를 줍니다.",
       "description_ja": "すべての敵に<span class='card-damage'>8</span>ダメージを与える."
     },
-    {
-      "id": "magic_shield",
+    "magic_shield": {
       "type": "skill",
       "cost": 1,
       "block": 12,
@@ -136,8 +124,7 @@
       "description_ko": "<span class='card-block'>12</span> 방어도를 얻습니다.",
       "description_ja": "<span class='card-block'>12</span>防御力を得る."
     },
-    {
-      "id": "storm_sword",
+    "storm_sword": {
       "type": "attack",
       "cost": 2,
       "damage": 18,
@@ -147,8 +134,7 @@
       "description_ko": "적에게 <span class='card-damage'>18</span> 피해를 줍니다.",
       "description_ja": "敵に<span class='card-damage'>18</span>ダメージを与える."
     },
-    {
-      "id": "regenerate",
+    "regenerate": {
       "type": "skill",
       "cost": 1,
       "heal": 8,
@@ -159,8 +145,7 @@
       "description_ko": "체력을 <span class='card-energy'>8</span> 회복하고 <span class='card-block'>8</span> 방어도를 얻습니다.",
       "description_ja": "HPを<span class='card-energy'>8</span>回復し、<span class='card-block'>8</span>防御力を得る."
     },
-    {
-      "id": "arrow_barrage",
+    "arrow_barrage": {
       "type": "attack",
       "cost": 1,
       "damage": 4,
@@ -171,8 +156,7 @@
       "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 3번 줍니다.",
       "description_ja": "敵に<span class='card-damage'>4</span>ダメージを3回与える."
     },
-    {
-      "id": "berserker_strike",
+    "berserker_strike": {
       "type": "attack",
       "cost": 0,
       "damage": 12,
@@ -183,8 +167,7 @@
       "description_ko": "적에게 <span class='card-damage'>12</span> 피해를 주고 자신이 2 피해를 받습니다.",
       "description_ja": "敵に<span class='card-damage'>12</span>ダメージを与え、自身が2ダメージを受ける."
     },
-    {
-      "id": "dark_orb",
+    "dark_orb": {
       "type": "attack",
       "cost": 3,
       "damage": 24,
@@ -194,8 +177,7 @@
       "description_ko": "적에게 <span class='card-damage'>24</span> 피해를 줍니다.",
       "description_ja": "敵に<span class='card-damage'>24</span>ダメージを与える."
     },
-    {
-      "id": "healing_spell",
+    "healing_spell": {
       "type": "skill",
       "cost": 1,
       "heal": 12,
@@ -205,8 +187,7 @@
       "description_ko": "체력을 <span class='card-energy'>12</span> 회복합니다.",
       "description_ja": "HPを<span class='card-energy'>12</span>回復する."
     },
-    {
-      "id": "double_slash",
+    "double_slash": {
       "type": "attack",
       "cost": 1,
       "damage": 6,
@@ -217,8 +198,7 @@
       "description_ko": "적에게 <span class='card-damage'>6</span> 피해를 2번 줍니다.",
       "description_ja": "敵に<span class='card-damage'>6</span>ダメージを2回与える."
     },
-    {
-      "id": "absolute_defense",
+    "absolute_defense": {
       "type": "skill",
       "cost": 2,
       "block": 18,
@@ -228,8 +208,7 @@
       "description_ko": "<span class='card-block'>18</span> 방어도를 얻습니다.",
       "description_ja": "<span class='card-block'>18</span>防御力を得る."
     },
-    {
-      "id": "holy_strike",
+    "holy_strike": {
       "type": "attack",
       "cost": 2,
       "damage": 16,
@@ -240,8 +219,7 @@
       "description_ko": "적에게 <span class='card-damage'>16</span> 피해를 주고 체력을 <span class='card-energy'>4</span> 회복합니다.",
       "description_ja": "敵に<span class='card-damage'>16</span>ダメージを与え、HPを<span class='card-energy'>4</span>回復する."
     },
-    {
-      "id": "focused_strike",
+    "focused_strike": {
       "type": "attack",
       "cost": 1,
       "damage": 12,
@@ -251,8 +229,7 @@
       "description_ko": "적에게 <span class='card-damage'>12</span> 피해를 줍니다.",
       "description_ja": "敵に<span class='card-damage'>12</span>ダメージを与える."
     },
-    {
-      "id": "energy_wave",
+    "energy_wave": {
       "type": "skill",
       "cost": 0,
       "energy": 3,
@@ -262,5 +239,5 @@
       "description_ko": "<span class='card-energy'>3</span> 에너지를 얻습니다.",
       "description_ja": "<span class='card-energy'>3</span>エネルギーを得る."
     }
-  ]
+  }
 }
