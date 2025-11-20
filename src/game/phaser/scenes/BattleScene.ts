@@ -242,6 +242,14 @@ export default class BattleScene extends Phaser.Scene {
           });
         }
       },
+      onPlayerFullBlock: () => {
+        // 완전 방어 시 블럭 사운드 재생
+        if (this.soundManager) {
+          this.soundManager.playBlock();
+        }
+        // 방어 애니메이션
+        this.playerCharacter.playDefendAnimation();
+      },
       onPlayerTakeDamage: (actualDamage: number, blockedDamage: number) => {
         // 데미지 표시만 담당 (상태는 옵저버가 처리)
         if (blockedDamage > 0) {

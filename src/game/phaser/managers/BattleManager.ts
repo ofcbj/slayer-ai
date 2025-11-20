@@ -29,6 +29,7 @@ export interface BattleCallbacks {
   onEnemyTurnStart?     : () => void;
   onEnemyAction?        : (enemy: Enemy, intent: EnemyIntent) => void;
   onPlayerTakeDamage?   : (actualDamage: number, blockedDamage: number) => void;
+  onPlayerFullBlock?    : () => void;
   onEnemyDefeated?      : (enemy: Enemy) => void;
   onBattleEnd?          : (victory: boolean) => void;
 }
@@ -208,6 +209,7 @@ export default class BattleManager {
   public playerTakeDamage(amount: number): void {
     let actualDamage = 0;
     let blockedDamage = 0;
+    let fullBlock = false;
 
     // 상태 업데이트 (옵저버가 자동으로 통지)
     this.playerStateObservable.setState(state => {
@@ -219,7 +221,15 @@ export default class BattleManager {
       state.defense = Math.max(0, state.defense - blockedDamage);
       // 체력 감소
       state.health  = Math.max(0, state.health - actualDamage);
+
+      // 완전 방어 여부 확인
+      fullBlock = actualDamage === 0 && blockedDamage > 0;
     });
+
+    // 완전 방어 시 블럭 사운드 재생
+    if (fullBlock && this.callbacks.onPlayerFullBlock) {
+      this.callbacks.onPlayerFullBlock();
+    }
 
     if (this.callbacks.onPlayerTakeDamage) {
       this.callbacks.onPlayerTakeDamage(actualDamage, blockedDamage);

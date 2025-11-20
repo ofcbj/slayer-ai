@@ -146,9 +146,14 @@ export default class BattleEventManager {
       return;
     }
 
+    // 카드 사용 사운드 재생 (애니메이션보다 먼저)
+    if (this.soundManager) {
+      this.soundManager.playCardPlay();
+    }
+
     // 애니메이션 처리
     let shouldDiscardWithAnimation = true; // discardCardWithAnimation을 호출할지 여부
-    
+
     if (rawType === 'attack') {
       // 공격 사운드 재생
       const isHeavy = cardData.value >= 10;
@@ -167,13 +172,15 @@ export default class BattleEventManager {
       }
     } else if (cardData.rawData.block) {
       // 방어 카드 (block 속성으로 판단)
-      // 방어 사운드 재생
-      if (this.soundManager) {
-        this.soundManager.playDefend();
-      }
-
       // 플레이어 캐릭터 방어 애니메이션
       this.playerCharacter.playDefendAnimation();
+
+      // 방어 사운드 재생 (약간 딜레이를 줘서 카드 사용 사운드와 겹치지 않도록)
+      this.scene.time.delayedCall(100, () => {
+        if (this.soundManager) {
+          this.soundManager.playDefend();
+        }
+      });
       // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
     } else if (cardData.rawData.heal) {
       // 치유 카드 (heal 속성으로 판단)
@@ -183,11 +190,6 @@ export default class BattleEventManager {
     } else if (cardData.rawData.energy) {
       // 에너지 카드 (rawData의 energy 속성으로 판단)
       // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
-    }
-
-    // 카드 사용 사운드 재생
-    if (this.soundManager) {
-      this.soundManager.playCardPlay();
     }
 
     // 핸드에서 제거
