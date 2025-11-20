@@ -1,21 +1,19 @@
 import Phaser from 'phaser';
 import { PlayerState } from '../../../types';
+import Character from './Character';
 
 /**
- * Player - 플레이어 시각화 전용 클래스
- * 상태는 BattleManager가 관리하며, 이 클래스는 표시와 애니메이션만 담당합니다.
+ * Player - 플레이어 캐릭터 클래스
+ * Character를 상속하여 공통 로직 사용
+ * 상태는 BattleManager가 관리하며, updateFromState()로 동기화됩니다.
  */
-export default class Player extends Phaser.GameObjects.Container {
+export default class Player extends Character {
   private healthText: Phaser.GameObjects.Text;
   private defenseText: Phaser.GameObjects.Text;
   private bg: Phaser.GameObjects.Rectangle;
   private playerHead: Phaser.GameObjects.Text;
   private hpContainer: Phaser.GameObjects.Container;
   private defContainer: Phaser.GameObjects.Container;
-
-  // 표시용 값만 유지
-  private currentHealth: number = 0;
-  private currentDefense: number = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
@@ -103,13 +101,16 @@ export default class Player extends Phaser.GameObjects.Container {
 
   /**
    * 상태 업데이트 (옵저버 콜백에서 호출)
+   * BattleManager의 PlayerState를 Character의 내부 상태와 동기화합니다.
    */
   updateFromState(state: PlayerState): void {
-    const healthChanged = this.currentHealth !== state.health;
-    const defenseChanged = this.currentDefense !== state.defense;
+    const healthChanged = this.health !== state.health;
+    const defenseChanged = this.defense !== state.defense;
 
-    this.currentHealth = state.health;
-    this.currentDefense = state.defense;
+    // Character의 내부 상태 동기화
+    this.health = state.health;
+    this.maxHealth = state.maxHealth;
+    this.defense = state.defense;
 
     if (healthChanged) {
       this.updateHealthDisplay();
@@ -120,17 +121,24 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   /**
-   * 체력 표시 업데이트
+   * 체력 표시 업데이트 (Character의 abstract 메서드 구현)
    */
-  private updateHealthDisplay(): void {
-    this.healthText.setText(this.currentHealth.toString());
+  protected updateHealthDisplay(): void {
+    this.healthText.setText(this.health.toString());
   }
 
   /**
-   * 방어력 표시 업데이트
+   * 방어력 표시 업데이트 (Character의 abstract 메서드 구현)
    */
-  private updateDefenseDisplay(): void {
-    this.defenseText.setText(this.currentDefense.toString());
+  protected updateDefenseDisplay(): void {
+    this.defenseText.setText(this.defense.toString());
+  }
+
+  /**
+   * 피격 애니메이션 (Character의 abstract 메서드 구현)
+   */
+  protected playHitAnimation(): void {
+    this.playHitAnimationPublic();
   }
 
   /**
