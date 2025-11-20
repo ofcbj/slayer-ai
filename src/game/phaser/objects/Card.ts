@@ -133,7 +133,34 @@ export default class Card extends Phaser.GameObjects.Container {
     });
   }
 
+  /**
+   * 파티클 효과만 재생합니다 (카드는 destroy하지 않음)
+   */
+  public playParticleEffect(targetX: number, targetY: number): void {
+    // 카드의 현재 월드 좌표를 가져옴
+    const matrix = this.getWorldTransformMatrix();
+    const worldX = matrix.tx;
+    const worldY = matrix.ty;
+
+    // 파티클 효과만 재생
+    this.createParticleEffect(worldX, worldY, targetX, targetY);
+  }
+
+  /**
+   * 카드가 목표로 날아가는 효과 (레거시 - 필요시 사용)
+   */
   public playEffect(targetX: number, targetY: number, callback?: () => void): void {
+    // 카드의 현재 월드 좌표를 가져옴
+    const matrix = this.getWorldTransformMatrix();
+    const worldX = matrix.tx;
+    const worldY = matrix.ty;
+
+    // 카드가 부모 컨테이너에 있다면 제거하고 월드 좌표로 이동
+    if (this.parentContainer) {
+      this.parentContainer.remove(this);
+      this.setPosition(worldX, worldY);
+    }
+
     // 카드가 목표로 날아가는 애니메이션
     this.scene.tweens.add({
       targets: this,
@@ -150,34 +177,55 @@ export default class Card extends Phaser.GameObjects.Container {
       }
     });
 
-    // 파티클 효과
-    this.createParticleEffect();
+    // 파티클 효과 (월드 좌표 기준)
+    this.createParticleEffect(worldX, worldY, targetX, targetY);
   }
 
-  private createParticleEffect(): void {
+  private createParticleEffect(worldX: number, worldY: number, targetX?: number, targetY?: number): void {
     const color: number = CardRenderer.getCardColor(this.cardData);
     const particleCount: number = 20;
 
     for (let i: number = 0; i < particleCount; i++) {
-      const angle: number = (Math.PI * 2 * i) / particleCount;
-      const speed: number = Phaser.Math.Between(50, 150);
       const particle: Phaser.GameObjects.Arc = this.scene.add.circle(
-        this.x,
-        this.y,
+        worldX,
+        worldY,
         Phaser.Math.Between(3, 8),
         color
       );
 
-      this.scene.tweens.add({
-        targets: particle,
-        x: this.x + Math.cos(angle) * speed,
-        y: this.y + Math.sin(angle) * speed,
-        alpha: 0,
-        scale: 0,
-        duration: 800,
-        ease: 'Power2',
-        onComplete: () => particle.destroy()
-      });
+      // 타겟이 지정되면 타겟을 향해 날아가고, 없으면 방사형으로 퍼짐
+      if (targetX !== undefined && targetY !== undefined) {
+        // 타겟을 향해 날아가는 파티클
+        const angle: number = Math.atan2(targetY - worldY, targetX - worldX);
+        const distance: number = Phaser.Math.Distance.Between(worldX, worldY, targetX, targetY);
+        const randomOffset: number = Phaser.Math.Between(-30, 30);
+
+        this.scene.tweens.add({
+          targets: particle,
+          x: targetX + Math.cos(angle + randomOffset * 0.01) * (distance * 0.3),
+          y: targetY + Math.sin(angle + randomOffset * 0.01) * (distance * 0.3),
+          alpha: 0,
+          scale: 0,
+          duration: 600,
+          ease: 'Power2',
+          onComplete: () => particle.destroy()
+        });
+      } else {
+        // 방사형으로 퍼지는 파티클
+        const angle: number = (Math.PI * 2 * i) / particleCount;
+        const speed: number = Phaser.Math.Between(50, 150);
+
+        this.scene.tweens.add({
+          targets: particle,
+          x: worldX + Math.cos(angle) * speed,
+          y: worldY + Math.sin(angle) * speed,
+          alpha: 0,
+          scale: 0,
+          duration: 800,
+          ease: 'Power2',
+          onComplete: () => particle.destroy()
+        });
+      }
     }
   }
 }

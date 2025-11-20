@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { PlayerState } from '../../../types';
 import LanguageManager from '../../../i18n/LanguageManager';
+import { tweenConfig } from './TweenConfigManager';
 
 interface EnergyOrbData {
   orb   : Phaser.GameObjects.Arc;
@@ -59,14 +60,7 @@ export default class BattleUIManager {
       energyContainer.add([glow, orb]);
 
       // 펄스 애니메이션
-      this.scene.tweens.add({
-        targets: glow,
-        scaleX: 1.2,
-        scaleY: 1.2,
-        alpha: 0.5,
-        duration: 800,
-        yoyo: true,
-        repeat: -1,
+      tweenConfig.apply(this.scene, 'ui.energyPulse', glow, {
         delay: i * 100
       });
     }
@@ -101,24 +95,14 @@ export default class BattleUIManager {
     button.on('pointerover', () => {
       if (!this.isEndTurnButtonEnabled) return;
 
-      this.scene.tweens.add({
-        targets: button,
-        scaleX: 1.1,
-        scaleY: 1.1,
-        duration: 100
-      });
+      tweenConfig.apply(this.scene, 'interactive.buttonHover', button);
       bg.setFillStyle(0xff8888);
     });
 
     button.on('pointerout', () => {
       if (!this.isEndTurnButtonEnabled) return;
 
-      this.scene.tweens.add({
-        targets: button,
-        scaleX: 1,
-        scaleY: 1,
-        duration: 100
-      });
+      tweenConfig.apply(this.scene, 'interactive.buttonHoverOut', button);
       bg.setFillStyle(0xff6b6b);
     });
 
@@ -208,21 +192,11 @@ export default class BattleUIManager {
     this.deckPileContainer.add(clickArea);
 
     clickArea.on('pointerover', () => {
-      this.scene.tweens.add({
-        targets: this.deckPileContainer,
-        scaleX: 1.05,
-        scaleY: 1.05,
-        duration: 100
-      });
+      tweenConfig.apply(this.scene, 'ui.deckPileHover', this.deckPileContainer);
     });
 
     clickArea.on('pointerout', () => {
-      this.scene.tweens.add({
-        targets: this.deckPileContainer,
-        scaleX: 1,
-        scaleY: 1,
-        duration: 100
-      });
+      tweenConfig.apply(this.scene, 'ui.deckPileHoverOut', this.deckPileContainer);
     });
 
     clickArea.on('pointerdown', () => {
@@ -284,21 +258,11 @@ export default class BattleUIManager {
     this.discardPileContainer.add(clickArea);
 
     clickArea.on('pointerover', () => {
-      this.scene.tweens.add({
-        targets: this.discardPileContainer,
-        scaleX: 1.05,
-        scaleY: 1.05,
-        duration: 100
-      });
+      tweenConfig.apply(this.scene, 'ui.deckPileHover', this.discardPileContainer);
     });
 
     clickArea.on('pointerout', () => {
-      this.scene.tweens.add({
-        targets: this.discardPileContainer,
-        scaleX: 1,
-        scaleY: 1,
-        duration: 100
-      });
+      tweenConfig.apply(this.scene, 'ui.deckPileHoverOut', this.discardPileContainer);
     });
 
     clickArea.on('pointerdown', () => {
@@ -344,14 +308,7 @@ export default class BattleUIManager {
         this.energyContainer.add([glow, orb]);
 
         // 펄스 애니메이션
-        this.scene.tweens.add({
-          targets: glow,
-          scaleX: 1.2,
-          scaleY: 1.2,
-          alpha: 0.5,
-          duration: 800,
-          yoyo: true,
-          repeat: -1,
+        tweenConfig.apply(this.scene, 'ui.energyPulse', glow, {
           delay: i * 100
         });
 
@@ -445,11 +402,9 @@ export default class BattleUIManager {
     });
     message.setOrigin(0.5);
 
-    this.scene.tweens.add({
-      targets: message,
-      alpha: 0,
-      y: height / 2 - 50,
+    tweenConfig.apply(this.scene, 'ui.damageText', message, {
       duration: 1500,
+      y: height / 2 - 50,
       onComplete: () => message.destroy()
     });
   }
@@ -530,12 +485,8 @@ export default class BattleUIManager {
       }
     ).setOrigin(0.5);
 
-    this.scene.tweens.add({
-      targets: message,
-      alpha: 0,
+    tweenConfig.apply(this.scene, 'ui.damageText', message, {
       y: message.y - 50,
-      duration: 1000,
-      ease: 'Power2',
       onComplete: () => message.destroy()
     });
   }

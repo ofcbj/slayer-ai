@@ -1,0 +1,199 @@
+{
+  "interactive": {
+    "cardHover": {
+      "duration": 200,
+      "properties": {
+        "scaleX": 1.05,
+        "scaleY": 1.05,
+        "yOffset": -20
+      }
+    },
+    "cardHoverOut": {
+      "duration": 200,
+      "properties": {
+        "scaleX": 1,
+        "scaleY": 1,
+        "yOffset": 0
+      }
+    },
+    "buttonHover": {
+      "duration": 100,
+      "properties": {
+        "scaleX": 1.1,
+        "scaleY": 1.1
+      }
+    },
+    "buttonHoverOut": {
+      "duration": 100,
+      "properties": {
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    }
+  },
+  "combat": {
+    "playerHit": {
+      "duration": 60,
+      "yoyo": true,
+      "repeat": 2,
+      "properties": {
+        "xOffset": 15
+      }
+    },
+    "enemyHit": {
+      "duration": 50,
+      "yoyo": true,
+      "repeat": 3,
+      "properties": {
+        "xOffset": 10
+      }
+    },
+    "deathAnimation": {
+      "duration": 800,
+      "ease": "Power2",
+      "properties": {
+        "alpha": 0,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "yOffset": 50
+      }
+    },
+    "targetHighlight": {
+      "duration": 200,
+      "properties": {
+        "scaleX": 1.1,
+        "scaleY": 1.1
+      }
+    },
+    "untargetHighlight": {
+      "duration": 200,
+      "properties": {
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    }
+  },
+  "ui": {
+    "damageText": {
+      "duration": 1000,
+      "ease": "Power2",
+      "properties": {
+        "yOffset": -60,
+        "alpha": 0
+      }
+    },
+    "defensePopup": {
+      "duration": 1000,
+      "ease": "Power2",
+      "properties": {
+        "yOffset": -40,
+        "alpha": 0
+      }
+    },
+    "energyPulse": {
+      "duration": 800,
+      "yoyo": true,
+      "repeat": -1,
+      "properties": {
+        "scaleX": 1.2,
+        "scaleY": 1.2,
+        "alpha": 0.5
+      }
+    },
+    "deckPileHover": {
+      "duration": 200,
+      "properties": {
+        "scaleX": 1.1,
+        "scaleY": 1.1
+      }
+    },
+    "deckPileHoverOut": {
+      "duration": 200,
+      "properties": {
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    }
+  },
+  "cards": {
+    "draw": {
+      "duration": 400,
+      "ease": "Power2",
+      "properties": {
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    "play": {
+      "duration": 500,
+      "ease": "Power2",
+      "properties": {
+        "scaleX": 0.5,
+        "scaleY": 0.5,
+        "alpha": 0
+      }
+    },
+    "particleBurst": {
+      "duration": 800,
+      "ease": "Power2",
+      "properties": {
+        "alpha": 0,
+        "scale": 0
+      }
+    },
+    "select": {
+      "duration": 200,
+      "properties": {
+        "yOffset": -10
+      }
+    },
+    "deselect": {
+      "duration": 200,
+      "properties": {
+        "yOffset": 0
+      }
+    }
+  },
+  "transitions": {
+    "titleBreathing": {
+      "duration": 1000,
+      "ease": "Sine.easeInOut",
+      "yoyo": true,
+      "repeat": -1,
+      "properties": {
+        "scaleX": 1.05,
+        "scaleY": 1.05
+      }
+    },
+    "fadeIn": {
+      "duration": 500,
+      "properties": {
+        "alpha": 1
+      }
+    },
+    "fadeOut": {
+      "duration": 500,
+      "properties": {
+        "alpha": 0
+      }
+    }
+  },
+  "particles": {
+    "burst": {
+      "duration": 1000,
+      "ease": "Power2",
+      "properties": {
+        "alpha": 0,
+        "scale": 0
+      }
+    },
+    "healEffect": {
+      "duration": 800,
+      "ease": "Power2",
+      "properties": {
+        "yOffset": -80,
+        "alpha": 0
+      }
+    }
+  }
+}

@@ -162,14 +162,16 @@ export default class BattleEventManager {
       }
 
       if (cardData.allEnemies) {
-        card.playEffect(this.scene.cameras.main.width / 2, 250);
-        // playEffect가 카드를 destroy하므로 discardCardWithAnimation 호출하지 않음
-        shouldDiscardWithAnimation = false;
+        // 전체 공격: 파티클만 화면 중앙으로 날아가고, 카드는 버린 카드 더미로
+        (card as any).playParticleEffect(this.scene.cameras.main.width / 2, 250);
       } else if (target) {
-        card.playEffect(target.x, target.y);
-        // playEffect가 카드를 destroy하므로 discardCardWithAnimation 호출하지 않음
-        shouldDiscardWithAnimation = false;
+        // 단일 공격: 파티클만 타겟으로 날아가고, 카드는 버린 카드 더미로
+        const targetMatrix = target.getWorldTransformMatrix();
+        const targetWorldX = targetMatrix.tx;
+        const targetWorldY = targetMatrix.ty;
+        (card as any).playParticleEffect(targetWorldX, targetWorldY);
       }
+      // 공격 카드도 버린 카드 더미로 이동
     } else if (cardData.rawData.block) {
       // 방어 카드 (block 속성으로 판단)
       // 플레이어 캐릭터 방어 애니메이션
