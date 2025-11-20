@@ -221,7 +221,7 @@ export default class Enemy extends Character {
   /**
    * 피격 애니메이션 (Character 추상 메서드 구현)
    */
-  protected playHitAnimation(): void {
+  protected override playHitAnimation(): void {
     // 좌우 흔들림
     this.scene.tweens.add({
       targets: this,
@@ -275,7 +275,7 @@ export default class Enemy extends Character {
   /**
    * 방어력 표시 업데이트 (Character 추상 메서드 구현)
    */
-  protected updateDefenseDisplay(): void {
+  protected override updateDefenseDisplay(): void {
     if (this.defense > 0) {
       this.defenseText.setText(`🛡️${this.defense}`);
       this.defenseText.setVisible(true);
@@ -288,7 +288,7 @@ export default class Enemy extends Character {
   /**
    * 체력바 업데이트 (Character 추상 메서드 구현)
    */
-  protected updateHealthDisplay(): void {
+  protected override updateHealthDisplay(): void {
     const healthPercent = this.health / this.maxHealth;
     const newWidth = this.hpBarWidth * healthPercent;
 

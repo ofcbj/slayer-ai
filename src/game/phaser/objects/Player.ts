@@ -123,21 +123,21 @@ export default class Player extends Character {
   /**
    * 체력 표시 업데이트 (Character의 abstract 메서드 구현)
    */
-  protected updateHealthDisplay(): void {
+  protected override updateHealthDisplay(): void {
     this.healthText.setText(this.health.toString());
   }
 
   /**
    * 방어력 표시 업데이트 (Character의 abstract 메서드 구현)
    */
-  protected updateDefenseDisplay(): void {
+  protected override updateDefenseDisplay(): void {
     this.defenseText.setText(this.defense.toString());
   }
 
   /**
    * 피격 애니메이션 (Character의 abstract 메서드 구현)
    */
-  protected playHitAnimation(): void {
+  protected override playHitAnimation(): void {
     this.playHitAnimationPublic();
   }
 
@@ -179,7 +179,7 @@ export default class Player extends Character {
     });
   }
 
-  playDefendAnimation(): void {
+  override playDefendAnimation(): void {
     // 방어 애니메이션 - 푸른 빛
     const shield: Phaser.GameObjects.Circle = this.scene.add.circle(0, 0, 120, 0x4ecdc4, 0.3);
     this.add(shield);
