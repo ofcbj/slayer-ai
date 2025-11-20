@@ -80,14 +80,22 @@ export default class CardRenderer {
     valueText.setOrigin(0.5);
 
     // 카드 효과 설명 - 하단
-    const descText = scene.add.text(0, 62, this.getEffectDescription(cardData), {
-      fontSize: '11px',
+    const descText = scene.add.text(0, 65, this.getEffectDescription(cardData), {
+      fontSize: '10px',
       fontFamily: 'Arial, sans-serif',
       color: '#cccccc',
       align: 'center',
-      wordWrap: { width: width - 20 }
+      wordWrap: { width: width - 30, useAdvancedWrap: true },
+      lineSpacing: 2
     });
-    descText.setOrigin(0.5);
+    descText.setOrigin(0.5, 0.5);
+
+    // 설명이 카드 하단을 넘어가면 스케일을 줄여서 맞춤
+    const maxDescHeight = height / 2 - 75; // 하단 여백 고려
+    if (descText.height > maxDescHeight) {
+      const scale = maxDescHeight / descText.height;
+      descText.setScale(scale);
+    }
 
     container.add([bg, headerBg, nameText, costCircle, costText, cardImage, valueText, descText]);
 
