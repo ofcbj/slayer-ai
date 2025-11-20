@@ -21,6 +21,10 @@ export default class BattleUIManager {
   private deckText!: Phaser.GameObjects.Text;
   private deckCountText!: Phaser.GameObjects.Text;
   private discardCountText!: Phaser.GameObjects.Text;
+  private endTurnButton!: Phaser.GameObjects.Container;
+  private endTurnButtonBg!: Phaser.GameObjects.Rectangle;
+  private endTurnButtonText!: Phaser.GameObjects.Text;
+  private isEndTurnButtonEnabled: boolean = true;
   private onEndTurnClick?: () => void;
   private onDeckPileClick?: () => void;
   private onDiscardPileClick?: () => void;
@@ -95,6 +99,8 @@ export default class BattleUIManager {
     button.setInteractive({ useHandCursor: true });
 
     button.on('pointerover', () => {
+      if (!this.isEndTurnButtonEnabled) return;
+
       this.scene.tweens.add({
         targets: button,
         scaleX: 1.1,
@@ -105,6 +111,8 @@ export default class BattleUIManager {
     });
 
     button.on('pointerout', () => {
+      if (!this.isEndTurnButtonEnabled) return;
+
       this.scene.tweens.add({
         targets: button,
         scaleX: 1,
@@ -115,10 +123,36 @@ export default class BattleUIManager {
     });
 
     button.on('pointerdown', () => {
+      if (!this.isEndTurnButtonEnabled) return;
+
       if (this.onEndTurnClick) {
         this.onEndTurnClick();
       }
     });
+
+    // 참조 저장
+    this.endTurnButton = button;
+    this.endTurnButtonBg = bg;
+    this.endTurnButtonText = text;
+  }
+
+  /**
+   * 턴 종료 버튼을 활성화/비활성화합니다.
+   */
+  public setEndTurnButtonEnabled(enabled: boolean): void {
+    this.isEndTurnButtonEnabled = enabled;
+
+    if (enabled) {
+      // 활성화
+      this.endTurnButtonBg.setFillStyle(0xff6b6b);
+      this.endTurnButtonText.setAlpha(1);
+      this.endTurnButton.setAlpha(1);
+    } else {
+      // 비활성화
+      this.endTurnButtonBg.setFillStyle(0x666666);
+      this.endTurnButtonText.setAlpha(0.5);
+      this.endTurnButton.setAlpha(0.7);
+    }
   }
 
   /**

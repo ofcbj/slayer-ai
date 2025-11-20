@@ -17,12 +17,20 @@ export default class CardHandManager {
   private hand: Card[] = [];
   private selectedCard: Card | null = null;
   private handContainer!: Phaser.GameObjects.Container;
+  private setEndTurnAllowed?: (allowed: boolean) => void;
 
-  constructor(scene: Phaser.Scene, deckManager: DeckManager, uiManager: BattleUIManager, soundManager?: SoundManager) {
+  constructor(
+    scene: Phaser.Scene,
+    deckManager: DeckManager,
+    uiManager: BattleUIManager,
+    soundManager?: SoundManager,
+    setEndTurnAllowed?: (allowed: boolean) => void
+  ) {
     this.scene = scene;
     this.deckManager = deckManager;
     this.uiManager = uiManager;
     this.soundManager = soundManager;
+    this.setEndTurnAllowed = setEndTurnAllowed;
 
     this.initializeHandContainer();
   }
@@ -58,6 +66,12 @@ export default class CardHandManager {
     const cardsDrawn = cardsToDrawData.length;
     const currentHandSize = this.hand.length;
 
+    // 드로우 시작 - 턴 종료 불가 및 버튼 비활성화
+    if (this.setEndTurnAllowed) {
+      this.setEndTurnAllowed(false);
+    }
+    this.uiManager.setEndTurnButtonEnabled(false);
+
     // 순차적으로 카드 추가 애니메이션
     cardsToDrawData.forEach((cardData, index) => {
       this.scene.time.delayedCall(index * 150, () => {
@@ -71,11 +85,18 @@ export default class CardHandManager {
 
     // 모든 카드가 드로우된 후 콜백 실행
     // 마지막 카드의 애니메이션 시작 시간(cardsDrawn * 150) + 애니메이션 duration(400) + 여유시간(100)
-    if (onComplete) {
-      this.scene.time.delayedCall(cardsDrawn * 150 + 500, () => {
+    const totalDuration = cardsDrawn * 150 + 500;
+    this.scene.time.delayedCall(totalDuration, () => {
+      // 드로우 완료 - 턴 종료 가능 및 버튼 활성화
+      if (this.setEndTurnAllowed) {
+        this.setEndTurnAllowed(true);
+      }
+      this.uiManager.setEndTurnButtonEnabled(true);
+
+      if (onComplete) {
         onComplete();
-      });
-    }
+      }
+    });
   }
 
   /**
@@ -276,6 +297,13 @@ export default class CardHandManager {
     });
     this.deckManager.discardCards(cardsDataToDiscard);
 
+    // 카드 버리기 시작 - 턴 종료 불가 및 버튼 비활성화
+    // (이미 endPlayerTurn에서 canEndTurn을 false로 설정했으므로 중복이지만 명시적으로 표시)
+    if (this.setEndTurnAllowed) {
+      this.setEndTurnAllowed(false);
+    }
+    this.uiManager.setEndTurnButtonEnabled(false);
+
     cardsToDiscard.forEach((card, index) => {
       // 순차적으로 카드 버리기
       this.scene.time.delayedCall(index * 100, () => {
@@ -289,6 +317,10 @@ export default class CardHandManager {
     // 모든 카드가 버려진 후 콜백 호출
     const totalDelay = cardsToDiscard.length * 100 + 400;
     this.scene.time.delayedCall(totalDelay, () => {
+      // 카드 버리기 완료
+      // (적 턴으로 넘어가므로 turnController에서 관리)
+      this.uiManager.setEndTurnButtonEnabled(true);
+
       if (onComplete) {
         onComplete();
       }

@@ -9,6 +9,8 @@ import { EnemyData } from '../managers/BattleManager';
  * 플레이어 턴과 적 턴의 시작/종료를 관리합니다.
  */
 export default class BattleTurnController {
+  private canEndTurn: boolean = true;
+
   constructor(
     private scene           : Phaser.Scene,
     private battleManager   : BattleManager,
@@ -17,9 +19,24 @@ export default class BattleTurnController {
   ) {}
 
   /**
+   * 턴 종료 가능 여부를 반환합니다.
+   */
+  public isEndTurnAllowed(): boolean {
+    return this.canEndTurn;
+  }
+
+  /**
+   * 턴 종료 가능 여부를 설정합니다.
+   */
+  public setEndTurnAllowed(allowed: boolean): void {
+    this.canEndTurn = allowed;
+  }
+
+  /**
    * 플레이어 턴 시작
    */
   startPlayerTurn(): void {
+    this.canEndTurn = true;
     this.battleManager.startPlayerTurn();
   }
 
@@ -27,6 +44,14 @@ export default class BattleTurnController {
    * 플레이어 턴 종료
    */
   endPlayerTurn(): void {
+    // 턴 종료가 허용되지 않으면 무시
+    if (!this.canEndTurn) {
+      return;
+    }
+
+    // 턴 종료 시작 - 더 이상 턴 종료 불가
+    this.canEndTurn = false;
+
     // BattleManager에 턴 종료 알림
     this.battleManager.endPlayerTurn();
 
@@ -46,6 +71,9 @@ export default class BattleTurnController {
    * 적 턴 시작
    */
   startEnemyTurn(): void {
+    // 적 턴 동안에는 턴 종료 불가
+    this.canEndTurn = false;
+
     this.battleManager.startEnemyTurn();
 
     let delay = 0;

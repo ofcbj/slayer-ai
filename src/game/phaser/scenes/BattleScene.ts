@@ -168,6 +168,10 @@ export default class BattleScene extends Phaser.Scene {
       () => this.stateSynchronizer.updateDeckInfo()
     );
 
+    // CardHandManager에 setEndTurnAllowed 콜백 설정
+    (this.cardHandManager as any).setEndTurnAllowed = (allowed: boolean) =>
+      this.turnController.setEndTurnAllowed(allowed);
+
     this.stateSynchronizer = new BattleStateSynchronizer(
       this.uiManager,
       this.deckManager,
@@ -228,12 +232,14 @@ export default class BattleScene extends Phaser.Scene {
     const callbacks: BattleCallbacks = {
       onPlayerTurnStart: () => {
         // 카드 뽑기 (5장)
+        // drawCards 내부에서 자동으로 버튼 비활성화/활성화 처리됨
         this.cardHandManager.drawCards(5, () => {
           this.stateSynchronizer.updateDeckInfo();
         });
       },
       onEnemyTurnStart: () => {
-        // 적 턴 시작 애니메이션 등
+        // 적 턴 동안 턴 종료 버튼 비활성화
+        this.uiManager.setEndTurnButtonEnabled(false);
       },
       onEnemyAction: (enemy: Enemy, intent) => {
         if (intent.type === 'attack') {
