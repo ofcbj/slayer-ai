@@ -113,6 +113,30 @@
         "scaleX": 1,
         "scaleY": 1
       }
+    },
+    "deckPileBounce": {
+      "duration": 100,
+      "yoyo": true,
+      "properties": {
+        "scaleX": 1.1,
+        "scaleY": 1.1
+      }
+    },
+    "discardPileBounce": {
+      "duration": 100,
+      "yoyo": true,
+      "properties": {
+        "scaleX": 1.15,
+        "scaleY": 1.15
+      }
+    },
+    "energyOrbAppear": {
+      "duration": 300,
+      "ease": "Back.easeOut",
+      "properties": {
+        "scaleX": 1,
+        "scaleY": 1
+      }
     }
   },
   "cards": {
@@ -144,7 +168,8 @@
     "select": {
       "duration": 200,
       "properties": {
-        "yOffset": -10
+        "scaleX": 1.1,
+        "scaleY": 1.1
       }
     },
     "deselect": {

@@ -315,13 +315,7 @@ export default class BattleUIManager {
         // 등장 애니메이션
         orb.setScale(0);
         glow.setScale(0);
-        this.scene.tweens.add({
-          targets: [orb, glow],
-          scaleX: 1,
-          scaleY: 1,
-          duration: 300,
-          ease: 'Back.easeOut'
-        });
+        tweenConfig.apply(this.scene, 'ui.energyOrbAppear', [orb, glow]);
       }
     }
 
@@ -414,13 +408,7 @@ export default class BattleUIManager {
    */
   public animateDeckPile(): void {
     if (this.deckPileContainer) {
-      this.scene.tweens.add({
-        targets: this.deckPileContainer,
-        scaleX: 1.1,
-        scaleY: 1.1,
-        duration: 100,
-        yoyo: true
-      });
+      tweenConfig.apply(this.scene, 'ui.deckPileBounce', this.deckPileContainer);
     }
   }
 
@@ -429,13 +417,7 @@ export default class BattleUIManager {
    */
   public animateDiscardPile(): void {
     if (this.discardPileContainer) {
-      this.scene.tweens.add({
-        targets: this.discardPileContainer,
-        scaleX: 1.15,
-        scaleY: 1.15,
-        duration: 100,
-        yoyo: true
-      });
+      tweenConfig.apply(this.scene, 'ui.discardPileBounce', this.discardPileContainer);
     }
   }
 

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { NormalizedCardData } from '../managers/BattleManager';
 import CardRenderer from '../utils/CardRenderer';
+import { tweenConfig } from '../managers/TweenConfigManager';
 
 export default class Card extends Phaser.GameObjects.Container {
   private cardData: NormalizedCardData;
@@ -112,12 +113,7 @@ export default class Card extends Phaser.GameObjects.Container {
     this.isSelected = true;
     this.bg.setStrokeStyle(4, 0xffff00);
 
-    this.scene.tweens.add({
-      targets: this,
-      scaleX: 1.1,
-      scaleY: 1.1,
-      duration: 200
-    });
+    tweenConfig.apply(this.scene, 'cards.select', this);
   }
 
   public deselect(): void {
