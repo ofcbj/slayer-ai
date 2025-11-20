@@ -1,0 +1,197 @@
+{
+  "basic": [
+    {
+      "name": "強打",
+      "type": "공격",
+      "cost": 1,
+      "damage": 6,
+      "image": "⚔️",
+      "description": "敵に<span class='card-damage'>6</span>ダメージを与える。"
+    },
+    {
+      "name": "防御",
+      "type": "스킬",
+      "cost": 1,
+      "block": 5,
+      "image": "🛡️",
+      "description": "<span class='card-block'>5</span>防御力を得る。"
+    },
+    {
+      "name": "怒り",
+      "type": "공격",
+      "cost": 0,
+      "damage": 4,
+      "image": "😡",
+      "description": "敵に<span class='card-damage'>4</span>ダメージを与える。"
+    },
+    {
+      "name": "斬撃",
+      "type": "공격",
+      "cost": 1,
+      "damage": 7,
+      "image": "🗡️",
+      "description": "敵に<span class='card-damage'>7</span>ダメージを与える。"
+    },
+    {
+      "name": "集中",
+      "type": "스킬",
+      "cost": 0,
+      "energy": 1,
+      "image": "🧘",
+      "description": "<span class='card-energy'>1</span>エネルギーを得る。"
+    },
+    {
+      "name": "治癒",
+      "type": "스킬",
+      "cost": 1,
+      "heal": 8,
+      "image": "💚",
+      "description": "HPを<span class='card-energy'>8</span>回復する。"
+    },
+    {
+      "name": "鉄壁",
+      "type": "스킬",
+      "cost": 1,
+      "block": 8,
+      "image": "🏰",
+      "description": "<span class='card-block'>8</span>防御力を得る。"
+    }
+  ],
+  "rewards": [
+    {
+      "name": "剣風",
+      "type": "공격",
+      "cost": 1,
+      "damage": 6,
+      "allEnemies": true,
+      "image": "🌪️",
+      "description": "すべての敵に<span class='card-damage'>6</span>ダメージを与える。"
+    },
+    {
+      "name": "火炎球",
+      "type": "공격",
+      "cost": 2,
+      "damage": 14,
+      "image": "🔥",
+      "description": "敵に<span class='card-damage'>14</span>ダメージを与える。"
+    },
+    {
+      "name": "氷槍",
+      "type": "공격",
+      "cost": 1,
+      "damage": 10,
+      "image": "🧊",
+      "description": "敵に<span class='card-damage'>10</span>ダメージを与える。"
+    },
+    {
+      "name": "雷",
+      "type": "공격",
+      "cost": 2,
+      "damage": 8,
+      "allEnemies": true,
+      "image": "⚡",
+      "description": "すべての敵に<span class='card-damage'>8</span>ダメージを与える。"
+    },
+    {
+      "name": "魔法の盾",
+      "type": "스킬",
+      "cost": 1,
+      "block": 12,
+      "image": "🔮",
+      "description": "<span class='card-block'>12</span>防御力を得る。"
+    },
+    {
+      "name": "嵐剣",
+      "type": "공격",
+      "cost": 2,
+      "damage": 18,
+      "image": "🌩️",
+      "description": "敵に<span class='card-damage'>18</span>ダメージを与える。"
+    },
+    {
+      "name": "再生",
+      "type": "스킬",
+      "cost": 1,
+      "heal": 8,
+      "block": 8,
+      "image": "✨",
+      "description": "HPを<span class='card-energy'>8</span>回復し、<span class='card-block'>8</span>防御力を得る。"
+    },
+    {
+      "name": "矢の乱射",
+      "type": "공격",
+      "cost": 1,
+      "damage": 4,
+      "hits": 3,
+      "image": "🏹",
+      "description": "敵に<span class='card-damage'>4</span>ダメージを3回与える。"
+    },
+    {
+      "name": "狂戦士の一撃",
+      "type": "공격",
+      "cost": 0,
+      "damage": 12,
+      "selfDamage": 2,
+      "image": "💀",
+      "description": "敵に<span class='card-damage'>12</span>ダメージを与え、自身が2ダメージを受ける。"
+    },
+    {
+      "name": "暗黒球",
+      "type": "공격",
+      "cost": 3,
+      "damage": 24,
+      "image": "🌑",
+      "description": "敵に<span class='card-damage'>24</span>ダメージを与える。"
+    },
+    {
+      "name": "治療術",
+      "type": "스킬",
+      "cost": 1,
+      "heal": 12,
+      "image": "💖",
+      "description": "HPを<span class='card-energy'>12</span>回復する。"
+    },
+    {
+      "name": "連続斬撃",
+      "type": "공격",
+      "cost": 1,
+      "damage": 6,
+      "hits": 2,
+      "image": "⚡",
+      "description": "敵に<span class='card-damage'>6</span>ダメージを2回与える。"
+    },
+    {
+      "name": "完全防御",
+      "type": "스킬",
+      "cost": 2,
+      "block": 18,
+      "image": "🏛️",
+      "description": "<span class='card-block'>18</span>防御力を得る。"
+    },
+    {
+      "name": "神聖なる一撃",
+      "type": "공격",
+      "cost": 2,
+      "damage": 16,
+      "heal": 4,
+      "image": "✨",
+      "description": "敵に<span class='card-damage'>16</span>ダメージを与え、HPを<span class='card-energy'>4</span>回復する。"
+    },
+    {
+      "name": "集中打撃",
+      "type": "공격",
+      "cost": 1,
+      "damage": 12,
+      "image": "🎯",
+      "description": "敵に<span class='card-damage'>12</span>ダメージを与える。"
+    },
+    {
+      "name": "エネルギー波動",
+      "type": "스킬",
+      "cost": 0,
+      "energy": 3,
+      "image": "💫",
+      "description": "<span class='card-energy'>3</span>エネルギーを得る。"
+    }
+  ]
+}

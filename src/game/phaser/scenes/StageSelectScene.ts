@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 interface StageData {
   id: number;
@@ -55,7 +56,8 @@ export default class StageSelectScene extends Phaser.Scene {
     graphics.fillRect(0, 0, width, height);
 
     // 타이틀
-    this.add.text(width / 2, 60, '스테이지 선택', {
+    const langManager = LanguageManager.getInstance();
+    this.add.text(width / 2, 60, langManager.t('stage.select'), {
       fontSize: '56px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
@@ -68,8 +70,8 @@ export default class StageSelectScene extends Phaser.Scene {
     const gameState: GameState = this.registry.get('gameState');
     this.createPlayerStats(gameState.player);
 
-    // 스테이지 데이터 로드
-    const stagesData: StagesDataMap = this.registry.get('stagesData');
+    // 스테이지 데이터 로드 (번역된 데이터 사용)
+    const stagesData: StagesDataMap = langManager.getAllStageData();
     const currentStage: number = gameState.currentStage || 1;
     const clearedStages: number[] = gameState.stagesCleared || [];
 
@@ -91,7 +93,8 @@ export default class StageSelectScene extends Phaser.Scene {
     bg.setOrigin(0);
 
     // 타이틀
-    const titleText = this.add.text(125, 15, '플레이어 정보', {
+    const langManager = LanguageManager.getInstance();
+    const titleText = this.add.text(125, 15, langManager.t('stage.playerInfo'), {
       fontSize: '18px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
@@ -494,21 +497,26 @@ export default class StageSelectScene extends Phaser.Scene {
   }
 
   private getStageIcon(type: string): string {
+    // type 값이 이미 번역된 값이므로 직접 매칭
     const icons: { [key: string]: string } = {
       '일반': '⚔️',
       '중보스': '👹',
-      '보스': '👑'
+      '보스': '👑',
+      'ノーマル': '⚔️',
+      '中ボス': '👹',
+      'ボス': '👑'
     };
     return icons[type] || '❓';
   }
 
   private createBackButton(): void {
+    const langManager = LanguageManager.getInstance();
     const backContainer = this.add.container(80, 60);
 
     const backBg = this.add.rectangle(0, 0, 120, 50, 0x1e293b, 0.9);
     backBg.setStrokeStyle(2, 0x475569);
 
-    const backText = this.add.text(0, 0, '← 돌아가기', {
+    const backText = this.add.text(0, 0, langManager.t('stage.back'), {
       fontSize: '18px',
       fontFamily: 'Arial, sans-serif',
       color: '#ffffff'

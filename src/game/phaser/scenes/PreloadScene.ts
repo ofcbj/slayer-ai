@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import SoundManager from '../managers/SoundManager';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 interface GameState {
   player: {
@@ -62,7 +63,14 @@ export default class PreloadScene extends Phaser.Scene {
 
     this.registry.set('gameState', gameState);
 
-    // 메뉴 씬으로 이동
-    this.scene.start('MenuScene');
+    // 언어가 이미 선택되었는지 확인
+    const langManager = LanguageManager.getInstance();
+    const savedLanguage = localStorage.getItem('language');
+
+    if (savedLanguage) {
+      this.scene.start('MenuScene');
+    } else {
+      this.scene.start('LanguageSelectScene');
+    }
   }
 }

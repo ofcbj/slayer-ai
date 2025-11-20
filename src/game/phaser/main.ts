@@ -1,11 +1,24 @@
 import Phaser from 'phaser';
 import BootScene from './scenes/BootScene.js';
 import PreloadScene from './scenes/PreloadScene.js';
+import LanguageSelectScene from './scenes/LanguageSelectScene.js';
 import MenuScene from './scenes/MenuScene.js';
 import StageSelectScene from './scenes/StageSelectScene.js';
 import BattleScene from './scenes/BattleScene.js';
 import RewardScene from './scenes/RewardScene.js';
 import GameOverScene from './scenes/GameOverScene.js';
+
+// Force inclusion of all scenes
+const allScenes = [
+  BootScene,
+  PreloadScene,
+  LanguageSelectScene,
+  MenuScene,
+  StageSelectScene,
+  BattleScene,
+  RewardScene,
+  GameOverScene
+];
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -26,15 +39,7 @@ const config: Phaser.Types.Core.GameConfig = {
     clearBeforeRender: true,
     preserveDrawingBuffer: false
   },
-  scene: [
-    BootScene,
-    PreloadScene,
-    MenuScene,
-    StageSelectScene,
-    BattleScene,
-    RewardScene,
-    GameOverScene
-  ],
+  scene: allScenes,
   physics: {
     default: 'arcade',
     arcade: {
@@ -44,5 +49,8 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 const game = new Phaser.Game(config);
+
+// Debug: Log all registered scenes
+console.log('Registered Scenes:', game.scene.keys);
 
 export default game;

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { PlayerState } from '../../../types';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 interface EnergyOrbData {
   orb   : Phaser.GameObjects.Arc;
@@ -159,7 +160,8 @@ export default class BattleUIManager {
     this.deckPileContainer.add(this.deckCountText);
 
     // 라벨
-    const deckLabel = this.scene.add.text(0, 130, '덱', {
+    const langManager = LanguageManager.getInstance();
+    const deckLabel = this.scene.add.text(0, 130, langManager.t('battle.deck'), {
       fontSize: '18px',
       fontFamily: 'Arial, sans-serif',
       color: '#95a5a6'
@@ -234,7 +236,8 @@ export default class BattleUIManager {
     this.discardPileContainer.add(this.discardCountText);
 
     // 라벨
-    const discardLabel = this.scene.add.text(0, 130, '버린 카드', {
+    const langManager = LanguageManager.getInstance();
+    const discardLabel = this.scene.add.text(0, 130, langManager.t('battle.discard'), {
       fontSize: '18px',
       fontFamily: 'Arial, sans-serif',
       color: '#95a5a6'

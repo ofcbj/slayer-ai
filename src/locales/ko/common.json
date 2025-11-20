@@ -1,0 +1,51 @@
+{
+  "menu": {
+    "title": "SLAYER AI",
+    "startGame": "게임 시작",
+    "description": "덱 빌딩 로그라이크 카드 게임",
+    "selectLanguage": "언어 선택"
+  },
+  "stage": {
+    "select": "스테이지 선택",
+    "playerInfo": "플레이어 정보",
+    "back": "← 돌아가기",
+    "types": {
+      "일반": "일반",
+      "중보스": "중보스",
+      "보스": "보스"
+    }
+  },
+  "battle": {
+    "endTurn": "턴 종료",
+    "deck": "덱",
+    "discard": "버린 카드",
+    "close": "닫기",
+    "deckEmpty": "덱이 비어있습니다!",
+    "discardEmpty": "버린 카드가 없습니다!",
+    "deckReshuffle": "덱 리셔플!",
+    "hp": "HP",
+    "defense": "방어",
+    "energy": "에너지"
+  },
+  "reward": {
+    "victory": "승리!",
+    "chooseCard": "덱에 추가할 카드를 선택하세요"
+  },
+  "gameOver": {
+    "victory": "승리!",
+    "victoryMessage": "마왕을 물리쳤습니다!",
+    "defeat": "패배",
+    "defeatMessage": "게임 오버"
+  },
+  "cardTypes": {
+    "공격": "공격",
+    "방어": "방어",
+    "스킬": "스킬",
+    "치유": "치유",
+    "에너지": "에너지"
+  },
+  "loading": {
+    "loading": "로딩 중...",
+    "complete": "완료"
+  }
+}

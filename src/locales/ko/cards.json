@@ -1,0 +1,197 @@
+{
+  "basic": [
+    {
+      "name": "강타",
+      "type": "공격",
+      "cost": 1,
+      "damage": 6,
+      "image": "⚔️",
+      "description": "적에게 <span class='card-damage'>6</span> 피해를 줍니다."
+    },
+    {
+      "name": "방어",
+      "type": "스킬",
+      "cost": 1,
+      "block": 5,
+      "image": "🛡️",
+      "description": "<span class='card-block'>5</span> 방어도를 얻습니다."
+    },
+    {
+      "name": "분노",
+      "type": "공격",
+      "cost": 0,
+      "damage": 4,
+      "image": "😡",
+      "description": "적에게 <span class='card-damage'>4</span> 피해를 줍니다."
+    },
+    {
+      "name": "베기",
+      "type": "공격",
+      "cost": 1,
+      "damage": 7,
+      "image": "🗡️",
+      "description": "적에게 <span class='card-damage'>7</span> 피해를 줍니다."
+    },
+    {
+      "name": "집중",
+      "type": "스킬",
+      "cost": 0,
+      "energy": 1,
+      "image": "🧘",
+      "description": "<span class='card-energy'>1</span> 에너지를 얻습니다."
+    },
+    {
+      "name": "치유",
+      "type": "스킬",
+      "cost": 1,
+      "heal": 8,
+      "image": "💚",
+      "description": "체력을 <span class='card-energy'>8</span> 회복합니다."
+    },
+    {
+      "name": "철벽",
+      "type": "스킬",
+      "cost": 1,
+      "block": 8,
+      "image": "🏰",
+      "description": "<span class='card-block'>8</span> 방어도를 얻습니다."
+    }
+  ],
+  "rewards": [
+    {
+      "name": "검풍",
+      "type": "공격",
+      "cost": 1,
+      "damage": 6,
+      "allEnemies": true,
+      "image": "🌪️",
+      "description": "모든 적에게 <span class='card-damage'>6</span> 피해를 줍니다."
+    },
+    {
+      "name": "화염구",
+      "type": "공격",
+      "cost": 2,
+      "damage": 14,
+      "image": "🔥",
+      "description": "적에게 <span class='card-damage'>14</span> 피해를 줍니다."
+    },
+    {
+      "name": "얼음창",
+      "type": "공격",
+      "cost": 1,
+      "damage": 10,
+      "image": "🧊",
+      "description": "적에게 <span class='card-damage'>10</span> 피해를 줍니다."
+    },
+    {
+      "name": "번개",
+      "type": "공격",
+      "cost": 2,
+      "damage": 8,
+      "allEnemies": true,
+      "image": "⚡",
+      "description": "모든 적에게 <span class='card-damage'>8</span> 피해를 줍니다."
+    },
+    {
+      "name": "마법 방패",
+      "type": "스킬",
+      "cost": 1,
+      "block": 12,
+      "image": "🔮",
+      "description": "<span class='card-block'>12</span> 방어도를 얻습니다."
+    },
+    {
+      "name": "폭풍검",
+      "type": "공격",
+      "cost": 2,
+      "damage": 18,
+      "image": "🌩️",
+      "description": "적에게 <span class='card-damage'>18</span> 피해를 줍니다."
+    },
+    {
+      "name": "재생",
+      "type": "스킬",
+      "cost": 1,
+      "heal": 8,
+      "block": 8,
+      "image": "✨",
+      "description": "체력을 <span class='card-energy'>8</span> 회복하고 <span class='card-block'>8</span> 방어도를 얻습니다."
+    },
+    {
+      "name": "화살 난사",
+      "type": "공격",
+      "cost": 1,
+      "damage": 4,
+      "hits": 3,
+      "image": "🏹",
+      "description": "적에게 <span class='card-damage'>4</span> 피해를 3번 줍니다."
+    },
+    {
+      "name": "광전사의 일격",
+      "type": "공격",
+      "cost": 0,
+      "damage": 12,
+      "selfDamage": 2,
+      "image": "💀",
+      "description": "적에게 <span class='card-damage'>12</span> 피해를 주고 자신이 2 피해를 받습니다."
+    },
+    {
+      "name": "암흑 구체",
+      "type": "공격",
+      "cost": 3,
+      "damage": 24,
+      "image": "🌑",
+      "description": "적에게 <span class='card-damage'>24</span> 피해를 줍니다."
+    },
+    {
+      "name": "치료술",
+      "type": "스킬",
+      "cost": 1,
+      "heal": 12,
+      "image": "💖",
+      "description": "체력을 <span class='card-energy'>12</span> 회복합니다."
+    },
+    {
+      "name": "연속 베기",
+      "type": "공격",
+      "cost": 1,
+      "damage": 6,
+      "hits": 2,
+      "image": "⚡",
+      "description": "적에게 <span class='card-damage'>6</span> 피해를 2번 줍니다."
+    },
+    {
+      "name": "완전 방어",
+      "type": "스킬",
+      "cost": 2,
+      "block": 18,
+      "image": "🏛️",
+      "description": "<span class='card-block'>18</span> 방어도를 얻습니다."
+    },
+    {
+      "name": "신성한 일격",
+      "type": "공격",
+      "cost": 2,
+      "damage": 16,
+      "heal": 4,
+      "image": "✨",
+      "description": "적에게 <span class='card-damage'>16</span> 피해를 주고 체력을 <span class='card-energy'>4</span> 회복합니다."
+    },
+    {
+      "name": "집중 타격",
+      "type": "공격",
+      "cost": 1,
+      "damage": 12,
+      "image": "🎯",
+      "description": "적에게 <span class='card-damage'>12</span> 피해를 줍니다."
+    },
+    {
+      "name": "에너지 파동",
+      "type": "스킬",
+      "cost": 0,
+      "energy": 3,
+      "image": "💫",
+      "description": "<span class='card-energy'>3</span> 에너지를 얻습니다."
+    }
+  ]
+}

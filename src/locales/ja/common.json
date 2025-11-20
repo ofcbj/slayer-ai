@@ -1,0 +1,51 @@
+{
+  "menu": {
+    "title": "SLAYER AI",
+    "startGame": "ゲーム開始",
+    "description": "デッキ構築型ローグライクカードゲーム",
+    "selectLanguage": "言語選択"
+  },
+  "stage": {
+    "select": "ステージ選択",
+    "playerInfo": "プレイヤー情報",
+    "back": "← 戻る",
+    "types": {
+      "일반": "ノーマル",
+      "중보스": "中ボス",
+      "보스": "ボス"
+    }
+  },
+  "battle": {
+    "endTurn": "ターン終了",
+    "deck": "デッキ",
+    "discard": "捨て札",
+    "close": "閉じる",
+    "deckEmpty": "デッキが空です！",
+    "discardEmpty": "捨て札がありません！",
+    "deckReshuffle": "デッキをシャッフル！",
+    "hp": "HP",
+    "defense": "防御",
+    "energy": "エネルギー"
+  },
+  "reward": {
+    "victory": "勝利！",
+    "chooseCard": "デッキに追加するカードを選択してください"
+  },
+  "gameOver": {
+    "victory": "勝利！",
+    "victoryMessage": "魔王を倒しました！",
+    "defeat": "敗北",
+    "defeatMessage": "ゲームオーバー"
+  },
+  "cardTypes": {
+    "공격": "攻撃",
+    "방어": "防御",
+    "스킬": "スキル",
+    "치유": "回復",
+    "에너지": "エネルギー"
+  },
+  "loading": {
+    "loading": "読み込み中...",
+    "complete": "完了"
+  }
+}

@@ -11,6 +11,7 @@ import CardViewManager    from '../managers/CardViewManager';
 import BattleEventManager from '../managers/BattleEventManager';
 import BattleManager, { BattleCallbacks, EnemyData, GameState } from '../managers/BattleManager';
 import SoundManager       from '../managers/SoundManager';
+import LanguageManager    from '../../../i18n/LanguageManager';
 
 import BattleSceneInitializer       from '../controllers/BattleSceneInitializer';
 import BattleTurnController         from '../controllers/BattleTurnController';
@@ -338,16 +339,18 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   private onDeckPileClick(): void {
+    const langManager = LanguageManager.getInstance();
     const deck = this.deckManager.getDeck();
     this.cardViewManager.showDeckView(deck, () => {
-      this.uiManager.showMessage('덱이 비어있습니다!');
+      this.uiManager.showMessage(langManager.t('battle.deckEmpty'));
     });
   }
 
   private onDiscardPileClick(): void {
+    const langManager = LanguageManager.getInstance();
     const discardPile = this.deckManager.getDiscardPile();
     this.cardViewManager.showDiscardPileView(discardPile, () => {
-      this.uiManager.showMessage('버린 카드가 없습니다!');
+      this.uiManager.showMessage(langManager.t('battle.discardEmpty'));
     });
   }
 }

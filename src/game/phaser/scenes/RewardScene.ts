@@ -3,6 +3,7 @@ import EventBus from '../../EventBus';
 import Card from '../objects/Card';
 import { CardData, GameState } from '../../types';
 import { NormalizedCardData } from '../managers/BattleManager';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 interface CardsDataRegistry {
   rewards: CardData[];
@@ -27,7 +28,8 @@ export default class RewardScene extends Phaser.Scene {
     this.add.rectangle(0, 0, width, height, 0x1a1a2e).setOrigin(0);
 
     // 타이틀
-    this.add.text(width / 2, 100, 'VICTORY!', {
+    const langManager = LanguageManager.getInstance();
+    this.add.text(width / 2, 100, langManager.t('reward.victory'), {
       fontSize: '64px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
@@ -40,7 +42,7 @@ export default class RewardScene extends Phaser.Scene {
     this.createVictoryParticles();
 
     // 설명
-    this.add.text(width / 2, 180, 'Choose a card to add to your deck', {
+    this.add.text(width / 2, 180, langManager.t('reward.chooseCard'), {
       fontSize: '24px',
       fontFamily: 'Arial, sans-serif',
       color: '#ffffff'
@@ -56,7 +58,8 @@ export default class RewardScene extends Phaser.Scene {
   private createRewardCards(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
-    const cardsData = this.registry.get('cardsData') as CardsDataRegistry;
+    const langManager = LanguageManager.getInstance();
+    const cardsData = langManager.getCardData();
 
     // 랜덤 보상 카드 3장 선택
     const rewardCards: CardData[] = Phaser.Utils.Array.Shuffle([...cardsData.rewards]).slice(0, 3);

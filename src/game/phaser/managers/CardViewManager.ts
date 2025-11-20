@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CardData } from './BattleManager';
 import CardRenderer from '../utils/CardRenderer';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 /**
  * 카드 뷰 및 팝업을 관리하는 클래스
@@ -24,7 +25,8 @@ export default class CardViewManager {
       return;
     }
 
-    this.showCardListView('덱', [...deck]);
+    const langManager = LanguageManager.getInstance();
+    this.showCardListView(langManager.t('battle.deck'), [...deck]);
   }
 
   /**
@@ -38,7 +40,8 @@ export default class CardViewManager {
       return;
     }
 
-    this.showCardListView('버린 카드', [...discardPile]);
+    const langManager = LanguageManager.getInstance();
+    this.showCardListView(langManager.t('battle.discard'), [...discardPile]);
   }
 
   /**
@@ -121,7 +124,8 @@ export default class CardViewManager {
     closeButton.setDepth(1002);
     closeButton.setInteractive({ useHandCursor: true });
 
-    const closeText = this.scene.add.text(width / 2, height / 2 + popupHeight / 2 - 50, '닫기', {
+    const langManager = LanguageManager.getInstance();
+    const closeText = this.scene.add.text(width / 2, height / 2 + popupHeight / 2 - 50, langManager.t('battle.close'), {
       fontSize  : '24px',
       fontFamily: 'Arial, sans-serif',
       fontStyle : 'bold',

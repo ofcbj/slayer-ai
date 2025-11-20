@@ -4,6 +4,7 @@ import Player from '../objects/Player';
 import DeckManager from '../managers/DeckManager';
 import BattleUIManager from '../managers/BattleUIManager';
 import { CardData, EnemyData, GameState, StageData } from '../managers/BattleManager';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 /**
  * BattleScene 초기화를 담당하는 컨트롤러
@@ -62,7 +63,7 @@ export default class BattleSceneInitializer {
    */
   createEnemies(): Enemy[] {
     const width = this.scene.cameras.main.width;
-    const enemiesData: Record<string, EnemyData> = this.scene.registry.get('enemiesData');
+    const langManager = LanguageManager.getInstance();
     const stageEnemies: string[] = this.selectedStage.data.enemies;
 
     console.log(`[BattleSceneInitializer] createEnemies - Stage: ${this.selectedStage.id}, Expected enemies:`, stageEnemies);
@@ -72,7 +73,7 @@ export default class BattleSceneInitializer {
 
     const createdEnemies: Enemy[] = [];
     stageEnemies.forEach((enemyName: string, index: number) => {
-      const enemyData = enemiesData[enemyName];
+      const enemyData = langManager.getEnemyData(enemyName);
       if (enemyData) {
         const x = startX + (index * spacing);
         const y = 220; // 적들을 상단에 배치
@@ -90,7 +91,8 @@ export default class BattleSceneInitializer {
    * 덱 설정
    */
   setupDeck(): void {
-    const cardsData: { basic: CardData[] } = this.scene.registry.get('cardsData');
+    const langManager = LanguageManager.getInstance();
+    const cardsData: { basic: CardData[] } = langManager.getCardData();
 
     console.log(`[BattleSceneInitializer] setupDeck - gameState.deck.length: ${this.gameState.deck.length}`);
 

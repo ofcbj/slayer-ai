@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 export default class MenuScene extends Phaser.Scene {
   constructor() {
@@ -11,12 +12,13 @@ export default class MenuScene extends Phaser.Scene {
     EventBus.emit('current-scene-ready', this);
     const width: number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
+    const langManager = LanguageManager.getInstance();
 
     // 배경
     this.add.rectangle(0, 0, width, height, 0x1a1a2e).setOrigin(0);
 
     // 타이틀
-    const title: Phaser.GameObjects.Text = this.add.text(width / 2, height / 3, 'SLAYER AI', {
+    const title: Phaser.GameObjects.Text = this.add.text(width / 2, height / 3, langManager.t('menu.title'), {
       fontSize: '72px',
       fontFamily: 'Arial, sans-serif',
       fontStyle: 'bold',
@@ -41,7 +43,7 @@ export default class MenuScene extends Phaser.Scene {
     const startButton: Phaser.GameObjects.Container = this.createButton(
       width / 2,
       height / 2 + 50,
-      'START GAME',
+      langManager.t('menu.startGame'),
       () => {
         this.scene.start('StageSelectScene');
       }
@@ -51,7 +53,7 @@ export default class MenuScene extends Phaser.Scene {
     const description: Phaser.GameObjects.Text = this.add.text(
       width / 2,
       height - 100,
-      'A deck-building roguelike card game',
+      langManager.t('menu.description'),
       {
         fontSize: '20px',
         fontFamily: 'Arial, sans-serif',

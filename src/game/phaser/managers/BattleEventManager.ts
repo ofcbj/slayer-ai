@@ -7,6 +7,7 @@ import CardHandManager from './CardHandManager';
 import DeckManager from './DeckManager';
 import BattleUIManager from './BattleUIManager';
 import SoundManager from './SoundManager';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 
 /**
@@ -81,7 +82,8 @@ export default class BattleEventManager {
     this.cardHandManager.selectCard(card);
 
     // 공격 카드인 경우 적 선택 대기, 아니면 즉시 사용
-    if (cardData.type === '공격' && !cardData.allEnemies) {
+    const langManager = LanguageManager.getInstance();
+    if (cardData.type === langManager.t('cardTypes.공격') && !cardData.allEnemies) {
       this.uiManager.showMessage('Select a target');
     } else {
       // 자동 사용 (방어, 치유, 전체 공격 등)
@@ -99,7 +101,8 @@ export default class BattleEventManager {
     if (!selectedCard) return;
 
     const cardData: NormalizedCardData = (selectedCard as any).cardData;
-    if (cardData.type !== '공격') return;
+    const langManager = LanguageManager.getInstance();
+    if (cardData.type !== langManager.t('cardTypes.공격')) return;
 
     this.useCard(selectedCard, enemy);
   };
