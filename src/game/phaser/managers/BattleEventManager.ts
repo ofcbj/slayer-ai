@@ -147,6 +147,8 @@ export default class BattleEventManager {
     }
 
     // 애니메이션 처리
+    let shouldDiscardWithAnimation = true; // discardCardWithAnimation을 호출할지 여부
+    
     if (rawType === 'attack') {
       // 공격 사운드 재생
       const isHeavy = cardData.value >= 10;
@@ -156,8 +158,12 @@ export default class BattleEventManager {
 
       if (cardData.allEnemies) {
         card.playEffect(this.scene.cameras.main.width / 2, 250);
+        // playEffect가 카드를 destroy하므로 discardCardWithAnimation 호출하지 않음
+        shouldDiscardWithAnimation = false;
       } else if (target) {
         card.playEffect(target.x, target.y);
+        // playEffect가 카드를 destroy하므로 discardCardWithAnimation 호출하지 않음
+        shouldDiscardWithAnimation = false;
       }
     } else if (cardData.rawData.block) {
       // 방어 카드 (block 속성으로 판단)
@@ -168,15 +174,15 @@ export default class BattleEventManager {
 
       // 플레이어 캐릭터 방어 애니메이션
       this.playerCharacter.playDefendAnimation();
-      card.playEffect(this.playerCharacter.x, this.playerCharacter.y, undefined);
+      // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
     } else if (cardData.rawData.heal) {
       // 치유 카드 (heal 속성으로 판단)
       // 플레이어 캐릭터 치유 애니메이션
       this.playerCharacter.playHealAnimation();
-      card.playEffect(this.playerCharacter.x, this.playerCharacter.y, undefined);
+      // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
     } else if (cardData.rawData.energy) {
       // 에너지 카드 (rawData의 energy 속성으로 판단)
-      card.playEffect(this.playerCharacter.x, this.playerCharacter.y, undefined);
+      // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
     }
 
     // 카드 사용 사운드 재생
@@ -188,8 +194,12 @@ export default class BattleEventManager {
     this.cardHandManager.removeCardFromHand(card);
     // DeckManager를 사용하여 버린 카드 더미에 추가
     this.deckManager.discardCard(cardData.rawData);
-    // 카드를 버린 카드 더미로 이동 애니메이션
-    this.cardHandManager.discardCardWithAnimation(card);
+    
+    // 카드를 버린 카드 더미로 이동 애니메이션 (playEffect를 사용하지 않은 경우만)
+    if (shouldDiscardWithAnimation) {
+      this.cardHandManager.discardCardWithAnimation(card);
+    }
+    
     // 핸드 재배치
     this.cardHandManager.arrangeHand();
     // 덱 정보 업데이트

@@ -381,9 +381,9 @@ export default class BattleScene extends Phaser.Scene {
 
     // F1-F3: 적 선택
     const functionKeys = [
-      Phaser.Input.Keyboard.KeyCodes.F1,
-      Phaser.Input.Keyboard.KeyCodes.F2,
-      Phaser.Input.Keyboard.KeyCodes.F3
+      Phaser.Input.Keyboard.KeyCodes.LEFT,
+      Phaser.Input.Keyboard.KeyCodes.DOWN,
+      Phaser.Input.Keyboard.KeyCodes.RIGHT
     ];
     functionKeys.forEach((keyCode, index) => {
       const key = keyboard.addKey(keyCode);
