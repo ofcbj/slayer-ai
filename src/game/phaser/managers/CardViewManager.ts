@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { CardData } from './BattleManager';
 import CardRenderer from '../utils/CardRenderer';
 import LanguageManager from '../../../i18n/LanguageManager';
+import { textStyle } from './TextStyleManager';
 
 /**
  * 카드 뷰 및 팝업을 관리하는 클래스
@@ -65,27 +66,17 @@ export default class CardViewManager {
     popupBg.setDepth(1001);
 
     // 타이틀
-    const titleText = this.scene.add.text(width/2, height / 2 - popupHeight / 2 + 40, title, {
-      fontSize  : '36px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle : 'bold',
-      color     : '#ffffff',
-      stroke    : '#000000',
-      strokeThickness: 4
-    });
+    const titleText = this.scene.add.text(width/2, height/2-popupHeight/2+40,
+      title,
+      textStyle.getStyle('cardView.title')
+    );
     titleText.setOrigin(0.5);
     titleText.setDepth(1002);
 
     // 카드 수
-    const countText = this.scene.add.text(
-      width / 2,
-      height / 2 - popupHeight / 2 + 80,
+    const countText = this.scene.add.text(width/2, height/2-popupHeight/2+80,
       `총 ${cards.length}장`,
-      {
-        fontSize: '20px',
-        fontFamily: 'Arial, sans-serif',
-        color: '#94a3b8'
-      }
+      textStyle.getStyle('cardView.count', { color: '#94a3b8' })
     );
     countText.setOrigin(0.5);
     countText.setDepth(1002);
@@ -125,12 +116,10 @@ export default class CardViewManager {
     closeButton.setInteractive({ useHandCursor: true });
 
     const langManager = LanguageManager.getInstance();
-    const closeText = this.scene.add.text(width / 2, height / 2 + popupHeight / 2 - 50, langManager.t('battle.close'), {
-      fontSize  : '24px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle : 'bold',
-      color     : '#ffffff'
-    });
+    const closeText = this.scene.add.text(width/2, height/2+popupHeight/2-50,
+      langManager.t('battle.close'),
+      textStyle.getStyle('buttons.secondary')
+    );
     closeText.setOrigin(0.5);
     closeText.setDepth(1003);
 

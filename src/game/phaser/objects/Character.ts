@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { textStyle } from '../managers/TextStyleManager';
 
 /**
  * Character - Player와 Enemy의 공통 베이스 클래스
@@ -91,14 +92,9 @@ export default abstract class Character extends Phaser.GameObjects.Container {
    * 방어력으로 막힌 데미지 표시
    */
   protected showBlockedDamage(amount: number): void {
-    const blockText = this.scene.add.text(this.x - 40, this.y - 50, `🛡️-${amount}`, {
-      fontSize: '28px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#4ecdc4',
-      stroke: '#000000',
-      strokeThickness: 4
-    });
+    const blockText = this.scene.add.text(this.x-40, this.y-50, `🛡️-${amount}`,
+      textStyle.getStyle('damage.defenseBlock')
+    );
     blockText.setOrigin(0.5);
 
     this.scene.tweens.add({
@@ -115,14 +111,9 @@ export default abstract class Character extends Phaser.GameObjects.Container {
    * 체력 데미지 숫자 표시
    */
   protected showDamageNumber(amount: number): void {
-    const damageText = this.scene.add.text(this.x + 40, this.y - 50, `-${amount} HP`, {
-      fontSize: '36px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ff6b6b',
-      stroke: '#000000',
-      strokeThickness: 5
-    });
+    const damageText = this.scene.add.text(this.x+40, this.y-50, `-${amount} HP`,
+      textStyle.getStyle('damage.hp')
+    );
     damageText.setOrigin(0.5);
 
     this.scene.tweens.add({

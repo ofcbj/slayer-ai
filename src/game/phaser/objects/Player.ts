@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { PlayerState } from '../../../types';
 import Character from './Character';
 import { PlayerStateObservable } from '../state/PlayerStateObservable';
+import { textStyle } from '../managers/TextStyleManager';
 
 /**
  * Player - 플레이어 캐릭터 클래스
@@ -52,40 +53,29 @@ export default class Player extends Character {
     bg.setStrokeStyle(4, 0x4ecdc4);
 
     // 플레이어 이름
-    const nameText: Phaser.GameObjects.Text = this.scene.add.text(0, -height/2 + 25, 'Hero', {
-      fontSize: '24px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#4ecdc4',
-      stroke: '#000000',
-      strokeThickness: 3
-    });
+    const nameText: Phaser.GameObjects.Text = this.scene.add.text(0, -height/2+25,
+      'Hero',
+      textStyle.getStyle('character.emojiSmall')
+    );
     nameText.setOrigin(0.5);
 
     // 플레이어 캐릭터 이미지 - 머리와 목
-    const playerHead: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🧙‍♂️', {
-      fontSize: '120px',
-      fontFamily: 'Arial, sans-serif'
-    });
+    const playerHead: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🧙‍♂️',
+      textStyle.getStyle('character.emojiLarge')
+    );
     playerHead.setOrigin(0.5);
 
     // HP 컨테이너 (왼쪽 하단)
     const hpContainer: Phaser.GameObjects.Container = this.scene.add.container(-width/2 + 70, height/2 - 40);
 
-    const hpIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '❤️', {
-      fontSize: '30px',
-      fontFamily: 'Arial, sans-serif'
-    });
+    const hpIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '❤️',
+      textStyle.getStyle('damage.healEffect')
+    );
     hpIcon.setOrigin(0.5);
 
-    this.healthText = this.scene.add.text(25, 0, '100', {
-      fontSize: '28px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ff6b6b',
-      stroke: '#000000',
-      strokeThickness: 3
-    });
+    this.healthText = this.scene.add.text(25, 0, '100',
+      textStyle.getStyle('damage.defenseEffect')
+    );
     this.healthText.setOrigin(0, 0.5);
 
     hpContainer.add([hpIcon, this.healthText]);
@@ -93,20 +83,14 @@ export default class Player extends Character {
     // Defense 컨테이너 (오른쪽 하단)
     const defContainer: Phaser.GameObjects.Container = this.scene.add.container(width/2 - 70, height/2 - 40);
 
-    const defIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🛡️', {
-      fontSize: '30px',
-      fontFamily: 'Arial, sans-serif'
-    });
+    const defIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🛡️',
+      textStyle.getStyle('damage.healEffect')
+    );
     defIcon.setOrigin(0.5);
 
-    this.defenseText = this.scene.add.text(25, 0, '0', {
-      fontSize: '28px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#4ecdc4',
-      stroke: '#000000',
-      strokeThickness: 3
-    });
+    this.defenseText = this.scene.add.text(25, 0, '0',
+      textStyle.getStyle('damage.defenseEffect')
+    );
     this.defenseText.setOrigin(0, 0.5);
 
     defContainer.add([defIcon, this.defenseText]);

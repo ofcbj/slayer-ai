@@ -71,6 +71,18 @@
       "fontFamily": "Arial, sans-serif",
       "fontStyle": "bold",
       "color": "#4ecdc4"
+    },
+    "emoji": {
+      "fontSize": "64px",
+      "fontFamily": "Arial, sans-serif"
+    },
+    "emojiSmall": {
+      "fontSize": "24px",
+      "fontFamily": "Arial, sans-serif"
+    },
+    "emojiLarge": {
+      "fontSize": "120px",
+      "fontFamily": "Arial, sans-serif"
     }
   },
   "damage": {
@@ -90,6 +102,14 @@
       "stroke": "#000000",
       "strokeThickness": 4
     },
+    "defenseBlock": {
+      "fontSize": "28px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#4ecdc4",
+      "stroke": "#000000",
+      "strokeThickness": 4
+    },
     "heal": {
       "fontSize": "32px",
       "fontFamily": "Arial, sans-serif",
@@ -97,14 +117,35 @@
       "color": "#2ecc71",
       "stroke": "#000000",
       "strokeThickness": 4
+    },
+    "healEffect": {
+      "fontSize": "30px",
+      "fontFamily": "Arial, sans-serif"
+    },
+    "defenseEffect": {
+      "fontSize": "28px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#4ecdc4",
+      "stroke": "#000000",
+      "strokeThickness": 3
+    },
+    "enemyDamage": {
+      "fontSize": "24px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ff6b6b",
+      "stroke": "#000000",
+      "strokeThickness": 4
     }
   },
   "cards": {
     "name": {
-      "fontSize": "14px",
+      "fontSize": "15px",
       "fontFamily": "Arial, sans-serif",
       "fontStyle": "bold",
-      "color": "#ffffff"
+      "color": "#ffffff",
+      "align": "center"
     },
     "description": {
       "fontSize": "11px",
@@ -113,16 +154,26 @@
       "wordWrap": true
     },
     "cost": {
-      "fontSize": "18px",
+      "fontSize": "17px",
       "fontFamily": "Arial, sans-serif",
       "fontStyle": "bold",
       "color": "#ffffff"
     },
     "value": {
-      "fontSize": "24px",
+      "fontSize": "30px",
       "fontFamily": "Arial, sans-serif",
       "fontStyle": "bold",
       "color": "#ffffff"
+    },
+    "emoji": {
+      "fontSize": "44px",
+      "fontFamily": "Arial, sans-serif"
+    },
+    "emojiSmall": {
+      "fontSize": "10px",
+      "fontFamily": "Arial, sans-serif",
+      "color": "#ffffff",
+      "align": "center"
     }
   },
   "ui": {
@@ -185,6 +236,15 @@
       "fontFamily": "Arial, sans-serif",
       "fontStyle": "bold",
       "color": "#ffffff"
+    },
+    "emoji": {
+      "fontSize": "40px",
+      "fontFamily": "Arial, sans-serif"
+    },
+    "emojiSmall": {
+      "fontSize": "36px",
+      "fontFamily": "Arial, sans-serif",
+      "color": "#ffffff"
     }
   },
   "reward": {
@@ -198,6 +258,51 @@
       "fontSize": "20px",
       "fontFamily": "Arial, sans-serif",
       "color": "#cccccc"
+    }
+  },
+  "cardView": {
+    "title": {
+      "fontSize": "36px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff",
+      "stroke": "#000000",
+      "strokeThickness": 3
+    },
+    "emptyMessage": {
+      "fontSize": "24px",
+      "fontFamily": "Arial, sans-serif",
+      "color": "#888888"
+    },
+    "count": {
+      "fontSize": "20px",
+      "fontFamily": "Arial, sans-serif",
+      "color": "#ffffff"
+    }
+  },
+  "language": {
+    "title": {
+      "fontSize": "64px",
+      "fontFamily": "Arial Black",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "instruction": {
+      "fontSize": "24px",
+      "fontFamily": "Arial",
+      "color": "#cccccc"
+    },
+    "button": {
+      "fontSize": "32px",
+      "fontFamily": "Arial Black",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    }
+  },
+  "stageSelect": {
+    "icon": {
+      "fontSize": "32px",
+      "fontFamily": "Arial, sans-serif"
     }
   }
 }

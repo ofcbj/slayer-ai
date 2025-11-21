@@ -81,7 +81,7 @@ export default class BattleUIManager {
     const bg = this.scene.add.rectangle(0, 0, 150, 60, 0xff6b6b);
     bg.setStrokeStyle(3, 0xffffff);
 
-    const text = this.scene.add.text(0,0,'End Turn',
+    const text = this.scene.add.text(0, 0, 'End Turn',
       textStyle.getStyle('buttons.secondary')
     );
     text.setOrigin(0.5);
@@ -224,14 +224,14 @@ export default class BattleUIManager {
     this.discardPileContainer.add(discardIcon);
 
     // 버린 카드 수 텍스트
-    this.discardCountText = this.scene.add.text(0,100,'0',
+    this.discardCountText = this.scene.add.text(0, 100, '0',
       textStyle.getStyle('buttons.secondary', { stroke: '#000000', strokeThickness: 4 })
     ).setOrigin(0.5);
     this.discardPileContainer.add(this.discardCountText);
 
     // 라벨
     const langManager = LanguageManager.getInstance();
-    const discardLabel = this.scene.add.text(0,130,
+    const discardLabel = this.scene.add.text(0, 130,
       langManager.t('battle.discard'),
       textStyle.getStyle('character.name', { color: '#95a5a6' })
     ).setOrigin(0.5);
@@ -369,7 +369,7 @@ export default class BattleUIManager {
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
 
-    const message = this.scene.add.text(width/2,height/2,text,
+    const message = this.scene.add.text(width/2, height/2, text,
       textStyle.getStyle('ui.message', { fontSize: '32px', strokeThickness: 6 })
     );
     message.setOrigin(0.5);
@@ -431,15 +431,8 @@ export default class BattleUIManager {
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
 
-    const message = this.scene.add.text(width/2, height-400,'덱 리셔플!',
-      {
-        fontSize: '28px',
-        fontFamily: 'Arial, sans-serif',
-        fontStyle: 'bold',
-        color: '#4ecdc4',
-        stroke: '#000000',
-        strokeThickness: 4
-      }
+    const message = this.scene.add.text(width/2, height-400, '덱 리셔플!',
+      textStyle.getStyle('ui.message', { color: '#4ecdc4', fontSize: '28px' })
     ).setOrigin(0.5);
 
     tweenConfig.apply(this.scene, 'ui.damageText', message, {

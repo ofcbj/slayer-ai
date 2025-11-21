@@ -407,10 +407,12 @@ export default class StageSelectScene extends Phaser.Scene {
     nodeBg.setStrokeStyle(4, borderColor);
 
     // 아이콘/번호
-    const iconText = this.add.text(0, -5, stageIcon, {
-      fontSize: '32px',
-      fontFamily: 'Arial, sans-serif'
-    }).setOrigin(0.5);
+    const iconText = this.add.text(
+      0,
+      -5,
+      stageIcon,
+      textStyle.getStyle('stageSelect.icon')
+    ).setOrigin(0.5);
 
     const numberText = this.add.text(
       0,

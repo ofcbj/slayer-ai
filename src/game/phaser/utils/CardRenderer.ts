@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { CardData, NormalizedCardData } from '../managers/BattleManager';
+import { textStyle } from '../managers/TextStyleManager';
 
 /**
  * 카드 렌더링 설정
@@ -39,55 +40,37 @@ export default class CardRenderer {
     const headerBg = scene.add.rectangle(0, -height / 2 + 18, width, 36, borderColor);
 
     // 카드 이름
-    const nameText = scene.add.text(0, -height / 2 + 18, cardData.name, {
-      fontSize: '15px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      align: 'center',
-      wordWrap: { width: width - 10 }
-    });
+    const nameText = scene.add.text(0, -height/2+18, cardData.name,
+      textStyle.getStyle('cards.name', { wordWrap: { width: width - 10 } })
+    );
     nameText.setOrigin(0.5);
 
     // 코스트 (카드 색상과 동일하게)
-    const costCircle = scene.add.circle(-width / 2 + 20, -height / 2 + 18, 15, borderColor);
+    const costCircle = scene.add.circle(-width/2+20, -height/2+18, 15, borderColor);
     costCircle.setStrokeStyle(2, 0xffffff);
 
-    const costText = scene.add.text(-width / 2 + 20, -height / 2 + 18, cardData.cost.toString(), {
-      fontSize: '17px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff'
-    });
+    const costText = scene.add.text(-width/2+20, -height/2+18,
+      cardData.cost.toString(),
+      textStyle.getStyle('cards.cost')
+    );
     costText.setOrigin(0.5);
 
     // 카드 이미지 (이모지) - 중앙에 크게 표시
-    const cardImage = scene.add.text(0, -20, this.getCardImage(cardData), {
-      fontSize: '44px',
-      fontFamily: 'Arial, sans-serif'
-    });
+    const cardImage = scene.add.text(0, -20, this.getCardImage(cardData),
+      textStyle.getStyle('cards.emoji')
+    );
     cardImage.setOrigin(0.5);
 
     // 카드 값 (데미지, 방어도 등) - 이미지 아래
-    const valueText = scene.add.text(0, 25, this.getValueDisplay(cardData), {
-      fontSize: '30px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: this.getValueColor(cardData),
-      stroke: '#000000',
-      strokeThickness: 4
-    });
+    const valueText = scene.add.text(0, 25, this.getValueDisplay(cardData),
+      textStyle.getStyle('cards.value', { color: this.getValueColor(cardData), stroke: '#000000', strokeThickness: 4 })
+    );
     valueText.setOrigin(0.5);
 
     // 카드 효과 설명 - 하단
-    const descText = scene.add.text(0, 65, this.getEffectDescription(cardData), {
-      fontSize: '10px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#cccccc',
-      align: 'center',
-      wordWrap: { width: width - 30, useAdvancedWrap: true },
-      lineSpacing: 2
-    });
+    const descText = scene.add.text(0, 65, this.getEffectDescription(cardData),
+      textStyle.getStyle('cards.emojiSmall', { color: '#cccccc', wordWrap: { width: width - 30, useAdvancedWrap: true }, lineSpacing: 2 })
+    );
     descText.setOrigin(0.5, 0.5);
 
     // 설명이 카드 하단을 넘어가면 스케일을 줄여서 맞춤

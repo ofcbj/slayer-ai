@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import LanguageManager, { Language } from '../../../i18n/LanguageManager';
+import { textStyle } from '../managers/TextStyleManager';
 
 export default class LanguageSelectScene extends Phaser.Scene {
   constructor() {
@@ -10,47 +11,41 @@ export default class LanguageSelectScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     this.add
-      .text(width / 2, height / 3, 'SLAYER AI', {
-        fontFamily: 'Arial Black',
-        fontSize: 64,
-        color: '#ffffff',
-        stroke: '#000000',
-        strokeThickness: 8,
-        align: 'center',
-      })
+      .text(
+        width / 2,
+        height / 3,
+        'SLAYER AI',
+        textStyle.getStyle('language.title', { stroke: '#000000', strokeThickness: 8 })
+      )
       .setOrigin(0.5)
       .setDepth(100);
 
     this.add
-      .text(width / 2, height / 2 - 80, 'Select Language / 言語選択 / 언어 선택', {
-        fontFamily: 'Arial',
-        fontSize: 24,
-        color: '#ffffff',
-        align: 'center',
-      })
+      .text(
+        width / 2,
+        height / 2 - 80,
+        'Select Language / 言語選択 / 언어 선택',
+        textStyle.getStyle('language.instruction')
+      )
       .setOrigin(0.5);
 
     const koreanButton = this.add
-      .text(width / 2, height / 2, '한국어 (Korean)', {
-        fontFamily: 'Arial Black',
-        fontSize: 32,
-        color: '#ffffff',
-        stroke: '#000000',
-        strokeThickness: 4,
-        align: 'center',
-      })
+      .text(
+        width / 2,
+        height / 2,
+        '한국어 (Korean)',
+        textStyle.getStyle('language.button', { stroke: '#000000', strokeThickness: 4 })
+      )
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
     const japaneseButton = this.add
-      .text(width / 2, height / 2 + 80, '日本語 (Japanese)', {
-        fontFamily: 'Arial Black',
-        fontSize: 32,
-        color: '#ffffff',
-        stroke: '#000000',
-        strokeThickness: 4,
-        align: 'center',
-      })
+      .text(
+        width / 2,
+        height / 2 + 80,
+        '日本語 (Japanese)',
+        textStyle.getStyle('language.button', { stroke: '#000000', strokeThickness: 4 })
+      )
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 

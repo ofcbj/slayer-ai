@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Character from './Character';
 import { EnemyData } from '../../../types';
+import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 
 interface Intent {
@@ -53,21 +54,15 @@ export default class Enemy extends Character {
     bg.setStrokeStyle(3, 0xff6b6b);
 
     // 적 이름
-    const nameText = this.scene.add.text(0, -height / 2 + 25, this.enemyData.name, {
-      fontSize: '18px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      align: 'center',
-      wordWrap: { width: width - 10 }
-    });
+    const nameText = this.scene.add.text(0, -height/2+25, this.enemyData.name,
+      textStyle.getStyle('character.name', { align: 'center', wordWrap: { width: width - 10 } })
+    );
     nameText.setOrigin(0.5);
 
     // 적 이미지 (이모지) - 중앙에 크게 표시
-    const enemyImage = this.scene.add.text(0, 15, this.getEnemyImage(), {
-      fontSize: '64px',
-      fontFamily: 'Arial, sans-serif'
-    });
+    const enemyImage = this.scene.add.text(0, 15, this.getEnemyImage(),
+      textStyle.getStyle('character.emoji')
+    );
     enemyImage.setOrigin(0.5);
 
     // 체력 바 배경
@@ -84,42 +79,27 @@ export default class Enemy extends Character {
     hpBar.setOrigin(0, 0.5);
 
     // 체력 텍스트
-    const hpText = this.scene.add.text(0, height / 2 - 40, `${this.health}/${this.maxHealth}`, {
-      fontSize: '16px',
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      stroke: '#000000',
-      strokeThickness: 3
-    });
+    const hpText = this.scene.add.text(0, height/2-40,
+      `${this.health}/${this.maxHealth}`,
+      textStyle.getStyle('character.defense', { fontFamily: 'monospace', stroke: '#000000', strokeThickness: 3 })
+    );
     hpText.setOrigin(0.5);
 
     // 의도 표시 - 아이콘과 숫자만 (배경 없이)
-    const intentIcon = this.scene.add.text(-30, -55, '?', {
-      fontSize: '40px',
-      fontFamily: 'Arial, sans-serif'
-    });
+    const intentIcon = this.scene.add.text(-30, -55, '?',
+      textStyle.getStyle('intent.emoji')
+    );
     intentIcon.setOrigin(0.5);
 
-    const intentValue = this.scene.add.text(30, -55, '', {
-      fontSize: '36px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      stroke: '#000000',
-      strokeThickness: 4
-    });
+    const intentValue = this.scene.add.text(30, -55, '',
+      textStyle.getStyle('intent.emojiSmall', { stroke: '#000000', strokeThickness: 4 })
+    );
     intentValue.setOrigin(0.5);
 
     // 방어도 표시
-    const defenseText = this.scene.add.text(width / 2 - 25, -height / 2 + 25, '', {
-      fontSize: '24px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#4ecdc4',
-      stroke: '#000000',
-      strokeThickness: 3
-    });
+    const defenseText = this.scene.add.text(width/2-25, -height/2+25, '',
+      textStyle.getStyle('character.emojiSmall', { color: '#4ecdc4', stroke: '#000000', strokeThickness: 3 })
+    );
     defenseText.setOrigin(0.5);
 
     this.add([bg, nameText, enemyImage, hpBarBg, hpBar, hpText, intentIcon, intentValue, defenseText]);
@@ -253,14 +233,9 @@ export default class Enemy extends Character {
     super.applyDefense(amount);
 
     // 방어력 증가 시각 효과
-    const defensePopup = this.scene.add.text(this.x, this.y - 50, `+${amount} 🛡️`, {
-      fontSize: '24px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#4ecdc4',
-      stroke: '#000000',
-      strokeThickness: 3
-    });
+    const defensePopup = this.scene.add.text(this.x, this.y-50, `+${amount} 🛡️`,
+      textStyle.getStyle('damage.enemyDamage', { color: '#4ecdc4' })
+    );
     defensePopup.setOrigin(0.5);
 
     this.scene.tweens.add({
