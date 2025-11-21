@@ -52,7 +52,10 @@ export class TweenConfigManager {
     }
 
     try {
-      const response = await fetch('/data/tween.json');
+      // Use import.meta.env.BASE_URL to handle GitHub Pages base path
+      const basePath = import.meta.env.BASE_URL || '/';
+      const url = `${basePath}data/tween.json`.replace('//', '/');
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Failed to load tween.json: ${response.statusText}`);
       }
