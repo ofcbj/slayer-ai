@@ -1,0 +1,203 @@
+{
+  "titles": {
+    "main": {
+      "fontSize": "72px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff",
+      "stroke": "#ff6b6b",
+      "strokeThickness": 6
+    },
+    "gameOver": {
+      "fontSize": "96px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ff6b6b",
+      "stroke": "#000000",
+      "strokeThickness": 8
+    },
+    "victory": {
+      "fontSize": "96px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#2ecc71",
+      "stroke": "#ffffff",
+      "strokeThickness": 8
+    },
+    "section": {
+      "fontSize": "48px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff",
+      "stroke": "#000000",
+      "strokeThickness": 4
+    }
+  },
+  "buttons": {
+    "primary": {
+      "fontSize": "28px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "secondary": {
+      "fontSize": "24px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "endTurn": {
+      "fontSize": "20px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    }
+  },
+  "character": {
+    "name": {
+      "fontSize": "18px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "hp": {
+      "fontSize": "18px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ff6b6b"
+    },
+    "defense": {
+      "fontSize": "16px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#4ecdc4"
+    }
+  },
+  "damage": {
+    "hp": {
+      "fontSize": "36px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ff6b6b",
+      "stroke": "#000000",
+      "strokeThickness": 5
+    },
+    "defense": {
+      "fontSize": "32px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#4ecdc4",
+      "stroke": "#000000",
+      "strokeThickness": 4
+    },
+    "heal": {
+      "fontSize": "32px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#2ecc71",
+      "stroke": "#000000",
+      "strokeThickness": 4
+    }
+  },
+  "cards": {
+    "name": {
+      "fontSize": "14px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "description": {
+      "fontSize": "11px",
+      "fontFamily": "Arial, sans-serif",
+      "color": "#e0e0e0",
+      "wordWrap": true
+    },
+    "cost": {
+      "fontSize": "18px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "value": {
+      "fontSize": "24px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    }
+  },
+  "ui": {
+    "label": {
+      "fontSize": "16px",
+      "fontFamily": "Arial, sans-serif",
+      "color": "#ffffff"
+    },
+    "value": {
+      "fontSize": "18px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "energy": {
+      "fontSize": "28px",
+      "fontFamily": "monospace",
+      "fontStyle": "bold",
+      "color": "#f39c12"
+    },
+    "deckCount": {
+      "fontSize": "20px",
+      "fontFamily": "monospace",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "message": {
+      "fontSize": "24px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff",
+      "stroke": "#000000",
+      "strokeThickness": 4
+    }
+  },
+  "stage": {
+    "nodeName": {
+      "fontSize": "14px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "description": {
+      "fontSize": "12px",
+      "fontFamily": "Arial, sans-serif",
+      "color": "#94a3b8",
+      "align": "center",
+      "wordWrap": true
+    },
+    "floor": {
+      "fontSize": "16px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    }
+  },
+  "intent": {
+    "value": {
+      "fontSize": "14px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    }
+  },
+  "reward": {
+    "title": {
+      "fontSize": "36px",
+      "fontFamily": "Arial, sans-serif",
+      "fontStyle": "bold",
+      "color": "#ffffff"
+    },
+    "instruction": {
+      "fontSize": "20px",
+      "fontFamily": "Arial, sans-serif",
+      "color": "#cccccc"
+    }
+  }
+}

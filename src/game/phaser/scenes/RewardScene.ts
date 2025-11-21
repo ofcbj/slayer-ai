@@ -5,6 +5,7 @@ import { CardData, GameState } from '../../types';
 import { NormalizedCardData } from '../managers/BattleManager';
 import LanguageManager from '../../../i18n/LanguageManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import { textStyle } from '../managers/TextStyleManager';
 
 interface CardsDataRegistry {
   rewards: CardData[];
@@ -30,24 +31,23 @@ export default class RewardScene extends Phaser.Scene {
 
     // 타이틀
     const langManager = LanguageManager.getInstance();
-    this.add.text(width / 2, 100, langManager.t('reward.victory'), {
-      fontSize: '64px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#2ecc71',
-      stroke: '#ffffff',
-      strokeThickness: 4
-    }).setOrigin(0.5);
+    this.add.text(
+      width / 2,
+      100,
+      langManager.t('reward.victory'),
+      textStyle.getStyle('titles.section', { fontSize: '64px', color: '#2ecc71', stroke: '#ffffff', strokeThickness: 4 })
+    ).setOrigin(0.5);
 
     // 승리 파티클
     this.createVictoryParticles();
 
     // 설명
-    this.add.text(width / 2, 180, langManager.t('reward.chooseCard'), {
-      fontSize: '24px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#ffffff'
-    }).setOrigin(0.5);
+    this.add.text(
+      width / 2,
+      180,
+      langManager.t('reward.chooseCard'),
+      textStyle.getStyle('buttons.secondary')
+    ).setOrigin(0.5);
 
     // 보상 카드 생성
     this.createRewardCards();
@@ -136,14 +136,12 @@ export default class RewardScene extends Phaser.Scene {
     });
 
     // 메시지 표시
-    const message = this.add.text(this.cameras.main.width / 2, this.cameras.main.height / 2 + 150, `${cardData.name} added to deck!`, {
-      fontSize: '28px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#2ecc71',
-      stroke: '#000000',
-      strokeThickness: 4
-    });
+    const message = this.add.text(
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2 + 150,
+      `${cardData.name} added to deck!`,
+      textStyle.getStyle('buttons.primary', { color: '#2ecc71', stroke: '#000000', strokeThickness: 4 })
+    );
     message.setOrigin(0.5);
     message.setAlpha(0);
 
@@ -166,12 +164,12 @@ export default class RewardScene extends Phaser.Scene {
     const bg = this.add.rectangle(0, 0, 250, 70, 0x4ecdc4);
     bg.setStrokeStyle(3, 0xffffff);
 
-    const text = this.add.text(0, 0, 'Continue', {
-      fontSize: '32px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff'
-    });
+    const text = this.add.text(
+      0,
+      0,
+      'Continue',
+      textStyle.getStyle('titles.section', { fontSize: '32px' })
+    );
     text.setOrigin(0.5);
 
     button.add([bg, text]);

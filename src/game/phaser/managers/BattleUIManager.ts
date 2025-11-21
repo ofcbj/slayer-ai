@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { PlayerState } from '../../../types';
 import LanguageManager from '../../../i18n/LanguageManager';
 import { tweenConfig } from './TweenConfigManager';
+import { textStyle } from './TextStyleManager';
 
 interface EnergyOrbData {
   orb   : Phaser.GameObjects.Arc;
@@ -80,12 +81,12 @@ export default class BattleUIManager {
     const bg = this.scene.add.rectangle(0, 0, 150, 60, 0xff6b6b);
     bg.setStrokeStyle(3, 0xffffff);
 
-    const text = this.scene.add.text(0, 0, 'End Turn', {
-      fontSize: '24px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff'
-    });
+    const text = this.scene.add.text(
+      0,
+      0,
+      'End Turn',
+      textStyle.getStyle('buttons.secondary')
+    );
     text.setOrigin(0.5);
 
     button.add([bg, text]);
@@ -167,23 +168,22 @@ export default class BattleUIManager {
     this.deckPileContainer.add(deckIcon);
 
     // 덱 카드 수 텍스트
-    this.deckCountText = this.scene.add.text(0, 100, '0', {
-      fontSize: '24px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      stroke: '#000000',
-      strokeThickness: 4
-    }).setOrigin(0.5);
+    this.deckCountText = this.scene.add.text(
+      0,
+      100,
+      '0',
+      textStyle.getStyle('buttons.secondary', { stroke: '#000000', strokeThickness: 4 })
+    ).setOrigin(0.5);
     this.deckPileContainer.add(this.deckCountText);
 
     // 라벨
     const langManager = LanguageManager.getInstance();
-    const deckLabel = this.scene.add.text(0, 130, langManager.t('battle.deck'), {
-      fontSize: '18px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#95a5a6'
-    }).setOrigin(0.5);
+    const deckLabel = this.scene.add.text(
+      0,
+      130,
+      langManager.t('battle.deck'),
+      textStyle.getStyle('character.name', { color: '#95a5a6' })
+    ).setOrigin(0.5);
     this.deckPileContainer.add(deckLabel);
 
     // 클릭 가능한 영역 추가
@@ -233,23 +233,22 @@ export default class BattleUIManager {
     this.discardPileContainer.add(discardIcon);
 
     // 버린 카드 수 텍스트
-    this.discardCountText = this.scene.add.text(0, 100, '0', {
-      fontSize: '24px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      stroke: '#000000',
-      strokeThickness: 4
-    }).setOrigin(0.5);
+    this.discardCountText = this.scene.add.text(
+      0,
+      100,
+      '0',
+      textStyle.getStyle('buttons.secondary', { stroke: '#000000', strokeThickness: 4 })
+    ).setOrigin(0.5);
     this.discardPileContainer.add(this.discardCountText);
 
     // 라벨
     const langManager = LanguageManager.getInstance();
-    const discardLabel = this.scene.add.text(0, 130, langManager.t('battle.discard'), {
-      fontSize: '18px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#95a5a6'
-    }).setOrigin(0.5);
+    const discardLabel = this.scene.add.text(
+      0,
+      130,
+      langManager.t('battle.discard'),
+      textStyle.getStyle('character.name', { color: '#95a5a6' })
+    ).setOrigin(0.5);
     this.discardPileContainer.add(discardLabel);
 
     // 클릭 가능한 영역 추가
@@ -278,11 +277,12 @@ export default class BattleUIManager {
   public createDeckInfoText(): void {
     const height = this.scene.cameras.main.height;
 
-    this.deckText = this.scene.add.text(50, height - 50, '', {
-      fontSize: '18px',
-      fontFamily: 'monospace',
-      color: '#ffffff'
-    });
+    this.deckText = this.scene.add.text(
+      50,
+      height - 50,
+      '',
+      textStyle.getStyle('ui.label', { fontFamily: 'monospace' })
+    );
   }
 
   /**
@@ -386,14 +386,12 @@ export default class BattleUIManager {
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
 
-    const message = this.scene.add.text(width / 2, height / 2, text, {
-      fontSize: '32px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      stroke: '#000000',
-      strokeThickness: 6
-    });
+    const message = this.scene.add.text(
+      width / 2,
+      height / 2,
+      text,
+      textStyle.getStyle('ui.message', { fontSize: '32px', strokeThickness: 6 })
+    );
     message.setOrigin(0.5);
 
     tweenConfig.apply(this.scene, 'ui.damageText', message, {

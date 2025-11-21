@@ -3,6 +3,7 @@ import EventBus from '../../EventBus';
 import SoundManager from '../managers/SoundManager';
 import LanguageManager from '../../../i18n/LanguageManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import { textStyle } from '../managers/TextStyleManager';
 
 interface GameState {
   player: {
@@ -46,6 +47,8 @@ export default class PreloadScene extends Phaser.Scene {
       await langManager.loadGameData();
       // Tween 설정 로드
       await tweenConfig.load();
+      // 텍스트 스타일 설정 로드
+      await textStyle.load();
     } catch (error) {
       console.error('Failed to load game data:', error);
       return;

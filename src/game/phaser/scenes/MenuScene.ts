@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import LanguageManager from '../../../i18n/LanguageManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import { textStyle } from '../managers/TextStyleManager';
 
 export default class MenuScene extends Phaser.Scene {
   constructor() {
@@ -19,14 +20,12 @@ export default class MenuScene extends Phaser.Scene {
     this.add.rectangle(0, 0, width, height, 0x1a1a2e).setOrigin(0);
 
     // 타이틀
-    const title: Phaser.GameObjects.Text = this.add.text(width / 2, height / 3, langManager.t('menu.title'), {
-      fontSize: '72px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      stroke: '#ff6b6b',
-      strokeThickness: 6
-    });
+    const title: Phaser.GameObjects.Text = this.add.text(
+      width / 2,
+      height / 3,
+      langManager.t('menu.title'),
+      textStyle.getStyle('titles.main')
+    );
     title.setOrigin(0.5);
 
     // 타이틀 애니메이션
@@ -59,11 +58,7 @@ export default class MenuScene extends Phaser.Scene {
       width / 2,
       height - 100,
       langManager.t('menu.description'),
-      {
-        fontSize: '20px',
-        fontFamily: 'Arial, sans-serif',
-        color: '#aaaaaa'
-      }
+      textStyle.getStyle('reward.instruction')
     );
     description.setOrigin(0.5);
 
@@ -84,12 +79,12 @@ export default class MenuScene extends Phaser.Scene {
     bg.setStrokeStyle(3, 0xffffff);
 
     // 버튼 텍스트
-    const btnText: Phaser.GameObjects.Text = this.add.text(0, 0, text, {
-      fontSize: '28px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff'
-    });
+    const btnText: Phaser.GameObjects.Text = this.add.text(
+      0,
+      0,
+      text,
+      textStyle.getStyle('buttons.primary')
+    );
     btnText.setOrigin(0.5);
 
     button.add([bg, btnText]);

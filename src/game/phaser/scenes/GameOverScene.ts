@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import { textStyle } from '../managers/TextStyleManager';
 
 interface InitData {
   victory?: boolean;
@@ -59,14 +60,7 @@ export default class GameOverScene extends Phaser.Scene {
       width / 2,
       height / 3,
       'VICTORY!',
-      {
-        fontSize  : '96px',
-        fontFamily: 'Arial, sans-serif',
-        fontStyle : 'bold',
-        color     : '#2ecc71',
-        stroke    : '#ffffff',
-        strokeThickness: 8
-      }
+      textStyle.getStyle('titles.victory')
     );
     title.setOrigin(0.5);
 
@@ -77,12 +71,12 @@ export default class GameOverScene extends Phaser.Scene {
     });
 
     // 메시지
-    this.add.text(width / 2, height / 2, 'You have defeated the Demon Lord!', {
-      fontSize  : '32px',
-      fontFamily: 'Arial, sans-serif',
-      color     : '#ffffff',
-      align     : 'center'
-    }).setOrigin(0.5);
+    this.add.text(
+      width / 2,
+      height / 2,
+      'You have defeated the Demon Lord!',
+      textStyle.getStyle('titles.section', { fontSize: '32px' })
+    ).setOrigin(0.5);
 
     // 승리 파티클
     this.createCelebrationParticles();
@@ -97,35 +91,28 @@ export default class GameOverScene extends Phaser.Scene {
       width / 2,
       height / 3,
       'DEFEAT',
-      { 
-        fontSize  : '96px',
-        fontFamily: 'Arial, sans-serif',
-        fontStyle : 'bold',
-        color     : '#ff6b6b',
-        stroke    : '#000000',
-        strokeThickness: 8
-      }
+      textStyle.getStyle('titles.gameOver')
     );
     title.setOrigin(0.5);
 
     // 메시지
-    this.add.text(width / 2, height / 2, 'Your journey ends here...', {
-      fontSize  : '32px',
-      fontFamily: 'Arial, sans-serif',
-      color     : '#cccccc',
-      align     : 'center'
-    }).setOrigin(0.5);
+    this.add.text(
+      width / 2,
+      height / 2,
+      'Your journey ends here...',
+      textStyle.getStyle('reward.instruction', { fontSize: '32px' })
+    ).setOrigin(0.5);
 
     // 게임 상태
     const gameState: GameState = this.registry.get('gameState');
     const statsText: string = `Stages Cleared: ${gameState.stagesCleared.length}\nDeck Size: ${gameState.deck.length} cards`;
 
-    this.add.text(width / 2, height / 2 + 80, statsText, {
-      fontSize  : '24px',
-      fontFamily: 'monospace',
-      color     : '#aaaaaa',
-      align     : 'center'
-    }).setOrigin(0.5);
+    this.add.text(
+      width / 2,
+      height / 2 + 80,
+      statsText,
+      textStyle.getStyle('buttons.secondary', { fontFamily: 'monospace', color: '#aaaaaa' })
+    ).setOrigin(0.5);
   }
 
   private createButtons(): void {
@@ -179,12 +166,12 @@ export default class GameOverScene extends Phaser.Scene {
     const bg: Phaser.GameObjects.Rectangle = this.add.rectangle(0, 0, 200, 60, 0x4ecdc4);
     bg.setStrokeStyle(3, 0xffffff);
 
-    const btnText: Phaser.GameObjects.Text = this.add.text(0, 0, text, {
-      fontSize: '24px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff'
-    });
+    const btnText: Phaser.GameObjects.Text = this.add.text(
+      0,
+      0,
+      text,
+      textStyle.getStyle('buttons.secondary')
+    );
     btnText.setOrigin(0.5);
 
     button.add([bg, btnText]);

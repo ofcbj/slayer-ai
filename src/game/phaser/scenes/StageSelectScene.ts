@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import LanguageManager from '../../../i18n/LanguageManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import { textStyle } from '../managers/TextStyleManager';
 
 interface StageData {
   id: number;
@@ -58,14 +59,12 @@ export default class StageSelectScene extends Phaser.Scene {
 
     // 타이틀
     const langManager = LanguageManager.getInstance();
-    this.add.text(width / 2, 60, langManager.t('stage.select'), {
-      fontSize: '56px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      stroke: '#000000',
-      strokeThickness: 4
-    }).setOrigin(0.5);
+    this.add.text(
+      width / 2,
+      60,
+      langManager.t('stage.select'),
+      textStyle.getStyle('titles.section', { fontSize: '56px' })
+    ).setOrigin(0.5);
 
     // 플레이어 상태 표시
     const gameState: GameState = this.registry.get('gameState');
@@ -95,31 +94,34 @@ export default class StageSelectScene extends Phaser.Scene {
 
     // 타이틀
     const langManager = LanguageManager.getInstance();
-    const titleText = this.add.text(125, 15, langManager.t('stage.playerInfo'), {
-      fontSize: '18px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#8b5cf6'
-    }).setOrigin(0.5, 0);
+    const titleText = this.add.text(
+      125,
+      15,
+      langManager.t('stage.playerInfo'),
+      textStyle.getStyle('character.name', { color: '#8b5cf6' })
+    ).setOrigin(0.5, 0);
 
-    const healthText = this.add.text(20, 50, `❤️ 체력: ${player.health}/${player.maxHealth}`, {
-      fontSize: '20px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#ff6b6b'
-    });
+    const healthText = this.add.text(
+      20,
+      50,
+      `❤️ 체력: ${player.health}/${player.maxHealth}`,
+      textStyle.getStyle('character.hp', { fontSize: '20px' })
+    );
 
-    const energyText = this.add.text(20, 80, `⚡ 에너지: ${player.maxEnergy}`, {
-      fontSize: '20px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#4ecdc4'
-    });
+    const energyText = this.add.text(
+      20,
+      80,
+      `⚡ 에너지: ${player.maxEnergy}`,
+      textStyle.getStyle('ui.label', { fontSize: '20px', color: '#4ecdc4' })
+    );
 
     const gameState: GameState = this.registry.get('gameState');
-    const deckText = this.add.text(20, 110, `🎴 덱: ${gameState.deck.length}장`, {
-      fontSize: '18px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#ffffff'
-    });
+    const deckText = this.add.text(
+      20,
+      110,
+      `🎴 덱: ${gameState.deck.length}장`,
+      textStyle.getStyle('character.name')
+    );
 
     statsContainer.add([bg, titleText, healthText, energyText, deckText]);
   }
@@ -410,33 +412,29 @@ export default class StageSelectScene extends Phaser.Scene {
       fontFamily: 'Arial, sans-serif'
     }).setOrigin(0.5);
 
-    const numberText = this.add.text(0, 20, stageId.toString(), {
-      fontSize: '16px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff'
-    }).setOrigin(0.5);
+    const numberText = this.add.text(
+      0,
+      20,
+      stageId.toString(),
+      textStyle.getStyle('stage.nodeName')
+    ).setOrigin(0.5);
 
     // 스테이지 이름
-    const nameText = this.add.text(0, 75, stage.name, {
-      fontSize: '16px',
-      fontFamily: 'Arial, sans-serif',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      align: 'center',
-      stroke: '#000000',
-      strokeThickness: 3
-    }).setOrigin(0.5);
+    const nameText = this.add.text(
+      0,
+      75,
+      stage.name,
+      textStyle.getStyle('stage.nodeName', { stroke: '#000000', strokeThickness: 3 })
+    ).setOrigin(0.5);
 
     // 스테이지 설명
     if (stage.description) {
-      const descText = this.add.text(0, 95, stage.description, {
-        fontSize: '12px',
-        fontFamily: 'Arial, sans-serif',
-        color: '#94a3b8',
-        align: 'center',
-        wordWrap: { width: 200 }
-      }).setOrigin(0.5);
+      const descText = this.add.text(
+        0,
+        95,
+        stage.description,
+        textStyle.getStyle('stage.description', { wordWrap: { width: 200 } })
+      ).setOrigin(0.5);
       node.add(descText);
     }
 
@@ -501,11 +499,12 @@ export default class StageSelectScene extends Phaser.Scene {
     const backBg = this.add.rectangle(0, 0, 120, 50, 0x1e293b, 0.9);
     backBg.setStrokeStyle(2, 0x475569);
 
-    const backText = this.add.text(0, 0, langManager.t('stage.back'), {
-      fontSize: '18px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#ffffff'
-    }).setOrigin(0.5);
+    const backText = this.add.text(
+      0,
+      0,
+      langManager.t('stage.back'),
+      textStyle.getStyle('character.name')
+    ).setOrigin(0.5);
 
     backContainer.add([backBg, backText]);
 
