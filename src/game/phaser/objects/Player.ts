@@ -1,25 +1,46 @@
 import Phaser from 'phaser';
 import { PlayerState } from '../../../types';
 import Character from './Character';
+import { PlayerStateObservable } from '../state/PlayerStateObservable';
 
 /**
  * Player - 플레이어 캐릭터 클래스
  * Character를 상속하여 공통 로직 사용
- * 상태는 BattleManager가 관리하며, updateFromState()로 동기화됩니다.
+ * PlayerStateObservable을 내부적으로 관리하여 자체 상태를 보유합니다.
  */
 export default class Player extends Character {
-  private healthText: Phaser.GameObjects.Text;
-  private defenseText: Phaser.GameObjects.Text;
-  private bg: Phaser.GameObjects.Rectangle;
-  private playerHead: Phaser.GameObjects.Text;
-  private hpContainer: Phaser.GameObjects.Container;
-  private defContainer: Phaser.GameObjects.Container;
+  private healthText!: Phaser.GameObjects.Text;
+  private defenseText!: Phaser.GameObjects.Text;
+  private bg!: Phaser.GameObjects.Rectangle;
+  private playerHead!: Phaser.GameObjects.Text;
+  private hpContainer!: Phaser.GameObjects.Container;
+  private defContainer!: Phaser.GameObjects.Container;
+  private stateObservable: PlayerStateObservable;
+  public maxEnergy: number = 3;
+  public energy: number = 3;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, initialState: PlayerState) {
     super(scene, x, y);
+
+    // PlayerStateObservable 초기화
+    this.stateObservable = new PlayerStateObservable(initialState);
+
+    // Character의 상태를 PlayerState와 동기화
+    this.health = initialState.health;
+    this.maxHealth = initialState.maxHealth;
+    this.defense = initialState.defense;
+    this.maxEnergy = initialState.maxEnergy;
 
     this.createPlayer();
     scene.add.existing(this);
+
+    // 자신의 상태 변경을 구독하여 Character의 내부 상태와 동기화
+    this.stateObservable.subscribe((state) => {
+      this.health = state.health;
+      this.maxHealth = state.maxHealth;
+      this.defense = state.defense;
+      this.maxEnergy = state.maxEnergy;
+    });
   }
 
   private createPlayer(): void {
@@ -100,24 +121,97 @@ export default class Player extends Character {
   }
 
   /**
-   * 상태 업데이트 (옵저버 콜백에서 호출)
-   * BattleManager의 PlayerState를 Character의 내부 상태와 동기화합니다.
+   * 외부 구독자 등록 (BattleManager, UI 등)
    */
-  updateFromState(state: PlayerState): void {
-    const healthChanged = this.health !== state.health;
-    const defenseChanged = this.defense !== state.defense;
+  public subscribeToState(observer: (state: PlayerState) => void): () => void {
+    return this.stateObservable.subscribe(observer);
+  }
 
-    // Character의 내부 상태 동기화
-    this.health = state.health;
-    this.maxHealth = state.maxHealth;
-    this.defense = state.defense;
+  /**
+   * 현재 상태 반환
+   */
+  public getState(): PlayerState {
+    return this.stateObservable.getState();
+  }
 
-    if (healthChanged) {
-      this.updateHealthDisplay();
+  /**
+   * takeDamage 오버라이드 - Character의 메서드를 사용하되 상태 동기화
+   */
+  override takeDamage(amount: number): void {
+    // Character의 takeDamage 호출 (방어력 계산, 애니메이션, 사운드 포함)
+    super.takeDamage(amount);
+
+    // 변경된 상태를 Observable에 반영
+    this.stateObservable.setState(state => {
+      state.health = this.health;
+      state.defense = this.defense;
+    });
+  }
+
+  /**
+   * 방어력 적용 오버라이드
+   */
+  override applyDefense(amount: number): void {
+    super.applyDefense(amount);
+
+    // 상태 동기화
+    this.stateObservable.setState(state => {
+      state.defense = this.defense;
+    });
+  }
+
+  /**
+   * 에너지 설정
+   */
+  public setEnergy(amount: number): void {
+    this.energy = Math.max(0, Math.min(this.maxEnergy, amount));
+    this.stateObservable.setState(state => {
+      state.energy = this.energy;
+    });
+  }
+
+  /**
+   * 에너지 소비
+   */
+  public consumeEnergy(amount: number): boolean {
+    if (this.energy >= amount) {
+      this.setEnergy(this.energy - amount);
+      return true;
     }
-    if (defenseChanged) {
-      this.updateDefenseDisplay();
-    }
+    return false;
+  }
+
+  /**
+   * 치유
+   */
+  public heal(amount: number): void {
+    this.health = Math.min(this.maxHealth, this.health + amount);
+    this.stateObservable.setState(state => {
+      state.health = this.health;
+    });
+    this.updateHealthDisplay();
+  }
+
+  /**
+   * 방어력 초기화 (턴 시작 시)
+   */
+  public resetDefense(): void {
+    this.defense = 0;
+    this.stateObservable.setState(state => {
+      state.defense = 0;
+    });
+    this.updateDefenseDisplay();
+  }
+
+  /**
+   * 방어력 직접 설정 (외부에서 호출)
+   */
+  public setDefense(amount: number): void {
+    this.defense = Math.max(0, amount);
+    this.stateObservable.setState(state => {
+      state.defense = this.defense;
+    });
+    this.updateDefenseDisplay();
   }
 
   /**
@@ -139,6 +233,16 @@ export default class Player extends Character {
    */
   protected override playHitAnimation(): void {
     this.playHitAnimationPublic();
+  }
+
+  /**
+   * 피격 사운드 재생 (Character의 abstract 메서드 구현)
+   */
+  protected override playDamageSound(): void {
+    const soundManager = (this.scene as any).soundManager;
+    if (soundManager) {
+      soundManager.playPlayerDamage();
+    }
   }
 
   /**

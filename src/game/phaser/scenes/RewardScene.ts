@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import Card from '../objects/Card';
 import { CardData, GameState } from '../../types';
-import { NormalizedCardData } from '../managers/BattleManager';
 import LanguageManager from '../../../i18n/LanguageManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
@@ -72,8 +71,7 @@ export default class RewardScene extends Phaser.Scene {
       const x = startX + (index * spacing);
       const y = height / 2;
 
-      const normalizedCard = this.normalizeCardData(cardData);
-      const card = new Card(this, x, y, normalizedCard);
+      const card = new Card(this, x, y, cardData);
 
       // 카드 선택 이벤트
       card.bg.off('pointerdown'); // 기존 이벤트 제거
@@ -89,21 +87,6 @@ export default class RewardScene extends Phaser.Scene {
         delay: index * 200
       });
     });
-  }
-
-  private normalizeCardData(cardData: CardData): NormalizedCardData {
-    // rawData도 깊은 복사하여 객체 참조 문제 방지
-    return {
-      name: cardData.name,
-      type: cardData.damage ? '공격' : cardData.block ? '방어' : cardData.heal ? '치유' : cardData.energy ? '에너지' : '스킬',
-      cost: cardData.cost,
-      value: cardData.damage || cardData.block || cardData.heal || cardData.energy || 0,
-      allEnemies: cardData.allEnemies || false,
-      hits: cardData.hits || 1,
-      selfDamage: cardData.selfDamage || 0,
-      description: cardData.description,
-      rawData: { ...cardData }
-    };
   }
 
   private selectRewardCard(cardData: CardData, cardObj: Card): void {

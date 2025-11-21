@@ -18,6 +18,7 @@ interface PhaserGameProps {
 export const PhaserGame = forwardRef<IRefPhaserGame, PhaserGameProps> (
   function PhaserGame({ currentActiveScene }, ref) {
     const gameRef = useRef<Phaser.Game | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
     useLayoutEffect(() => {
       if (gameRef.current === null) {
@@ -27,6 +28,11 @@ export const PhaserGame = forwardRef<IRefPhaserGame, PhaserGameProps> (
           ref({ game: gameRef.current, scene: null });
         } else if (ref) {
           ref.current = { game: gameRef.current, scene: null };
+        }
+
+        // 게임 컨테이너에 포커스를 주어 키보드 입력을 받을 수 있도록 함
+        if (containerRef.current) {
+          containerRef.current.focus();
         }
       }
 
@@ -56,6 +62,6 @@ export const PhaserGame = forwardRef<IRefPhaserGame, PhaserGameProps> (
       };
     }, [currentActiveScene, ref]);
 
-    return <div id="game-container" />;
+    return <div id="game-container" ref={containerRef} tabIndex={0} />;
   }
 );

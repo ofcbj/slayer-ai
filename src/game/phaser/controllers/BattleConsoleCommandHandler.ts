@@ -68,19 +68,23 @@ export default class BattleConsoleCommandHandler {
   }
 
   private handleDamagePlayer = (amount: number) => {
-    this.battleManager.playerTakeDamage(amount);
+    this.battleManager.getPlayer().takeDamage(amount);
+    // 플레이어 사망 시 전투 종료 체크
+    if (this.battleManager.getPlayer().isDead()) {
+      this.battleManager.checkBattleEnd();
+    }
   };
 
   private handleHealPlayer = (amount: number) => {
-    this.battleManager.healPlayer(amount);
+    this.battleManager.getPlayer().heal(amount);
   };
 
   private handleSetEnergy = (amount: number) => {
-    this.battleManager.setEnergy(amount);
+    this.battleManager.getPlayer().setEnergy(amount);
   };
 
   private handleSetDefense = (amount: number) => {
-    this.battleManager.setDefense(amount);
+    this.battleManager.getPlayer().setDefense(amount);
   };
 
   private handleAddCard = (cardName: string) => {

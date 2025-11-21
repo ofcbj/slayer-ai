@@ -244,76 +244,13 @@ export default class BattleScene extends Phaser.Scene {
       onEnemyAction: (enemy: Enemy, intent) => {
         if (intent.type === 'attack') {
           enemy.playAttackAnimation(() => {
-            this.battleManager.playerTakeDamage(intent.value);
-          });
-        }
-      },
-      onPlayerFullBlock: () => {
-        // 완전 방어 시 블럭 사운드 재생
-        if (this.soundManager) {
-          this.soundManager.playBlock();
-        }
-        // 방어 애니메이션
-        this.playerCharacter.playDefendAnimation();
-      },
-      onPlayerTakeDamage: (actualDamage: number, blockedDamage: number) => {
-        // 데미지 표시만 담당 (상태는 옵저버가 처리)
-        if (blockedDamage > 0) {
-          // 방어도로 막은 데미지 표시
-          const blockText = this.add.text(this.playerCharacter.x - 40, this.playerCharacter.y - 50, `🛡️-${blockedDamage}`, {
-            fontSize  : '28px',
-            fontFamily: 'Arial, sans-serif',
-            fontStyle : 'bold',
-            color     : '#4ecdc4',
-            stroke    : '#000000',
-            strokeThickness : 4
-          });
-          blockText.setOrigin(0.5);
+            // Player에게 직접 데미지 적용
+            this.playerCharacter.takeDamage(intent.value);
 
-          this.tweens.add({
-            targets   : blockText,
-            y         : blockText.y - 40,
-            alpha     : 0,
-            duration  : 1000,
-            ease      : 'Power2',
-            onComplete: () => blockText.destroy()
-          });
-        }
-
-        if (actualDamage > 0) {
-          // 실제 체력 데미지 표시
-          const damageText = this.add.text(this.playerCharacter.x + 40, this.playerCharacter.y - 50, `-${actualDamage} HP`, {
-            fontSize  : '36px',
-            fontFamily: 'Arial, sans-serif',
-            fontStyle : 'bold',
-            color     : '#ff6b6b',
-            stroke    : '#000000',
-            strokeThickness: 5
-          });
-          damageText.setOrigin(0.5);
-
-          this.tweens.add({
-            targets   : damageText,
-            y         : damageText.y - 60,
-            alpha     : 0,
-            duration  : 1000,
-            ease      : 'Power2',
-            onComplete: () => damageText.destroy()
-          });
-
-          // 피격 애니메이션
-          this.playerCharacter.playHitAnimationPublic();
-        } else if (blockedDamage > 0) {
-          // 완전히 막았을 때는 방어 애니메이션
-          this.playerCharacter.playDefendAnimation();
-        }
-
-        // 체력이 0 이하면 화면 빨갛게 + 게임 오버 체크
-        const playerState = this.battleManager.getPlayerState();
-        if (playerState.health <= 0) {
-          this.cameras.main.flash(200, 255, 0, 0, false, (_camera: any, progress: number) => {
-            if (progress === 1) {
-              this.resultHandler.checkGameOver();
+            // 플레이어 사망 시 처리
+            if (this.playerCharacter.isDead()) {
+              this.cameras.main.flash(200, 255, 0, 0);
+              this.battleManager.checkBattleEnd();
             }
           });
         }
@@ -337,14 +274,12 @@ export default class BattleScene extends Phaser.Scene {
       }
     };
 
-    this.battleManager = new BattleManager(this.gameState.player, enemies, callbacks);
+    this.battleManager = new BattleManager(this.playerCharacter, enemies, callbacks);
     // 플레이어 상태 옵저버 구독
-    this.unsubscribePlayerState = this.battleManager.subscribeToPlayerState((state) => {
+    this.unsubscribePlayerState = this.playerCharacter.subscribeToState((state) => {
       // 1. GameState 동기화 (React UI 및 씬 간 데이터 전달용)
       this.gameState.player = { ...state };
-      // 2. Player 시각화 업데이트
-      this.playerCharacter.updateFromState(state);
-      // 3. UI 업데이트
+      // 2. UI 업데이트
       this.uiManager.updateEnergyUI(state);
     });
   }
@@ -436,7 +371,7 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     const currentSelected = this.cardHandManager.getSelectedCard();
-    const isAttackCard = cardData.rawData.type === 'attack';
+    const isAttackCard = cardData.type === 'attack';
     const needsTarget = isAttackCard && !cardData.allEnemies;
 
     // 공격 카드이고 타겟이 필요한 경우
@@ -475,8 +410,8 @@ export default class BattleScene extends Phaser.Scene {
     if (!enemy || enemy.isDead()) return;
 
     const cardData: any = (selectedCard as any).cardData;
-    // rawData에서 원본 type 확인 (언어 독립적)
-    if (cardData.rawData.type !== 'attack') return;
+    // type 확인 (언어 독립적)
+    if (cardData.type !== 'attack') return;
 
     // BattleEventManager의 onEnemyClicked 로직과 동일하게 처리
     this.eventManager.useCard(selectedCard, enemy);

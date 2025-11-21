@@ -237,6 +237,16 @@ export default class Enemy extends Character {
   }
 
   /**
+   * 피격 사운드 재생 (Character 추상 메서드 구현)
+   */
+  protected override playDamageSound(): void {
+    const soundManager = (this.scene as any).soundManager;
+    if (soundManager) {
+      soundManager.playEnemyDamage();
+    }
+  }
+
+  /**
    * 방어력 적용 (베이스 클래스 오버라이드)
    */
   applyDefense(amount: number): void {

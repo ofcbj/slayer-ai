@@ -27,8 +27,12 @@ export default class BattleSceneInitializer {
     const height = this.scene.cameras.main.height;
 
     // 플레이어 캐릭터를 중앙 하단에 배치 (적과 카드 사이)
-    const playerCharacter = new Player(this.scene, width / 2, height / 2 + 100);
-    // 초기 상태는 BattleScene의 옵저버 구독을 통해 설정됨
+    const playerCharacter = new Player(
+      this.scene,
+      width / 2,
+      height / 2 + 100,
+      this.gameState.player // PlayerState 전달
+    );
     playerCharacter.idle(); // 아이들 애니메이션 시작
 
     return playerCharacter;

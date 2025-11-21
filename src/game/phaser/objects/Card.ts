@@ -1,15 +1,15 @@
 import Phaser from 'phaser';
-import { NormalizedCardData } from '../managers/BattleManager';
+import { CardData } from '../../../types';
 import CardRenderer from '../utils/CardRenderer';
 import { tweenConfig } from '../managers/TweenConfigManager';
 
 export default class Card extends Phaser.GameObjects.Container {
-  private cardData: NormalizedCardData;
+  private cardData: CardData;
   private isSelected: boolean;
   private originalY: number;
   private bg!: Phaser.GameObjects.Rectangle;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, cardData: NormalizedCardData) {
+  constructor(scene: Phaser.Scene, x: number, y: number, cardData: CardData) {
     super(scene, x, y);
 
     this.cardData = cardData;

@@ -3,7 +3,7 @@ import Card from '../objects/Card';
 import DeckManager from './DeckManager';
 import BattleUIManager from './BattleUIManager';
 import SoundManager from './SoundManager';
-import { CardData, NormalizedCardData } from './BattleManager';
+import { CardData } from '../../../types';
 
 /**
  * 카드 핸드를 관리하는 클래스
@@ -103,16 +103,13 @@ export default class CardHandManager {
    * 애니메이션과 함께 카드를 핸드에 추가합니다.
    */
   private addCardToHandWithAnimation(cardData: CardData, cardIndex: number, finalHandSize: number): void {
-    // 카드 타입 정규화
-    const normalizedCard = this.normalizeCardData(cardData);
-
     // 덱 위치에서 카드 생성
     const deckPileContainer = this.uiManager.getDeckPileContainer();
     const deckWorldPos = deckPileContainer.getWorldTransformMatrix();
     const startX = deckWorldPos.tx;
     const startY = deckWorldPos.ty;
 
-    const card = new Card(this.scene, startX, startY, normalizedCard as any);
+    const card = new Card(this.scene, startX, startY, cardData);
     card.setScale(0.8);
 
     // 드로우 애니메이션 중에는 인터랙션 비활성화
@@ -158,25 +155,6 @@ export default class CardHandManager {
         card.enableInteraction();
       }
     });
-  }
-
-  /**
-   * 카드 데이터를 정규화합니다.
-   */
-  private normalizeCardData(cardData: CardData): NormalizedCardData {
-    // 기존 카드 데이터를 Card 클래스가 기대하는 형식으로 변환
-    // rawData도 깊은 복사하여 객체 참조 문제 방지
-    return {
-      name: cardData.name,
-      type: cardData.damage ? '공격' : cardData.block ? '방어' : cardData.heal ? '치유' : cardData.energy ? '에너지' : '스킬',
-      cost: cardData.cost,
-      value: cardData.damage || cardData.block || cardData.heal || cardData.energy || 0,
-      allEnemies: cardData.allEnemies || false,
-      hits: cardData.hits || 1,
-      selfDamage: cardData.selfDamage || 0,
-      description: cardData.description,
-      rawData: { ...cardData }
-    };
   }
 
   /**
@@ -292,8 +270,7 @@ export default class CardHandManager {
 
     // DeckManager를 사용하여 모든 카드를 버린 카드 더미에 추가
     const cardsDataToDiscard = cardsToDiscard.map(card => {
-      const cardData: any = (card as any).cardData;
-      return cardData.rawData;
+      return (card as any).cardData as CardData;
     });
     this.deckManager.discardCards(cardsDataToDiscard);
 

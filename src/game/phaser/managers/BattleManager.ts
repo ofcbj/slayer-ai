@@ -1,19 +1,6 @@
 import Enemy from '../objects/Enemy';
+import Player from '../objects/Player';
 import { CardData, EnemyData, PlayerState, StageData, GameState } from '../../../types';
-import { PlayerStateObservable } from '../state/PlayerStateObservable';
-
-// BattleManager 전용 인터페이스
-export interface NormalizedCardData {
-  name        : string;
-  type        : string;
-  cost        : number;
-  value       : number;
-  allEnemies  : boolean;
-  hits        : number;
-  selfDamage  : number;
-  description : string;
-  rawData     : CardData;
-}
 
 export interface EnemyIntent {
   type: 'attack' | 'defend';
@@ -28,8 +15,6 @@ export interface BattleCallbacks {
   onPlayerTurnStart?    : () => void;
   onEnemyTurnStart?     : () => void;
   onEnemyAction?        : (enemy: Enemy, intent: EnemyIntent) => void;
-  onPlayerTakeDamage?   : (actualDamage: number, blockedDamage: number) => void;
-  onPlayerFullBlock?    : () => void;
   onEnemyDefeated?      : (enemy: Enemy) => void;
   onBattleEnd?          : (victory: boolean) => void;
 }
@@ -38,28 +23,20 @@ export interface BattleCallbacks {
  * 전투 로직을 관리하는 클래스
  * 턴 관리, 카드 사용, 적 행동 등을 처리합니다.
  *
- * PlayerState는 PlayerStateObservable을 통해 관리되며,
- * 모든 상태 변경은 자동으로 구독자들에게 통지됩니다.
+ * Player 객체가 자체 상태를 관리하며,
+ * BattleManager는 Player 참조를 통해 상태에 접근합니다.
  */
 export default class BattleManager {
-  private turn                  : 'player' | 'enemy' = 'player';
-  private playerStateObservable : PlayerStateObservable;
-  private enemies               : Enemy[];
-  private callbacks             : BattleCallbacks;
+  private turn      : 'player' | 'enemy' = 'player';
+  private player    : Player;
+  private enemies   : Enemy[];
+  private callbacks : BattleCallbacks;
 
-  constructor(playerState: PlayerState, enemies: Enemy[], callbacks: BattleCallbacks = {}) {
-    this.playerStateObservable = new PlayerStateObservable(playerState);
-    this.enemies              = enemies;
-    this.callbacks            = callbacks;
+  constructor(player: Player, enemies: Enemy[], callbacks: BattleCallbacks = {}) {
+    this.player    = player;
+    this.enemies   = enemies;
+    this.callbacks = callbacks;
     console.log(`[BattleManager] Created with ${enemies.length} enemies:`, enemies.map((e: any) => e.enemyData?.name));
-  }
-
-  /**
-   * 플레이어 상태 옵저버 구독
-   * @returns 구독 해제 함수
-   */
-  public subscribeToPlayerState(observer: (state: PlayerState) => void): () => void {
-    return this.playerStateObservable.subscribe(observer);
   }
 
   /**
@@ -75,11 +52,9 @@ export default class BattleManager {
   public startPlayerTurn(): void {
     this.turn = 'player';
 
-    // 에너지 회복 및 방어도 초기화 (옵저버가 자동으로 통지)
-    this.playerStateObservable.setState(state => {
-      state.energy = state.maxEnergy;
-      state.defense = 0;
-    });
+    // 에너지 회복 및 방어도 초기화
+    this.player.setEnergy(this.player.maxEnergy);
+    this.player.resetDefense();
 
     if (this.callbacks.onPlayerTurnStart) {
       this.callbacks.onPlayerTurnStart();
@@ -145,96 +120,54 @@ export default class BattleManager {
   /**
    * 카드를 사용합니다.
    */
-  public useCard(cardData: NormalizedCardData, target: Enemy | null = null): boolean {
+  public useCard(cardData: CardData, target: Enemy | null = null): boolean {
     console.log(`[BattleManager] useCard - ${cardData.name}, Current enemies in BattleManager:`, this.enemies.map((e: any) => e.enemyData?.name));
 
-    const currentState = this.playerStateObservable.getState();
-
     // 에너지 확인
-    if (currentState.energy < cardData.cost) {
+    if (!this.player.consumeEnergy(cardData.cost)) {
       return false; // 에너지 부족
     }
 
-    // 카드 효과 적용
-    if (cardData.type === '공격') {
-      // 에너지 소모만 먼저 처리
-      this.playerStateObservable.setState(state => {
-        state.energy -= cardData.cost;
-      });
+    // 카드 효과 적용 (type으로 언어 독립적 체크)
+    if (cardData.type === 'attack' && cardData.damage) {
+      const hits = cardData.hits || 1;
 
       if (cardData.allEnemies) {
         // 모든 적에게 공격 (내부 enemies 배열 사용)
         console.log(`[BattleManager] useCard - Attacking all enemies, count: ${this.enemies.length}`);
         this.enemies.forEach(enemy => {
           if (!enemy.isDead()) {
-            for (let i = 0; i < cardData.hits; i++) {
-              enemy.takeDamage(cardData.value);
+            for (let i = 0; i < hits; i++) {
+              enemy.takeDamage(cardData.damage!);
             }
           }
         });
       } else if (target) {
         // 단일 적 공격
         console.log(`[BattleManager] useCard - Attacking single target: ${(target as any).enemyData?.name}`);
-        for (let i = 0; i < cardData.hits; i++) {
-          target.takeDamage(cardData.value);
+        for (let i = 0; i < hits; i++) {
+          target.takeDamage(cardData.damage);
         }
       }
 
       // 자신에게 피해
       if (cardData.selfDamage) {
-        this.playerTakeDamage(cardData.selfDamage);
+        this.player.takeDamage(cardData.selfDamage);
       }
     } else {
-      // 비공격 카드는 한 번에 처리 (옵저버가 자동으로 통지)
-      this.playerStateObservable.setState(state => {
-        state.energy -= cardData.cost;
-
-        if (cardData.type === '방어') {
-          state.defense += cardData.value;
-        } else if (cardData.type === '치유') {
-          state.health = Math.min(state.maxHealth, state.health + cardData.value);
-        } else if (cardData.type === '에너지') {
-          state.energy += cardData.value;
-        }
-      });
+      // 비공격 카드 처리 (속성으로 체크)
+      if (cardData.block) {
+        this.player.applyDefense(cardData.block);
+      } else if (cardData.heal) {
+        this.player.heal(cardData.heal);
+      } else if (cardData.energy) {
+        this.player.setEnergy(this.player.energy + cardData.energy);
+      }
     }
 
     return true; // 카드 사용 성공
   }
 
-  /**
-   * 플레이어가 피해를 받습니다.
-   * Character.takeDamage()와 동일한 로직으로 방어도를 올바르게 처리합니다.
-   */
-  public playerTakeDamage(amount: number): void {
-    let actualDamage = 0;
-    let blockedDamage = 0;
-    let fullBlock = false;
-
-    // 상태 업데이트 (옵저버가 자동으로 통지)
-    this.playerStateObservable.setState(state => {
-      // 방어도로 막을 수 있는 데미지 계산
-      blockedDamage = Math.min(state.defense, amount);
-      // 실제 체력에 들어가는 데미지
-      actualDamage  = Math.max(0, amount - state.defense);
-      // 방어도는 실제로 막은 데미지만큼만 감소
-      state.defense = Math.max(0, state.defense - blockedDamage);
-      // 체력 감소
-      state.health  = Math.max(0, state.health - actualDamage);
-
-      // 완전 방어 여부 확인
-      fullBlock = actualDamage === 0 && blockedDamage > 0;
-    });
-
-    // 완전 방어 시 블럭 사운드 재생
-    if (fullBlock && this.callbacks.onPlayerFullBlock) {
-      this.callbacks.onPlayerFullBlock();
-    }
-
-    if (this.callbacks.onPlayerTakeDamage) {
-      this.callbacks.onPlayerTakeDamage(actualDamage, blockedDamage);
-    }
-  }
 
   /**
    * 적이 패배했을 때 호출됩니다.
@@ -285,7 +218,7 @@ export default class BattleManager {
       if (this.callbacks.onBattleEnd) {
         this.callbacks.onBattleEnd(true);
       }
-    } else if (this.playerStateObservable.getState().health <= 0) {
+    } else if (this.player.isDead()) {
       // 패배
       console.log('[BattleManager] Battle lost!');
       if (this.callbacks.onBattleEnd) {
@@ -303,14 +236,12 @@ export default class BattleManager {
       gameState.stagesCleared.push(selectedStage.id);
     }
 
-    // 체력 회복 (옵저버가 자동으로 통지)
+    // 체력 회복
     const healPercent = selectedStage.data.type === '보스' ? 0.6 :
                         selectedStage.data.type === '중보스' ? 0.4 : 0.25;
 
-    this.playerStateObservable.setState(state => {
-      const healAmount = Math.floor(state.maxHealth * healPercent);
-      state.health = Math.min(state.maxHealth, state.health + healAmount);
-    });
+    const healAmount = Math.floor(this.player.maxHealth * healPercent);
+    this.player.heal(healAmount);
 
     // 다음 스테이지 설정
     const nextStages = selectedStage.data.nextStages;
@@ -323,34 +254,14 @@ export default class BattleManager {
    * 플레이어 상태를 반환합니다.
    */
   public getPlayerState(): PlayerState {
-    return this.playerStateObservable.getState();
+    return this.player.getState();
   }
 
   /**
-   * 플레이어를 치유합니다.
+   * Player 객체를 반환합니다.
    */
-  public healPlayer(amount: number): void {
-    this.playerStateObservable.setState(state => {
-      state.health = Math.min(state.maxHealth, state.health + amount);
-    });
-  }
-
-  /**
-   * 플레이어 에너지를 설정합니다.
-   */
-  public setEnergy(amount: number): void {
-    this.playerStateObservable.setState(state => {
-      state.energy = Math.max(0, Math.min(state.maxEnergy, amount));
-    });
-  }
-
-  /**
-   * 플레이어 방어도를 설정합니다.
-   */
-  public setDefense(amount: number): void {
-    this.playerStateObservable.setState(state => {
-      state.defense = Math.max(0, amount);
-    });
+  public getPlayer(): Player {
+    return this.player;
   }
 
   /**

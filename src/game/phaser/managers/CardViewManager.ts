@@ -60,12 +60,12 @@ export default class CardViewManager {
     // 팝업 배경
     const popupWidth  = Math.min(1400, width - 100);
     const popupHeight = Math.min(900, height - 100);
-    const popupBg     = this.scene.add.rectangle(width / 2, height / 2, popupWidth, popupHeight, 0x1a1a2e);
+    const popupBg     = this.scene.add.rectangle(width/2, height/2, popupWidth, popupHeight, 0x1a1a2e);
     popupBg.setStrokeStyle(4, 0x8b5cf6);
     popupBg.setDepth(1001);
 
     // 타이틀
-    const titleText = this.scene.add.text(width / 2, height / 2 - popupHeight / 2 + 40, title, {
+    const titleText = this.scene.add.text(width/2, height / 2 - popupHeight / 2 + 40, title, {
       fontSize  : '36px',
       fontFamily: 'Arial, sans-serif',
       fontStyle : 'bold',

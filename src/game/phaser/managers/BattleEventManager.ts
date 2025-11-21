@@ -2,11 +2,12 @@ import Phaser from 'phaser';
 import Card from '../objects/Card';
 import Enemy from '../objects/Enemy';
 import Player from '../objects/Player';
-import BattleManager, { NormalizedCardData } from './BattleManager';
+import BattleManager from './BattleManager';
 import CardHandManager from './CardHandManager';
 import DeckManager from './DeckManager';
 import BattleUIManager from './BattleUIManager';
 import SoundManager from './SoundManager';
+import { CardData } from '../../../types';
 
 
 /**
@@ -68,7 +69,7 @@ export default class BattleEventManager {
   private onCardClicked = (card: Card): void => {
     if (this.battleManager.getTurn() !== 'player') return;
 
-    const cardData: NormalizedCardData = (card as any).cardData;
+    const cardData: CardData = (card as any).cardData;
     const playerState = this.battleManager.getPlayerState();
 
     // 에너지가 부족한 경우
@@ -79,8 +80,8 @@ export default class BattleEventManager {
 
     const currentSelected = this.cardHandManager.getSelectedCard();
 
-    // rawData에서 원본 type 확인 (언어 독립적)
-    const isAttackCard = cardData.rawData.type === 'attack';
+    // type으로 원본 확인 (언어 독립적)
+    const isAttackCard = cardData.type === 'attack';
     const needsTarget = isAttackCard && !cardData.allEnemies;
 
     // 공격 카드이고 타겟이 필요한 경우
@@ -108,9 +109,9 @@ export default class BattleEventManager {
     const selectedCard = this.cardHandManager.getSelectedCard();
     if (!selectedCard) return;
 
-    const cardData: NormalizedCardData = (selectedCard as any).cardData;
-    // rawData에서 원본 type 확인 (언어 독립적)
-    if (cardData.rawData.type !== 'attack') return;
+    const cardData: CardData = (selectedCard as any).cardData;
+    // type 확인 (언어 독립적)
+    if (cardData.type !== 'attack') return;
 
     this.useCard(selectedCard, enemy);
   };
@@ -127,13 +128,13 @@ export default class BattleEventManager {
    * 카드를 사용합니다.
    */
   public useCard(card: Card, target: Enemy | null = null): void {
-    const cardData: NormalizedCardData = (card as any).cardData;
+    const cardData: CardData = (card as any).cardData;
 
-    // rawData에서 원본 type 확인 (언어 독립적)
-    const rawType = cardData.rawData.type;
+    // type 확인 (언어 독립적)
+    const cardType = cardData.type;
 
     // 공격 카드이고 타겟이 필요한데 타겟이 없으면 사용 불가
-    if (rawType === 'attack' && !cardData.allEnemies && !target) {
+    if (cardType === 'attack' && !cardData.allEnemies && !target) {
       this.uiManager.showMessage('Select a target');
       return;
     }
@@ -154,9 +155,10 @@ export default class BattleEventManager {
     // 애니메이션 처리
     let shouldDiscardWithAnimation = true; // discardCardWithAnimation을 호출할지 여부
 
-    if (rawType === 'attack') {
+    if (cardType === 'attack') {
       // 공격 사운드 재생
-      const isHeavy = cardData.value >= 10;
+      const damageValue = cardData.damage || 0;
+      const isHeavy = damageValue >= 10;
       if (this.soundManager) {
         this.soundManager.playAttack(isHeavy);
       }
@@ -172,7 +174,7 @@ export default class BattleEventManager {
         (card as any).playParticleEffect(targetWorldX, targetWorldY);
       }
       // 공격 카드도 버린 카드 더미로 이동
-    } else if (cardData.rawData.block) {
+    } else if (cardData.block) {
       // 방어 카드 (block 속성으로 판단)
       // 플레이어 캐릭터 방어 애니메이션
       this.playerCharacter.playDefendAnimation();
@@ -184,20 +186,20 @@ export default class BattleEventManager {
         }
       });
       // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
-    } else if (cardData.rawData.heal) {
+    } else if (cardData.heal) {
       // 치유 카드 (heal 속성으로 판단)
       // 플레이어 캐릭터 치유 애니메이션
       this.playerCharacter.playHealAnimation();
       // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
-    } else if (cardData.rawData.energy) {
-      // 에너지 카드 (rawData의 energy 속성으로 판단)
+    } else if (cardData.energy) {
+      // 에너지 카드 (energy 속성으로 판단)
       // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
     }
 
     // 핸드에서 제거
     this.cardHandManager.removeCardFromHand(card);
     // DeckManager를 사용하여 버린 카드 더미에 추가
-    this.deckManager.discardCard(cardData.rawData);
+    this.deckManager.discardCard(cardData);
     
     // 카드를 버린 카드 더미로 이동 애니메이션 (playEffect를 사용하지 않은 경우만)
     if (shouldDiscardWithAnimation) {

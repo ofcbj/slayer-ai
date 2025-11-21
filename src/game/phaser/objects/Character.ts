@@ -58,15 +58,8 @@ export default abstract class Character extends Phaser.GameObjects.Container {
       console.log(`  -> Health damage: ${damageToHealth}, New health: ${this.health}`);
       this.showDamageNumber(damageToHealth);
 
-      // 피격 사운드 재생 (플레이어인지 적인지에 따라 다른 사운드)
-      const soundManager = (this.scene as any).soundManager;
-      if (soundManager) {
-        if (this.constructor.name === 'Player') {
-          soundManager.playPlayerDamage();
-        } else {
-          soundManager.playEnemyDamage();
-        }
-      }
+      // 피격 사운드 재생 (각 클래스에서 구현)
+      this.playDamageSound();
 
       // 피격 애니메이션 (체력 데미지를 받았을 때)
       this.playHitAnimation();
@@ -163,6 +156,11 @@ export default abstract class Character extends Phaser.GameObjects.Container {
    * 피격 애니메이션 (각 클래스에서 구현)
    */
   protected abstract playHitAnimation(): void;
+
+  /**
+   * 피격 사운드 재생 (각 클래스에서 구현)
+   */
+  protected abstract playDamageSound(): void;
 
   /**
    * 방어 애니메이션 (각 클래스에서 구현, 선택적)
