@@ -186,6 +186,9 @@ export default class CardHandManager {
    * 카드를 선택합니다.
    */
   public selectCard(card: Card): void {
+    // 같은 카드를 다시 선택하는 경우는 소리 재생 안 함
+    const isDifferentCard = this.selectedCard !== card;
+
     // 이전에 선택된 카드 해제
     if (this.selectedCard && this.selectedCard !== card) {
       this.selectedCard.deselect();
@@ -194,6 +197,11 @@ export default class CardHandManager {
     // 카드 선택
     this.selectedCard = card;
     card.select();
+
+    // 새로운 카드를 선택할 때만 소리 재생
+    if (isDifferentCard && this.soundManager) {
+      this.soundManager.playCardClick();
+    }
   }
 
   /**

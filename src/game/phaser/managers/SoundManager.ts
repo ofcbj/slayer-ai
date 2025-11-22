@@ -26,27 +26,17 @@ export default class SoundManager {
     // 카드 관련 사운드
     scene.load.audio('card-draw',   `${basePath}assets/sounds/card-draw.mp3`);
     scene.load.audio('card-click',  `${basePath}assets/sounds/card-click.mp3`);
-    scene.load.audio('card-play',   `${basePath}assets/sounds/card-play.mp3`);
+    scene.load.audio('focus',       `${basePath}assets/sounds/focus.mp3`);
 
     // 공격 사운드
     scene.load.audio('attack',      `${basePath}assets/sounds/attack.mp3`);
-    scene.load.audio('attack-heavy',`${basePath}assets/sounds/attack-heavy.mp3`);
+    scene.load.audio('attack-heavy',`${basePath}assets/sounds/attack_heavy.mp3`);
 
     // 방어 사운드
-    scene.load.audio('defend',      `${basePath}assets/sounds/defend.mp3`);
     scene.load.audio('block',       `${basePath}assets/sounds/block.mp3`);
 
     // 데미지 사운드
-    scene.load.audio('hit',         `${basePath}assets/sounds/hit.mp3`);
     scene.load.audio('damage-player',`${basePath}assets/sounds/damage-player.mp3`);
-    scene.load.audio('damage-enemy',`${basePath}assets/sounds/damage-enemy.mp3`);
-
-    // 승리/패배 사운드
-    scene.load.audio('victory',     `${basePath}assets/sounds/victory.mp3`);
-    scene.load.audio('defeat',      `${basePath}assets/sounds/defeat.mp3`);
-
-    // 적 사망
-    scene.load.audio('enemy-death', `${basePath}assets/sounds/enemy-death.mp3`);
   }
 
   /**
@@ -58,17 +48,11 @@ export default class SoundManager {
       'game-start',
       'card-draw',
       'card-click',
-      'card-play',
+      'focus',
       'attack',
       'attack-heavy',
-      'defend',
       'block',
-      'hit',
-      'damage-player',
-      'damage-enemy',
-      'victory',
-      'defeat',
-      'enemy-death'
+      'damage-player'
     ];
 
     soundKeys.forEach(key => {
@@ -120,10 +104,10 @@ export default class SoundManager {
   }
 
   /**
-   * 카드 사용 사운드
+   * 카드 사용 사운드 (card-play가 없으므로 card-click 사용)
    */
   playCardPlay(): void {
-    this.play('card-play');
+    //this.play('card-click', { volume: this.volume * 0.8 });
   }
 
   /**

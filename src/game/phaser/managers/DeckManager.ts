@@ -111,22 +111,10 @@ export default class DeckManager {
   /**
    * 카드 데이터를 깊은 복사합니다.
    * 객체 참조 문제를 방지하기 위해 사용됩니다.
+   * Spread operator를 사용하여 모든 속성을 자동으로 복사합니다.
    */
   private deepCopyCard(card: CardData): CardData {
-    return {
-      name: card.name,
-      type: card.type,
-      damage: card.damage,
-      block: card.block,
-      heal: card.heal,
-      energy: card.energy,
-      cost: card.cost,
-      allEnemies: card.allEnemies,
-      hits: card.hits,
-      selfDamage: card.selfDamage,
-      description: card.description,
-      image: card.image
-    };
+    return { ...card };
   }
 }
 

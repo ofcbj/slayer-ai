@@ -95,8 +95,15 @@ export default class BattleEventManager {
       this.cardHandManager.selectCard(card);
       this.uiManager.showMessage('Select a target');
     } else {
-      // 방어, 치유, 전체 공격 등은 즉시 사용
-      this.useCard(card);
+      // 스킬 카드, 전체 공격 등: 선택 → 한 번 더 클릭하면 사용
+      if (currentSelected === card) {
+        // 이미 선택된 카드를 다시 클릭하면 사용
+        this.useCard(card);
+      } else {
+        // 처음 클릭하면 선택만
+        this.cardHandManager.selectCard(card);
+        this.uiManager.showMessage('Click again to use');
+      }
     }
   };
 
@@ -151,7 +158,7 @@ export default class BattleEventManager {
     if (this.soundManager) {
       // 카드에 커스텀 사운드가 있으면 그것을 재생, 없으면 기본 사운드
       if (cardData.sound && cardData.sound !== '') {
-        this.soundManager.play(cardData.sound+'.mp3');
+        this.soundManager.play(cardData.sound);
       } else {
         this.soundManager.playCardPlay();
       }

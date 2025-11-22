@@ -385,12 +385,19 @@ export default class BattleScene extends Phaser.Scene {
       this.cardHandManager.selectCard(card);
       this.uiManager.showMessage('Select a target');
     } else {
-      // 방어, 치유, 전체 공격 등은 즉시 사용
-      // 사용하기 전에 이전 선택 해제 (다른 카드가 선택되어 있을 수 있음)
-      if (currentSelected) {
-        this.cardHandManager.deselectCard();
+      // 스킬 카드, 전체 공격 등: 선택 → 한 번 더 누르면 사용
+      if (currentSelected === card) {
+        // 이미 선택된 카드를 다시 누르면 사용
+        this.eventManager.useCard(card);
+      } else {
+        // 처음 누르면 선택만
+        // 이전 선택이 있으면 해제
+        if (currentSelected) {
+          this.cardHandManager.deselectCard();
+        }
+        this.cardHandManager.selectCard(card);
+        this.uiManager.showMessage('Press again to use');
       }
-      this.eventManager.useCard(card);
     }
   }
 

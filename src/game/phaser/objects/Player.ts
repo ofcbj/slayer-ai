@@ -145,10 +145,10 @@ export default class Player extends Character {
   }
 
   /**
-   * 에너지 설정
+   * 에너지 설정 (maxEnergy를 초과할 수 있음 - 보너스 에너지)
    */
   public setEnergy(amount: number): void {
-    this.energy = Math.max(0, Math.min(this.maxEnergy, amount));
+    this.energy = Math.max(0, amount);
     this.stateObservable.setState(state => {
       state.energy = this.energy;
     });
