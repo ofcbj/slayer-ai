@@ -3,6 +3,7 @@ import Card from '../objects/Card';
 import DeckManager from './DeckManager';
 import BattleUIManager from './BattleUIManager';
 import SoundManager from './SoundManager';
+import { tweenConfig } from './TweenConfigManager';
 import { CardData } from '../../../types';
 
 /**
@@ -160,8 +161,6 @@ export default class CardHandManager {
     const discardPileSize = this.deckManager.getDiscardPileSize();
     const cardsToShow = Math.min(discardPileSize, 10); // 최대 10장까지만 연출
 
-    const tempCards: Phaser.GameObjects.Rectangle[] = [];
-
     // 버린 카드 더미 애니메이션
     this.uiManager.animateDiscardPile();
 
@@ -178,17 +177,11 @@ export default class CardHandManager {
           0.8
         );
         tempCard.setDepth(1000 + i);
-        tempCards.push(tempCard);
 
         // 카드가 버린 더미에서 덱으로 이동
-        this.scene.tweens.add({
-          targets: tempCard,
+        tweenConfig.apply(this.scene, 'cards.reshuffle', tempCard, {
           x: deckWorldPos.tx,
           y: deckWorldPos.ty,
-          scaleX: 0.8,
-          scaleY: 0.8,
-          duration: 400,
-          ease: 'Power2',
           onComplete: () => {
             tempCard.destroy();
 
@@ -253,14 +246,9 @@ export default class CardHandManager {
     const targetX = handCenterX + finalLocalX;
     const targetY = handCenterY;
 
-    this.scene.tweens.add({
-      targets: card,
+    tweenConfig.apply(this.scene, 'cards.draw', card, {
       x: targetX,
       y: targetY,
-      scaleX: 1,
-      scaleY: 1,
-      duration: 400,
-      ease: 'Power2',
       onComplete: () => {
         // 카드를 핸드 컨테이너로 이동
         this.handContainer.add(card);
@@ -286,12 +274,9 @@ export default class CardHandManager {
       const targetX = startX + (index * spacing);
       const targetY = 0;
 
-      this.scene.tweens.add({
-        targets: card,
+      tweenConfig.apply(this.scene, 'cards.rearrange', card, {
         x: targetX,
-        y: targetY,
-        duration: 300,
-        ease: 'Power2'
+        y: targetY
       });
 
       (card as any).originalY = targetY;
@@ -311,12 +296,9 @@ export default class CardHandManager {
       const targetX = startX + (index * spacing);
       const targetY = 0;
 
-      this.scene.tweens.add({
-        targets: card,
+      tweenConfig.apply(this.scene, 'cards.arrange', card, {
         x: targetX,
-        y: targetY,
-        duration: 300,
-        ease: 'Back.easeOut'
+        y: targetY
       });
 
       (card as any).originalY = targetY;
@@ -389,15 +371,9 @@ export default class CardHandManager {
     const targetY = discardWorldPos.ty;
 
     // 카드를 버린 카드 더미로 이동
-    this.scene.tweens.add({
-      targets: card,
+    tweenConfig.apply(this.scene, 'cards.discard', card, {
       x: targetX,
       y: targetY,
-      scaleX: 0.5,
-      scaleY: 0.5,
-      alpha: 0.7,
-      duration: 300,
-      ease: 'Power2',
       onComplete: () => {
         card.destroy();
         if (onComplete) {

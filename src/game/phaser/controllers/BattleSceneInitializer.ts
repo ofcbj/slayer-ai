@@ -48,16 +48,12 @@ export default class BattleSceneInitializer {
   ): void {
     // Energy UI
     this.uiManager.createEnergyUI(this.gameState.player);
-
     // 턴 종료 버튼
     this.uiManager.createEndTurnButton(onEndTurn);
-
     // 덱 더미 UI
     this.uiManager.createDeckPile(onDeckPileClick);
-
     // 버린 카드 더미 UI
     this.uiManager.createDiscardPile(onDiscardPileClick);
-
     // 덱 정보 텍스트
     this.uiManager.createDeckInfoText();
   }

@@ -48,13 +48,10 @@ export default class BattleTurnController {
     if (!this.canEndTurn) {
       return;
     }
-
     // 턴 종료 시작 - 더 이상 턴 종료 불가
     this.canEndTurn = false;
-
     // BattleManager에 턴 종료 알림
     this.battleManager.endPlayerTurn();
-
     // 모든 카드 버리기
     this.cardHandManager.discardAllCards(
       undefined,

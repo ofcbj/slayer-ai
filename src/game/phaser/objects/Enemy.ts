@@ -70,10 +70,8 @@ export default class Enemy extends Character {
 
     // 체력 바
     const hpBar = this.scene.add.rectangle(
-      -(width - 20) / 2,
-      height / 2 - 40,
-      width - 20,
-      20,
+      -(width-20)/2, height/2-40,
+      width - 20, 20,
       0xff6b6b
     );
     hpBar.setOrigin(0, 0.5);
@@ -194,21 +192,12 @@ export default class Enemy extends Character {
    */
   protected override playHitAnimation(): void {
     // 좌우 흔들림
-    this.scene.tweens.add({
-      targets: this,
-      x: this.x + 10,
-      duration: 50,
-      yoyo: true,
-      repeat: 3
+    tweenConfig.apply(this.scene, 'combat.enemyHit', this, {
+      x: this.x
     });
 
     // 배경 깜빡임
-    this.scene.tweens.add({
-      targets: this.bg,
-      alpha: 0.5,
-      duration: 100,
-      yoyo: true
-    });
+    tweenConfig.apply(this.scene, 'combat.enemyHitFlash', this.bg);
 
     // 죽었으면 죽음 애니메이션
     if (this.isDead()) {
@@ -238,12 +227,8 @@ export default class Enemy extends Character {
     );
     defensePopup.setOrigin(0.5);
 
-    this.scene.tweens.add({
-      targets: defensePopup,
-      y: defensePopup.y - 40,
-      alpha: 0,
-      duration: 1000,
-      ease: 'Power2',
+    tweenConfig.apply(this.scene, 'ui.defensePopup', defensePopup, {
+      y: defensePopup.y,
       onComplete: () => defensePopup.destroy()
     });
   }
@@ -268,24 +253,16 @@ export default class Enemy extends Character {
     const healthPercent = this.health / this.maxHealth;
     const newWidth = this.hpBarWidth * healthPercent;
 
-    this.scene.tweens.add({
-      targets: this.hpBar,
-      width: newWidth,
-      duration: 300
+    tweenConfig.apply(this.scene, 'combat.healthBarUpdate', this.hpBar, {
+      width: newWidth
     });
 
     this.hpText.setText(`${this.health}/${this.maxHealth}`);
   }
 
   playAttackAnimation(callback?: () => void): void {
-    this.scene.tweens.add({
-      targets: this,
-      x: this.x + 40,
-      scaleX: 1.15,
-      scaleY: 1.15,
-      duration: 300,
-      ease: 'Power2',
-      yoyo: true,
+    tweenConfig.apply(this.scene, 'combat.enemyAttack', this, {
+      x: this.x,
       onComplete: () => {
         if (callback) callback();
       }
@@ -295,14 +272,8 @@ export default class Enemy extends Character {
   }
 
   playDeathAnimation(): void {
-    this.scene.tweens.add({
-      targets: this,
-      alpha: 0,
-      scaleX: 0.8,
-      scaleY: 0.8,
-      y: this.y + 50,
-      duration: 800,
-      ease: 'Power2',
+    tweenConfig.apply(this.scene, 'combat.deathAnimation', this, {
+      y: this.y,
       onComplete: () => {
         const sceneActive = this.scene && this.scene.scene && this.scene.scene.isActive('BattleScene');
         console.log(`[Enemy] Death animation complete - ${this.enemyData?.name}, Scene active: ${sceneActive}, this.active: ${this.active}`);
@@ -341,20 +312,14 @@ export default class Enemy extends Character {
       const angle = (Math.PI * 2 * i) / particleCount;
       const speed = Phaser.Math.Between(80, 150);
       const particle = this.scene.add.circle(
-        this.x,
-        this.y,
+        this.x, this.y,
         Phaser.Math.Between(4, 10),
         color
       );
 
-      this.scene.tweens.add({
-        targets: particle,
+      tweenConfig.apply(this.scene, 'particles.burst', particle, {
         x: this.x + Math.cos(angle) * speed,
         y: this.y + Math.sin(angle) * speed,
-        alpha: 0,
-        scale: 0,
-        duration: 1000,
-        ease: 'Power2',
         onComplete: () => particle.destroy()
       });
     }

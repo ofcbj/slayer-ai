@@ -167,8 +167,6 @@ export default class BattleManager {
 
     return true; // 카드 사용 성공
   }
-
-
   /**
    * 적이 패배했을 때 호출됩니다.
    */
@@ -203,7 +201,6 @@ export default class BattleManager {
 
     this.checkBattleEnd();
   }
-
   /**
    * 전투 종료를 확인합니다.
    */
@@ -226,7 +223,6 @@ export default class BattleManager {
       }
     }
   }
-
   /**
    * 전투 승리 처리를 합니다.
    */
@@ -249,28 +245,24 @@ export default class BattleManager {
       gameState.currentStage = nextStages[0];
     }
   }
-
   /**
    * 플레이어 상태를 반환합니다.
    */
   public getPlayerState(): PlayerState {
     return this.player.getState();
   }
-
   /**
    * Player 객체를 반환합니다.
    */
   public getPlayer(): Player {
     return this.player;
   }
-
   /**
    * 살아있는 적 목록을 반환합니다.
    */
   public getAliveEnemies(): Enemy[] {
     return this.enemies.filter(e => !e.isDead());
   }
-
   /**
    * 모든 적 목록을 반환합니다.
    */

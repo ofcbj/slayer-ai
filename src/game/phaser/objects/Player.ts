@@ -3,6 +3,7 @@ import { PlayerState } from '../../../types';
 import Character from './Character';
 import { PlayerStateObservable } from '../state/PlayerStateObservable';
 import { textStyle } from '../managers/TextStyleManager';
+import { tweenConfig } from '../managers/TweenConfigManager';
 
 /**
  * Player - 플레이어 캐릭터 클래스
@@ -51,23 +52,19 @@ export default class Player extends Character {
     // 플레이어 배경
     const bg: Phaser.GameObjects.Rectangle = this.scene.add.rectangle(0, 0, width, height, 0x2a2a4e);
     bg.setStrokeStyle(4, 0x4ecdc4);
-
     // 플레이어 이름
     const nameText: Phaser.GameObjects.Text = this.scene.add.text(0, -height/2+25,
       'Hero',
       textStyle.getStyle('character.emojiSmall')
     );
     nameText.setOrigin(0.5);
-
     // 플레이어 캐릭터 이미지 - 머리와 목
     const playerHead: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🧙‍♂️',
       textStyle.getStyle('character.emojiLarge')
     );
     playerHead.setOrigin(0.5);
-
     // HP 컨테이너 (왼쪽 하단)
     const hpContainer: Phaser.GameObjects.Container = this.scene.add.container(-width/2 + 70, height/2 - 40);
-
     const hpIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '❤️',
       textStyle.getStyle('damage.healEffect')
     );
@@ -82,7 +79,6 @@ export default class Player extends Character {
 
     // Defense 컨테이너 (오른쪽 하단)
     const defContainer: Phaser.GameObjects.Container = this.scene.add.container(width/2 - 70, height/2 - 40);
-
     const defIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🛡️',
       textStyle.getStyle('damage.healEffect')
     );
@@ -92,7 +88,6 @@ export default class Player extends Character {
       textStyle.getStyle('damage.defenseEffect')
     );
     this.defenseText.setOrigin(0, 0.5);
-
     defContainer.add([defIcon, this.defenseText]);
 
     this.add([bg, nameText, playerHead, hpContainer, defContainer]);
@@ -103,7 +98,7 @@ export default class Player extends Character {
     this.defContainer = defContainer;
     this.setSize(width, height);
   }
-
+  
   /**
    * 외부 구독자 등록 (BattleManager, UI 등)
    */
@@ -234,33 +229,18 @@ export default class Player extends Character {
    */
   public playHitAnimationPublic(callback?: () => void): void {
     // 피격 애니메이션
-    this.scene.tweens.add({
-      targets: this,
-      x: this.x + 15,
-      duration: 60,
-      yoyo: true,
-      repeat: 2,
+    tweenConfig.apply(this.scene, 'combat.playerHit', this, {
+      x: this.x,
       onComplete: (): void => {
         if (callback) callback();
       }
     });
 
     // 빨간색 플래시
-    this.scene.tweens.add({
-      targets: this.bg,
-      fillAlpha: 0.3,
-      duration: 60,
-      yoyo: true,
-      repeat: 2
-    });
+    tweenConfig.apply(this.scene, 'combat.playerHitFlash', this.bg);
 
     // 이미지 흔들림
-    this.scene.tweens.add({
-      targets: [this.playerHead],
-      angle: -10,
-      duration: 60,
-      yoyo: true,
-      repeat: 2,
+    tweenConfig.apply(this.scene, 'combat.playerHitShake', this.playerHead, {
       onComplete: (): void => {
         this.playerHead.setAngle(0);
       }
@@ -272,13 +252,7 @@ export default class Player extends Character {
     const shield: Phaser.GameObjects.Circle = this.scene.add.circle(0, 0, 120, 0x4ecdc4, 0.3);
     this.add(shield);
 
-    this.scene.tweens.add({
-      targets: shield,
-      scaleX: 1.3,
-      scaleY: 1.3,
-      alpha: 0,
-      duration: 600,
-      ease: 'Power2',
+    tweenConfig.apply(this.scene, 'combat.playerDefendShield', shield, {
       onComplete: (): void => shield.destroy()
     });
   }
@@ -294,14 +268,9 @@ export default class Player extends Character {
         0x2ecc71
       );
 
-      this.scene.tweens.add({
-        targets: particle,
+      tweenConfig.apply(this.scene, 'particles.healEffect', particle, {
         x: this.x,
         y: this.y,
-        alpha: 0,
-        scale: 0,
-        duration: 800,
-        ease: 'Power2',
         onComplete: (): void => particle.destroy()
       });
     }
@@ -309,13 +278,6 @@ export default class Player extends Character {
 
   idle(): void {
     // 아이들 애니메이션 - 부드러운 상하 움직임 (머리)
-    this.scene.tweens.add({
-      targets: this.playerHead,
-      y: -15,
-      duration: 2000,
-      ease: 'Sine.easeInOut',
-      yoyo: true,
-      repeat: -1
-    });
+    tweenConfig.apply(this.scene, 'transitions.playerIdle', this.playerHead);
   }
 }

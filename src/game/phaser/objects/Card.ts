@@ -55,24 +55,16 @@ export default class Card extends Phaser.GameObjects.Container {
 
     this.bg.on('pointerover', () => {
       if (!this.isSelected) {
-        this.scene.tweens.add({
-          targets: this,
-          y: this.originalY - 20,
-          scaleX: 1.05,
-          scaleY: 1.05,
-          duration: 200
+        tweenConfig.apply(this.scene, 'interactive.cardHover', this, {
+          y: this.originalY - 20
         });
       }
     });
 
     this.bg.on('pointerout', () => {
       if (!this.isSelected) {
-        this.scene.tweens.add({
-          targets: this,
-          y: this.originalY,
-          scaleX: 1,
-          scaleY: 1,
-          duration: 200
+        tweenConfig.apply(this.scene, 'interactive.cardHoverOut', this, {
+          y: this.originalY
         });
       }
     });
@@ -116,12 +108,10 @@ export default class Card extends Phaser.GameObjects.Container {
     this.isSelected = false;
     this.bg.setStrokeStyle(3, CardRenderer.getCardColor(this.cardData));
 
-    this.scene.tweens.add({
-      targets: this,
+    tweenConfig.apply(this.scene, 'cards.deselect', this, {
       y: this.originalY,
       scaleX: 1,
-      scaleY: 1,
-      duration: 200
+      scaleY: 1
     });
   }
 
@@ -154,15 +144,9 @@ export default class Card extends Phaser.GameObjects.Container {
     }
 
     // 카드가 목표로 날아가는 애니메이션
-    this.scene.tweens.add({
-      targets: this,
+    tweenConfig.apply(this.scene, 'cards.play', this, {
       x: targetX,
       y: targetY,
-      scaleX: 0.5,
-      scaleY: 0.5,
-      alpha: 0,
-      duration: 500,
-      ease: 'Power2',
       onComplete: () => {
         if (callback) callback();
         this.destroy();
@@ -179,8 +163,7 @@ export default class Card extends Phaser.GameObjects.Container {
 
     for (let i: number = 0; i < particleCount; i++) {
       const particle: Phaser.GameObjects.Arc = this.scene.add.circle(
-        worldX,
-        worldY,
+        worldX, worldY,
         Phaser.Math.Between(3, 8),
         color
       );
@@ -192,14 +175,10 @@ export default class Card extends Phaser.GameObjects.Container {
         const distance: number = Phaser.Math.Distance.Between(worldX, worldY, targetX, targetY);
         const randomOffset: number = Phaser.Math.Between(-30, 30);
 
-        this.scene.tweens.add({
-          targets: particle,
+        tweenConfig.apply(this.scene, 'cards.particleBurst', particle, {
           x: targetX + Math.cos(angle + randomOffset * 0.01) * (distance * 0.3),
           y: targetY + Math.sin(angle + randomOffset * 0.01) * (distance * 0.3),
-          alpha: 0,
-          scale: 0,
           duration: 600,
-          ease: 'Power2',
           onComplete: () => particle.destroy()
         });
       } else {
@@ -207,14 +186,8 @@ export default class Card extends Phaser.GameObjects.Container {
         const angle: number = (Math.PI * 2 * i) / particleCount;
         const speed: number = Phaser.Math.Between(50, 150);
 
-        this.scene.tweens.add({
-          targets: particle,
-          x: worldX + Math.cos(angle) * speed,
-          y: worldY + Math.sin(angle) * speed,
-          alpha: 0,
-          scale: 0,
-          duration: 800,
-          ease: 'Power2',
+        tweenConfig.apply(this.scene, 'cards.particleBurst', particle, {
+          x: worldX + Math.cos(angle) * speed, y: worldY + Math.sin(angle) * speed,
           onComplete: () => particle.destroy()
         });
       }

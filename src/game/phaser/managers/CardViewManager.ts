@@ -162,8 +162,7 @@ export default class CardViewManager {
 
     this.scene.tweens.add({
       targets : popupBg,
-      scaleX  : 1,
-      scaleY  : 1,
+      scaleX  : 1, scaleY  : 1,
       duration: 200,
       ease    : 'Back.easeOut'
     });

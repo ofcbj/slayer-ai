@@ -34,7 +34,6 @@ export default class BattleUIManager {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
   }
-
   /**
    * 에너지 UI를 생성합니다.
    */
@@ -42,10 +41,8 @@ export default class BattleUIManager {
     const width = this.scene.cameras.main.width;
     const x = width - 300;
     const y = 580;
-
     // Energy 컨테이너
     const energyContainer = this.scene.add.container(x, y);
-
     // Energy 아이콘들 (구슬)
     this.energyOrbs = [];
     const orbSpacing = 50;
@@ -53,13 +50,11 @@ export default class BattleUIManager {
     for (let i = 0; i < playerState.maxEnergy; i++) {
       const orb = this.scene.add.circle(i * orbSpacing, 0, 20, 0xf39c12);
       orb.setStrokeStyle(3, 0xffffff);
-
       // 빛나는 효과
       const glow = this.scene.add.circle(i * orbSpacing, 0, 24, 0xffcc00, 0.3);
 
       this.energyOrbs.push({ orb, glow, active: true });
       energyContainer.add([glow, orb]);
-
       // 펄스 애니메이션
       tweenConfig.apply(this.scene, 'ui.energyPulse', glow, {
         delay: i * 100
@@ -68,7 +63,6 @@ export default class BattleUIManager {
 
     this.energyContainer = energyContainer;
   }
-
   /**
    * 턴 종료 버튼을 생성합니다.
    */
@@ -117,7 +111,6 @@ export default class BattleUIManager {
     this.endTurnButtonBg = bg;
     this.endTurnButtonText = text;
   }
-
   /**
    * 턴 종료 버튼을 활성화/비활성화합니다.
    */
@@ -136,7 +129,6 @@ export default class BattleUIManager {
       this.endTurnButton.setAlpha(0.7);
     }
   }
-
   /**
    * 덱 더미 UI를 생성합니다.
    */
@@ -157,26 +149,22 @@ export default class BattleUIManager {
       cardBg.setStrokeStyle(3, 0x34495e);
       this.deckPileContainer.add(cardBg);
     }
-
     // 덱 아이콘
     const deckIcon = this.scene.add.text(0, 0, '🎴', {
       fontSize: '48px'
     }).setOrigin(0.5);
     this.deckPileContainer.add(deckIcon);
-
     // 덱 카드 수 텍스트
     this.deckCountText = this.scene.add.text(0,100,'0',
       textStyle.getStyle('buttons.secondary', { stroke: '#000000', strokeThickness: 4 })
     ).setOrigin(0.5);
     this.deckPileContainer.add(this.deckCountText);
-
     // 라벨
     const langManager = LanguageManager.getInstance();
     const deckLabel = this.scene.add.text(0, 130, langManager.t('battle.deck'),
       textStyle.getStyle('character.name', { color: '#95a5a6' })
     ).setOrigin(0.5);
     this.deckPileContainer.add(deckLabel);
-
     // 클릭 가능한 영역 추가
     const clickArea = this.scene.add.rectangle(0, 0, 150, 200, 0x000000, 0);
     clickArea.setInteractive({ useHandCursor: true });
@@ -196,7 +184,6 @@ export default class BattleUIManager {
       }
     });
   }
-
   /**
    * 버린 카드 더미 UI를 생성합니다.
    */
@@ -404,19 +391,9 @@ export default class BattleUIManager {
    */
   public playReshuffleAnimation(onComplete?: () => void): void {
     if (this.discardPileContainer && this.deckPileContainer) {
-      this.scene.tweens.add({
-        targets: this.discardPileContainer,
-        scaleX: 1.2,
-        scaleY: 1.2,
-        duration: 200,
-        yoyo: true,
+      tweenConfig.apply(this.scene, 'ui.reshuffleScale', this.discardPileContainer, {
         onComplete: () => {
-          this.scene.tweens.add({
-            targets: this.deckPileContainer,
-            scaleX: 1.2,
-            scaleY: 1.2,
-            duration: 200,
-            yoyo: true,
+          tweenConfig.apply(this.scene, 'ui.reshuffleScale', this.deckPileContainer, {
             onComplete: onComplete
           });
         }

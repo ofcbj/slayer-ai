@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { textStyle } from '../managers/TextStyleManager';
+import { tweenConfig } from '../managers/TweenConfigManager';
 
 /**
  * Character - Player와 Enemy의 공통 베이스 클래스
@@ -97,12 +98,8 @@ export default abstract class Character extends Phaser.GameObjects.Container {
     );
     blockText.setOrigin(0.5);
 
-    this.scene.tweens.add({
-      targets: blockText,
-      y: blockText.y - 40,
-      alpha: 0,
-      duration: 1000,
-      ease: 'Power2',
+    tweenConfig.apply(this.scene, 'ui.defensePopup', blockText, {
+      y: blockText.y,
       onComplete: () => blockText.destroy()
     });
   }
@@ -116,12 +113,8 @@ export default abstract class Character extends Phaser.GameObjects.Container {
     );
     damageText.setOrigin(0.5);
 
-    this.scene.tweens.add({
-      targets: damageText,
-      y: damageText.y - 60,
-      alpha: 0,
-      duration: 1000,
-      ease: 'Power2',
+    tweenConfig.apply(this.scene, 'ui.damageText', damageText, {
+      y: damageText.y,
       onComplete: () => damageText.destroy()
     });
   }
