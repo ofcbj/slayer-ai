@@ -94,8 +94,22 @@ export default class CardHandManager {
     const cardsDrawn = cardsToDrawData.length;
     const finalHandSize = currentHandSize + cardsDrawn;
 
+    // 드로우할 카드가 없고 리셔플도 불가능하면 즉시 종료
+    if (cardsDrawn === 0 && !this.deckManager.needsReshuffle()) {
+      // 드로우 가능한 카드가 더 이상 없음
+      if (this.setEndTurnAllowed) {
+        this.setEndTurnAllowed(true);
+      }
+      this.uiManager.setEndTurnButtonEnabled(true);
+
+      if (onComplete) {
+        onComplete();
+      }
+      return;
+    }
+
     // 기존 카드들을 finalHandSize 기준으로 재배치
-    if (currentHandSize > 0) {
+    if (currentHandSize > 0 && cardsDrawn > 0) {
       this.rearrangeExistingCards(finalHandSize);
     }
 
