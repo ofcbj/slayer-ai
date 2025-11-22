@@ -11,39 +11,27 @@ export default class LanguageSelectScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     this.add
-      .text(
-        width / 2,
-        height / 3,
-        'SLAYER AI',
+      .text(width/2, height/3, 'SLAYER AI',
         textStyle.getStyle('language.title', { stroke: '#000000', strokeThickness: 8 })
       )
       .setOrigin(0.5)
       .setDepth(100);
 
     this.add
-      .text(
-        width / 2,
-        height / 2 - 80,
-        'Select Language / 言語選択 / 언어 선택',
+      .text(width/2, height/2-80, 'Select Language / 言語選択 / 언어 선택',
         textStyle.getStyle('language.instruction')
       )
       .setOrigin(0.5);
 
     const koreanButton = this.add
-      .text(
-        width / 2,
-        height / 2,
-        '한국어 (Korean)',
+      .text(width/2, height/2, '한국어 (Korean)',
         textStyle.getStyle('language.button', { stroke: '#000000', strokeThickness: 4 })
       )
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
     const japaneseButton = this.add
-      .text(
-        width / 2,
-        height / 2 + 80,
-        '日本語 (Japanese)',
+      .text(width/2, height/2 + 80, '日本語 (Japanese)',
         textStyle.getStyle('language.button', { stroke: '#000000', strokeThickness: 4 })
       )
       .setOrigin(0.5)

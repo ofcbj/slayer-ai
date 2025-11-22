@@ -166,10 +166,7 @@ export default class GameOverScene extends Phaser.Scene {
     const bg: Phaser.GameObjects.Rectangle = this.add.rectangle(0, 0, 200, 60, 0x4ecdc4);
     bg.setStrokeStyle(3, 0xffffff);
 
-    const btnText: Phaser.GameObjects.Text = this.add.text(
-      0,
-      0,
-      text,
+    const btnText: Phaser.GameObjects.Text = this.add.text(0,0,text,
       textStyle.getStyle('buttons.secondary')
     );
     btnText.setOrigin(0.5);
