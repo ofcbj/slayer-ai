@@ -1,0 +1,162 @@
+{
+  "strike": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 6,
+    "image": "🗡️",
+    "sound": "",
+    "name_ko": "공격",
+    "name_ja": "攻撃",
+    "description_ko": "적에게 <span class='card-damage'>6</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>6</span>ダメージを与える."
+  },
+  "anger": {
+    "type": "attack",
+    "cost": 0,
+    "damage": 4,
+    "image": "😡",
+    "sound": "",
+    "name_ko": "분노",
+    "name_ja": "怒り",
+    "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>4</span>ダメージを与える."
+  },
+  "slash": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 7,
+    "image": "⚔️",
+    "sound": "",
+    "name_ko": "베기",
+    "name_ja": "斬撃",
+    "description_ko": "적에게 <span class='card-damage'>7</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>7</span>ダメージを与える."
+  },
+  "sword_wind": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 6,
+    "allEnemies": true,
+    "image": "🌪️",
+    "sound": "",
+    "name_ko": "검풍",
+    "name_ja": "剣風",
+    "description_ko": "모든 적에게 <span class='card-damage'>6</span> 피해를 줍니다.",
+    "description_ja": "すべての敵に<span class='card-damage'>6</span>ダメージを与える."
+  },
+  "fireball": {
+    "type": "attack",
+    "cost": 2,
+    "damage": 14,
+    "image": "🔥",
+    "sound": "",
+    "name_ko": "화염구",
+    "name_ja": "火炎球",
+    "description_ko": "적에게 <span class='card-damage'>14</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>14</span>ダメージを与える."
+  },
+  "ice_lance": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 10,
+    "image": "🧊",
+    "sound": "",
+    "name_ko": "얼음창",
+    "name_ja": "氷槍",
+    "description_ko": "적에게 <span class='card-damage'>10</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>10</span>ダメージを与える."
+  },
+  "lightning": {
+    "type": "attack",
+    "cost": 2,
+    "damage": 8,
+    "allEnemies": true,
+    "image": "⚡",
+    "sound": "",
+    "name_ko": "번개",
+    "name_ja": "雷",
+    "description_ko": "모든 적에게 <span class='card-damage'>8</span> 피해를 줍니다.",
+    "description_ja": "すべての敵に<span class='card-damage'>8</span>ダメージを与える."
+  },
+  "storm_sword": {
+    "type": "attack",
+    "cost": 2,
+    "damage": 18,
+    "image": "🌩️",
+    "sound": "",
+    "name_ko": "폭풍검",
+    "name_ja": "嵐剣",
+    "description_ko": "적에게 <span class='card-damage'>18</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>18</span>ダメージを与える."
+  },
+  "arrow_barrage": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 4,
+    "hits": 3,
+    "image": "🏹",
+    "sound": "",
+    "name_ko": "화살 난사",
+    "name_ja": "矢の乱射",
+    "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 3번 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>4</span>ダメージを3回与える."
+  },
+  "berserker_strike": {
+    "type": "attack",
+    "cost": 0,
+    "damage": 12,
+    "selfDamage": 2,
+    "image": "💀",
+    "sound": "",
+    "name_ko": "광전사의 일격",
+    "name_ja": "狂戦士の一撃",
+    "description_ko": "적에게 <span class='card-damage'>12</span> 피해를 주고 자신이 2 피해를 받습니다.",
+    "description_ja": "敵に<span class='card-damage'>12</span>ダメージを与え、自身が2ダメージを受ける."
+  },
+  "dark_orb": {
+    "type": "attack",
+    "cost": 3,
+    "damage": 24,
+    "image": "🌑",
+    "sound": "",
+    "name_ko": "암흑 구체",
+    "name_ja": "暗黒球",
+    "description_ko": "적에게 <span class='card-damage'>24</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>24</span>ダメージを与える."
+  },
+  "double_slash": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 6,
+    "hits": 2,
+    "image": "⚡",
+    "sound": "",
+    "name_ko": "연속 베기",
+    "name_ja": "連続斬撃",
+    "description_ko": "적에게 <span class='card-damage'>6</span> 피해를 2번 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>6</span>ダメージを2回与える."
+  },
+  "holy_strike": {
+    "type": "attack",
+    "cost": 2,
+    "damage": 16,
+    "heal": 4,
+    "image": "✨",
+    "sound": "",
+    "name_ko": "신성한 일격",
+    "name_ja": "神聖なる一撃",
+    "description_ko": "적에게 <span class='card-damage'>16</span> 피해를 주고 체력을 <span class='card-energy'>4</span> 회복합니다.",
+    "description_ja": "敵に<span class='card-damage'>16</span>ダメージを与え、HPを<span class='card-energy'>4</span>回復する."
+  },
+  "focused_strike": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 12,
+    "image": "🎯",
+    "sound": "",
+    "name_ko": "집중 타격",
+    "name_ja": "集中打撃",
+    "description_ko": "적에게 <span class='card-damage'>12</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>12</span>ダメージを与える."
+  }
+}

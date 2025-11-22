@@ -1,0 +1,102 @@
+{
+  "defend": {
+    "type": "skill",
+    "cost": 1,
+    "block": 5,
+    "image": "🛡️",
+    "sound": "",
+    "name_ko": "방어",
+    "name_ja": "防御",
+    "description_ko": "<span class='card-block'>5</span> 방어도를 얻습니다.",
+    "description_ja": "<span class='card-block'>5</span>防御力を得る."
+  },
+  "focus": {
+    "type": "skill",
+    "cost": 0,
+    "energy": 1,
+    "image": "🧘",
+    "sound": "focus",
+    "name_ko": "집중",
+    "name_ja": "集中",
+    "description_ko": "<span class='card-energy'>1</span> 에너지를 얻습니다.",
+    "description_ja": "<span class='card-energy'>1</span>エネルギーを得る."
+  },
+  "heal": {
+    "type": "skill",
+    "cost": 1,
+    "heal": 8,
+    "image": "💚",
+    "sound": "",
+    "name_ko": "치유",
+    "name_ja": "治癒",
+    "description_ko": "체력을 <span class='card-energy'>8</span> 회복합니다.",
+    "description_ja": "HPを<span class='card-energy'>8</span>回復する."
+  },
+  "iron_wall": {
+    "type": "skill",
+    "cost": 1,
+    "block": 8,
+    "image": "🏰",
+    "sound": "",
+    "name_ko": "철벽",
+    "name_ja": "鉄壁",
+    "description_ko": "<span class='card-block'>8</span> 방어도를 얻습니다.",
+    "description_ja": "<span class='card-block'>8</span>防御力を得る."
+  },
+  "magic_shield": {
+    "type": "skill",
+    "cost": 1,
+    "block": 12,
+    "image": "🔮",
+    "sound": "",
+    "name_ko": "마법 방패",
+    "name_ja": "魔法の盾",
+    "description_ko": "<span class='card-block'>12</span> 방어도를 얻습니다.",
+    "description_ja": "<span class='card-block'>12</span>防御力を得る."
+  },
+  "regenerate": {
+    "type": "skill",
+    "cost": 1,
+    "heal": 8,
+    "block": 8,
+    "image": "✨",
+    "sound": "",
+    "name_ko": "재생",
+    "name_ja": "再生",
+    "description_ko": "체력을 <span class='card-energy'>8</span> 회복하고 <span class='card-block'>8</span> 방어도를 얻습니다.",
+    "description_ja": "HPを<span class='card-energy'>8</span>回復し、<span class='card-block'>8</span>防御力を得る."
+  },
+  "healing_spell": {
+    "type": "skill",
+    "cost": 1,
+    "heal": 12,
+    "image": "💖",
+    "sound": "",
+    "name_ko": "치료술",
+    "name_ja": "治療術",
+    "description_ko": "체력을 <span class='card-energy'>12</span> 회복합니다.",
+    "description_ja": "HPを<span class='card-energy'>12</span>回復する."
+  },
+  "absolute_defense": {
+    "type": "skill",
+    "cost": 2,
+    "block": 18,
+    "image": "🏛️",
+    "sound": "",
+    "name_ko": "완전 방어",
+    "name_ja": "完全防御",
+    "description_ko": "<span class='card-block'>18</span> 방어도를 얻습니다.",
+    "description_ja": "<span class='card-block'>18</span>防御力を得る."
+  },
+  "energy_wave": {
+    "type": "skill",
+    "cost": 0,
+    "energy": 3,
+    "image": "💫",
+    "sound": "",
+    "name_ko": "에너지 파동",
+    "name_ja": "エネルギー波動",
+    "description_ko": "<span class='card-energy'>3</span> 에너지를 얻습니다.",
+    "description_ja": "<span class='card-energy'>3</span>エネルギーを得る."
+  }
+}

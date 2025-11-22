@@ -20,7 +20,7 @@
   "3": {
     "type": "normal",
     "enemies": ["mage", "magic_golem", "mage"],
-    "nextStages": [4, 6],
+    "nextStages": [5, 6],
     "name_ko": "마법사의 탑",
     "name_ja": "魔法使いの塔",
     "description_ko": "신비로운 마법의 탑",
@@ -29,16 +29,16 @@
   "4": {
     "type": "mid_boss",
     "enemies": ["dragon_rider"],
-    "nextStages": [7, 8],
-    "name_ko": "중보스: 드래곤 라이더",
-    "name_ja": "中ボス: ドラゴンライダー",
+    "nextStages": [7],
+    "name_ko": "드래곤 라이더",
+    "name_ja": "ドラゴンライダー",
     "description_ko": "강력한 드래곤 라이더",
     "description_ja": "強力なドラゴンライダー"
   },
   "5": {
     "type": "normal",
     "enemies": ["dark_wolf", "shadow_mage", "dark_wolf"],
-    "nextStages": [7],
+    "nextStages": [7, 8],
     "name_ko": "어둠의 숲",
     "name_ja": "闇の森",
     "description_ko": "어둠이 깃든 숲",
@@ -57,8 +57,8 @@
     "type": "mid_boss",
     "enemies": ["shadow_lord"],
     "nextStages": [9],
-    "name_ko": "중보스: 그림자 군주",
-    "name_ja": "中ボス: 影の君主",
+    "name_ko": "그림자 군주",
+    "name_ja": "影の君主",
     "description_ko": "어둠의 힘을 다루는 군주",
     "description_ja": "闇の力を操る君主"
   },
@@ -66,8 +66,8 @@
     "type": "mid_boss",
     "enemies": ["fire_archmage"],
     "nextStages": [9],
-    "name_ko": "중보스: 화염 대마법사",
-    "name_ja": "中ボス: 火炎大魔法使い",
+    "name_ko": "화염 대마법사",
+    "name_ja": "火炎大魔法使い",
     "description_ko": "불꽃의 마법을 구사하는 대마법사",
     "description_ja": "炎の魔法を使う大魔法使い"
   },
@@ -84,8 +84,8 @@
     "type": "boss",
     "enemies": ["demon_lord"],
     "nextStages": [],
-    "name_ko": "최종 보스: 마왕",
-    "name_ja": "最終ボス: 魔王",
+    "name_ko": "마왕",
+    "name_ja": "魔王",
     "description_ko": "모든 악의 근원, 마왕",
     "description_ja": "すべての悪の根源、魔王"
   }

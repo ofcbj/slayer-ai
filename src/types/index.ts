@@ -30,6 +30,7 @@ export interface CardData {
   selfDamage? : number;
   description?: string;
   image?      : string;
+  sound?      : string;  // 카드 사용 시 재생할 사운드
   [key: string]: unknown;
 }
 

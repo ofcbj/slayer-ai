@@ -3,7 +3,7 @@ import Enemy from '../objects/Enemy';
 import Player from '../objects/Player';
 import DeckManager from '../managers/DeckManager';
 import BattleUIManager from '../managers/BattleUIManager';
-import { CardData, EnemyData, GameState, StageData } from '../managers/BattleManager';
+import { GameState, StageData } from '../managers/BattleManager';
 import LanguageManager from '../../../i18n/LanguageManager';
 
 /**
@@ -96,18 +96,14 @@ export default class BattleSceneInitializer {
    */
   setupDeck(): void {
     const langManager = LanguageManager.getInstance();
-    const cardsData: { basic: CardData[] } = langManager.getCardData();
 
     console.log(`[BattleSceneInitializer] setupDeck - gameState.deck.length: ${this.gameState.deck.length}`);
 
     // 기본 덱 생성 (플레이어 덱이 비어있으면)
     if (this.gameState.deck.length === 0) {
-      this.gameState.deck = [
-        ...Array(5).fill(null).map(() => ({ ...cardsData.basic[0] })), // 강타 x5
-        ...Array(4).fill(null).map(() => ({ ...cardsData.basic[1] })), // 방어 x4
-        ...Array(1).fill(null).map(() => ({ ...cardsData.basic[4] }))  // 집중 x1
-      ];
-      console.log(`[BattleSceneInitializer] setupDeck - Created basic deck with ${this.gameState.deck.length} cards`);
+      // cards_cat.json의 start_deck 설정에서 시작 덱 가져오기
+      this.gameState.deck = langManager.getStartDeck();
+      console.log(`[BattleSceneInitializer] setupDeck - Created start deck with ${this.gameState.deck.length} cards from cards_cat.json`);
     }
 
     // DeckManager를 사용하여 덱 초기화

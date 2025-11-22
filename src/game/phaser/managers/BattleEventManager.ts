@@ -149,7 +149,12 @@ export default class BattleEventManager {
 
     // 카드 사용 사운드 재생 (애니메이션보다 먼저)
     if (this.soundManager) {
-      this.soundManager.playCardPlay();
+      // 카드에 커스텀 사운드가 있으면 그것을 재생, 없으면 기본 사운드
+      if (cardData.sound && cardData.sound !== '') {
+        this.soundManager.play(cardData.sound+'.mp3');
+      } else {
+        this.soundManager.playCardPlay();
+      }
     }
 
     // 애니메이션 처리

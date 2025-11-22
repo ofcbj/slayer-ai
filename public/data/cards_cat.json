@@ -1,0 +1,29 @@
+{
+  "rewards": [
+    "anger",
+    "slash",
+    "heal",
+    "iron_wall",
+    "sword_wind",
+    "fireball",
+    "ice_lance",
+    "lightning",
+    "magic_shield",
+    "storm_sword",
+    "regenerate",
+    "arrow_barrage",
+    "berserker_strike",
+    "dark_orb",
+    "healing_spell",
+    "double_slash",
+    "absolute_defense",
+    "holy_strike",
+    "focused_strike",
+    "energy_wave"
+  ],
+  "start_deck": {
+    "strike": 5,
+    "defend": 4,
+    "focus": 1
+  }  
+}

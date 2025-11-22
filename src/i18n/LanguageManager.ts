@@ -1,5 +1,6 @@
 import commonKo from '../locales/ko/common.json';
 import commonJa from '../locales/ja/common.json';
+import { CardData } from '../types';
 
 export type Language = 'ko' | 'ja';
 
@@ -8,9 +9,17 @@ interface CommonTranslations {
 }
 
 interface GameData {
-  cards: {
-    basic: any[];
-    rewards: any[];
+  cards_attack: {
+    [key: string]: any;
+  };
+  cards_skill: {
+    [key: string]: any;
+  };
+  cards_cat: {
+    rewards: string[];
+    start_deck: {
+      [cardId: string]: number;
+    };
   };
   enemies: {
     [key: string]: any;
@@ -90,14 +99,18 @@ class LanguageManager {
 
     try {
       const basePath = import.meta.env.BASE_URL || '/';
-      const [cardsRes, enemiesRes, stagesRes] = await Promise.all([
-        fetch(`${basePath}data/cards.json`),
+      const [cardsAttackRes, cardsSkillRes, cardsCatRes, enemiesRes, stagesRes] = await Promise.all([
+        fetch(`${basePath}data/cards_attack.json`),
+        fetch(`${basePath}data/cards_skill.json`),
+        fetch(`${basePath}data/cards_cat.json`),
         fetch(`${basePath}data/enemies.json`),
         fetch(`${basePath}data/stages.json`)
       ]);
 
       this.gameData = {
-        cards: await cardsRes.json(),
+        cards_attack: await cardsAttackRes.json(),
+        cards_skill: await cardsSkillRes.json(),
+        cards_cat: await cardsCatRes.json(),
         enemies: await enemiesRes.json(),
         stages: await stagesRes.json()
       };
@@ -111,32 +124,83 @@ class LanguageManager {
   public getCardData() {
     if (!this.gameData) {
       console.error('Game data not loaded');
-      return { basic: [], rewards: [] };
+      return { rewards: [] };
     }
 
     const lang = this.currentLanguage;
     const suffix = lang === 'ko' ? '_ko' : '_ja';
 
-    const translateCard = (cardId: string, card: any) => ({
-      id: cardId,
-      ...card,
-      name: card[`name${suffix}`],
-      description: card[`description${suffix}`],
-    });
+    // 모든 카드를 하나의 맵으로 병합 (attack + skill)
+    const allCards = {
+      ...this.gameData.cards_attack,
+      ...this.gameData.cards_skill
+    };
 
-    // 객체를 배열로 변환
-    const basicCards = Object.entries(this.gameData.cards.basic).map(([id, card]) =>
-      translateCard(id, card)
-    );
-    const rewardCards = Object.entries(this.gameData.cards.rewards).map(([id, card]) =>
-      translateCard(id, card)
-    );
+    const translateCard = (cardId: string) => {
+      const card = allCards[cardId];
+      if (!card) {
+        console.warn(`Card not found: ${cardId}`);
+        return null;
+      }
+      return {
+        id: cardId,
+        ...card,
+        name: card[`name${suffix}`],
+        description: card[`description${suffix}`],
+      };
+    };
+
+    // rewards 카드 ID 배열을 가져와서 변환
+    const rewardCards = this.gameData.cards_cat.rewards
+      .map(translateCard)
+      .filter(card => card !== null);
 
     return {
-      basic: basicCards,
       rewards: rewardCards,
     };
   }
+
+  // 시작 덱 가져오기
+  public getStartDeck(): CardData[] {
+    if (!this.gameData) {
+      console.error('Game data not loaded');
+      return [];
+    }
+
+    const lang = this.currentLanguage;
+    const suffix = lang === 'ko' ? '_ko' : '_ja';
+
+    // 모든 카드를 하나의 맵으로 병합
+    const allCards = {
+      ...this.gameData.cards_attack,
+      ...this.gameData.cards_skill
+    };
+
+    const startDeck: CardData[] = [];
+    const startDeckConfig = this.gameData.cards_cat.start_deck;
+
+    // start_deck 설정에 따라 카드 생성
+    Object.entries(startDeckConfig).forEach(([cardId, count]) => {
+      const card = allCards[cardId];
+      if (!card) {
+        console.warn(`Start deck card not found: ${cardId}`);
+        return;
+      }
+
+      // 카드를 count만큼 복사하여 추가
+      for (let i = 0; i < count; i++) {
+        startDeck.push({
+          id: cardId,
+          ...card,
+          name: card[`name${suffix}`],
+          description: card[`description${suffix}`],
+        });
+      }
+    });
+
+    return startDeck;
+  }
+
 
   // 적 데이터 가져오기
   public getEnemyData(enemyKey: string) {

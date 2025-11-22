@@ -406,7 +406,7 @@ export default class StageSelectScene extends Phaser.Scene {
     const nodeBg = this.add.circle(0, 0, 50, bgColor);
     nodeBg.setStrokeStyle(4, borderColor);
 
-    // 아이콘/번호
+    // 아이콘/이름
     const iconText = this.add.text(
       0,
       -5,
@@ -414,33 +414,22 @@ export default class StageSelectScene extends Phaser.Scene {
       textStyle.getStyle('stageSelect.icon')
     ).setOrigin(0.5);
 
-    const numberText = this.add.text(
+    const nameText = this.add.text(
       0,
       20,
-      stageId.toString(),
+      stage.name,
       textStyle.getStyle('stage.nodeName')
     ).setOrigin(0.5);
 
-    // 스테이지 이름
-    const nameText = this.add.text(
+    // 스테이지 설명
+    const descText = this.add.text(
       0,
       75,
-      stage.name,
-      textStyle.getStyle('stage.nodeName', { stroke: '#000000', strokeThickness: 3 })
+      stage.description || '',
+      textStyle.getStyle('stage.nodeName', { fontSize: '14px', stroke: '#000000', strokeThickness: 2 })
     ).setOrigin(0.5);
 
-    // 스테이지 설명
-    if (stage.description) {
-      const descText = this.add.text(
-        0,
-        95,
-        stage.description,
-        textStyle.getStyle('stage.description', { wordWrap: { width: 200 } })
-      ).setOrigin(0.5);
-      node.add(descText);
-    }
-
-    node.add([nodeBg, iconText, numberText, nameText]);
+    node.add([nodeBg, iconText, nameText, descText]);
     node.setDepth(1); // 노드를 화살표보다 위에 표시
 
     // 클릭 가능한 노드
