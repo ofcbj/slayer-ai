@@ -352,76 +352,14 @@ export default class BattleScene extends Phaser.Scene {
    * 카드 단축키 처리 (1-5)
    */
   private handleCardShortcut(cardIndex: number): void {
-    if (this.battleManager.getTurn() !== 'player') return;
-
-    const hand = this.cardHandManager.getHand();
-    if (cardIndex < 0 || cardIndex >= hand.length) return;
-
-    const card = hand[cardIndex];
-    if (!card) return;
-
-    // BattleEventManager의 onCardClicked 로직과 동일하게 처리
-    const cardData: any = (card as any).cardData;
-    const playerState = this.battleManager.getPlayerState();
-
-    // 에너지가 부족한 경우
-    if (playerState.energy < cardData.cost) {
-      this.uiManager.showMessage('Not enough energy!');
-      return;
-    }
-
-    const currentSelected = this.cardHandManager.getSelectedCard();
-    const isAttackCard = cardData.type === 'attack';
-    const needsTarget = isAttackCard && !cardData.allEnemies;
-
-    // 공격 카드이고 타겟이 필요한 경우
-    if (needsTarget) {
-      // 이미 같은 카드가 선택되어 있으면 선택 해제
-      if (currentSelected === card) {
-        this.cardHandManager.deselectCard();
-        return;
-      }
-      // 다른 카드를 선택 (selectCard가 자동으로 이전 선택 해제)
-      this.cardHandManager.selectCard(card);
-      this.uiManager.showMessage('Select a target');
-    } else {
-      // 스킬 카드, 전체 공격 등: 선택 → 한 번 더 누르면 사용
-      if (currentSelected === card) {
-        // 이미 선택된 카드를 다시 누르면 사용
-        this.eventManager.useCard(card);
-      } else {
-        // 처음 누르면 선택만
-        // 이전 선택이 있으면 해제
-        if (currentSelected) {
-          this.cardHandManager.deselectCard();
-        }
-        this.cardHandManager.selectCard(card);
-        this.uiManager.showMessage('Press again to use');
-      }
-    }
+    this.eventManager.handleCardShortcut(cardIndex);
   }
 
   /**
-   * 적 단축키 처리 (F1-F3)
+   * 적 단축키 처리 (화살표 키)
    */
   private handleEnemyShortcut(enemyIndex: number): void {
-    if (this.battleManager.getTurn() !== 'player') return;
-
-    const selectedCard = this.cardHandManager.getSelectedCard();
-    if (!selectedCard) return;
-
-    const aliveEnemies = this.battleManager.getAliveEnemies();
-    if (enemyIndex < 0 || enemyIndex >= aliveEnemies.length) return;
-
-    const enemy = aliveEnemies[enemyIndex];
-    if (!enemy || enemy.isDead()) return;
-
-    const cardData: any = (selectedCard as any).cardData;
-    // type 확인 (언어 독립적)
-    if (cardData.type !== 'attack') return;
-
-    // BattleEventManager의 onEnemyClicked 로직과 동일하게 처리
-    this.eventManager.useCard(selectedCard, enemy);
+    this.eventManager.handleEnemyShortcut(enemyIndex);
   }
 
   /**

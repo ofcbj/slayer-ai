@@ -66,7 +66,10 @@ export default class BattleEventManager {
   /**
    * 카드 클릭 이벤트를 처리합니다.
    */
-  private onCardClicked = (card: Card): void => {
+  /**
+   * 카드 선택/사용 처리 (클릭과 단축키 공통 로직)
+   */
+  private handleCardAction = (card: Card): void => {
     if (this.battleManager.getTurn() !== 'player') return;
 
     const cardData: CardData = (card as any).cardData;
@@ -108,6 +111,28 @@ export default class BattleEventManager {
   };
 
   /**
+   * 카드 클릭 이벤트 핸들러 (마우스 클릭)
+   */
+  private onCardClicked = (card: Card): void => {
+    this.handleCardAction(card);
+  };
+
+  /**
+   * 카드 단축키 처리 (숫자 키 1-5)
+   */
+  public handleCardShortcut(cardIndex: number): void {
+    if (this.battleManager.getTurn() !== 'player') return;
+
+    const hand = this.cardHandManager.getHand();
+    if (cardIndex < 0 || cardIndex >= hand.length) return;
+
+    const card = hand[cardIndex];
+    if (!card) return;
+
+    this.handleCardAction(card);
+  }
+
+  /**
    * 적 클릭 이벤트를 처리합니다.
    */
   private onEnemyClicked = (enemy: Enemy): void => {
@@ -122,6 +147,28 @@ export default class BattleEventManager {
 
     this.useCard(selectedCard, enemy);
   };
+
+  /**
+   * 적 단축키 처리 (화살표 키)
+   */
+  public handleEnemyShortcut(enemyIndex: number): void {
+    if (this.battleManager.getTurn() !== 'player') return;
+
+    const selectedCard = this.cardHandManager.getSelectedCard();
+    if (!selectedCard) return;
+
+    const aliveEnemies = this.battleManager.getAliveEnemies();
+    if (enemyIndex < 0 || enemyIndex >= aliveEnemies.length) return;
+
+    const enemy = aliveEnemies[enemyIndex];
+    if (!enemy || enemy.isDead()) return;
+
+    const cardData: CardData = (selectedCard as any).cardData;
+    // type 확인 (언어 독립적)
+    if (cardData.type !== 'attack') return;
+
+    this.useCard(selectedCard, enemy);
+  }
 
   /**
    * 적 패배 이벤트를 처리합니다.
