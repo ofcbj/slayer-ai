@@ -328,7 +328,10 @@ export default class BattleScene extends Phaser.Scene {
       });
     });
 
-    // F1-F3: 적 선택
+    // 화살표 키: 적 선택 (적의 수에 따라 동적 매핑)
+    // 1마리: 아래 화살표
+    // 2마리: 왼쪽/오른쪽 화살표
+    // 3마리: 왼쪽/아래/오른쪽 화살표
     const functionKeys = [
       Phaser.Input.Keyboard.KeyCodes.LEFT,
       Phaser.Input.Keyboard.KeyCodes.DOWN,

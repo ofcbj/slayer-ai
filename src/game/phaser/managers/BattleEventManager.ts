@@ -150,17 +150,51 @@ export default class BattleEventManager {
 
   /**
    * 적 단축키 처리 (화살표 키)
+   * keyIndex: 0 = 왼쪽 화살표, 1 = 아래 화살표, 2 = 오른쪽 화살표
+   *
+   * 적의 수에 따른 키 매핑:
+   * - 1마리: 아래(1) → 0번째 적
+   * - 2마리: 왼쪽(0) → 0번째 적, 오른쪽(2) → 1번째 적
+   * - 3마리: 왼쪽(0) → 0번째 적, 아래(1) → 1번째 적, 오른쪽(2) → 2번째 적
    */
-  public handleEnemyShortcut(enemyIndex: number): void {
+  public handleEnemyShortcut(keyIndex: number): void {
     if (this.battleManager.getTurn() !== 'player') return;
 
     const selectedCard = this.cardHandManager.getSelectedCard();
     if (!selectedCard) return;
 
-    const aliveEnemies = this.battleManager.getAliveEnemies();
-    if (enemyIndex < 0 || enemyIndex >= aliveEnemies.length) return;
+    // 모든 적 목록을 가져옴 (죽은 적 포함, 위치 고정)
+    const allEnemies = this.battleManager.getAllEnemies();
+    const enemyCount = allEnemies.length;
 
-    const enemy = aliveEnemies[enemyIndex];
+    // 적의 수에 따라 키를 적 인덱스로 매핑
+    let enemyIndex: number;
+
+    if (enemyCount === 1) {
+      // 1마리: 아래 화살표만 유효
+      if (keyIndex === 1) { // DOWN
+        enemyIndex = 0;
+      } else {
+        return; // 다른 키는 무시
+      }
+    } else if (enemyCount === 2) {
+      // 2마리: 왼쪽, 오른쪽 화살표만 유효
+      if (keyIndex === 0) { // LEFT
+        enemyIndex = 0;
+      } else if (keyIndex === 2) { // RIGHT
+        enemyIndex = 1;
+      } else {
+        return; // 아래 화살표는 무시
+      }
+    } else {
+      // 3마리 이상: 모든 화살표 사용
+      enemyIndex = keyIndex;
+    }
+
+    if (enemyIndex < 0 || enemyIndex >= allEnemies.length) return;
+
+    const enemy = allEnemies[enemyIndex];
+    // 죽은 적은 선택 불가
     if (!enemy || enemy.isDead()) return;
 
     const cardData: CardData = (selectedCard as any).cardData;

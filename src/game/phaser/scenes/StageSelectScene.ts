@@ -344,22 +344,34 @@ export default class StageSelectScene extends Phaser.Scene {
     clearedStages: number[],
     stagesData: StagesDataMap
   ): boolean {
-    // 현재 스테이지거나 이미 클리어한 경우
-    if (stageId === currentStage || clearedStages.includes(stageId)) {
+    // 이미 클리어한 스테이지는 다시 갈 수 없음
+    if (clearedStages.includes(stageId)) {
+      return false;
+    }
+
+    // 현재 스테이지 자체는 항상 가능
+    if (stageId === currentStage) {
       return true;
     }
 
-    // 첫 스테이지는 항상 가능
+    // 시작 스테이지(1번)는 항상 가능
     if (stageId === 1) {
       return true;
     }
 
-    // 이전 스테이지가 클리어되었는지 확인
-    for (const [id, stage] of Object.entries(stagesData)) {
-      if (stage.nextStages && stage.nextStages.includes(stageId)) {
-        if (clearedStages.includes(parseInt(id))) {
-          return true;
-        }
+    // 클리어한 스테이지가 없으면 시작 스테이지만 가능
+    if (clearedStages.length === 0) {
+      return false;
+    }
+
+    // 가장 최근에 클리어한 스테이지의 nextStages만 확인
+    // clearedStages는 클리어 순서대로 추가되므로, 마지막 요소가 최근 클리어한 스테이지
+    const lastClearedStageId = clearedStages[clearedStages.length - 1];
+    const lastClearedStageData = stagesData[lastClearedStageId];
+    
+    if (lastClearedStageData && lastClearedStageData.nextStages) {
+      if (lastClearedStageData.nextStages.includes(stageId)) {
+        return true;
       }
     }
 
