@@ -50,44 +50,21 @@ export default class CardHandManager {
    * 카드를 드로우합니다.
    */
   public drawCards(count: number, onComplete?: () => void): void {
-    const cardsToDrawData: CardData[] = [];
-
-    // 먼저 모든 카드 데이터를 가져옴
-    for (let i = 0; i < count; i++) {
-      const cardData = this.deckManager.drawCard();
-      if (cardData) {
-        cardsToDrawData.push(cardData);
-      } else {
-        // 덱이 비어있으면 중단 (DeckManager의 drawCard가 이미 리셔플 처리)
-        break;
-      }
-    }
-
-    const cardsDrawn = cardsToDrawData.length;
-    const currentHandSize = this.hand.length;
-
     // 드로우 시작 - 턴 종료 불가 및 버튼 비활성화
     if (this.setEndTurnAllowed) {
       this.setEndTurnAllowed(false);
     }
     this.uiManager.setEndTurnButtonEnabled(false);
 
-    // 순차적으로 카드 추가 애니메이션
-    cardsToDrawData.forEach((cardData, index) => {
-      this.scene.time.delayedCall(index * 150, () => {
-        this.addCardToHandWithAnimation(cardData, currentHandSize + index, currentHandSize + cardsDrawn);
-        // 카드 드로우 사운드 재생
-        if (this.soundManager) {
-          this.soundManager.playCardDraw();
-        }
-      });
-    });
+    this.drawCardsRecursive(count, 0, onComplete);
+  }
 
-    // 모든 카드가 드로우된 후 콜백 실행
-    // 마지막 카드의 애니메이션 시작 시간(cardsDrawn * 150) + 애니메이션 duration(400) + 여유시간(100)
-    const totalDuration = cardsDrawn * 150 + 500;
-    this.scene.time.delayedCall(totalDuration, () => {
-      // 드로우 완료 - 턴 종료 가능 및 버튼 활성화
+  /**
+   * 재귀적으로 카드를 드로우합니다. (리셔플 연출 포함)
+   */
+  private drawCardsRecursive(totalCount: number, drawnCount: number, onComplete?: () => void): void {
+    if (drawnCount >= totalCount) {
+      // 모든 카드 드로우 완료
       if (this.setEndTurnAllowed) {
         this.setEndTurnAllowed(true);
       }
@@ -96,7 +73,133 @@ export default class CardHandManager {
       if (onComplete) {
         onComplete();
       }
+      return;
+    }
+
+    // 현재 드로우 가능한 카드 수 확인
+    const remainingToDraw = totalCount - drawnCount;
+    const availableInDeck = this.deckManager.getDeckSize();
+    const canDrawNow = Math.min(remainingToDraw, availableInDeck);
+
+    // 현재 배치에서 드로우할 카드들
+    const cardsToDrawData: CardData[] = [];
+    for (let i = 0; i < canDrawNow; i++) {
+      const cardData = this.deckManager.drawCardWithoutReshuffle();
+      if (cardData) {
+        cardsToDrawData.push(cardData);
+      }
+    }
+
+    const currentHandSize = this.hand.length;
+    const cardsDrawn = cardsToDrawData.length;
+    const finalHandSize = currentHandSize + cardsDrawn;
+
+    // 기존 카드들을 finalHandSize 기준으로 재배치
+    if (currentHandSize > 0) {
+      this.rearrangeExistingCards(finalHandSize);
+    }
+
+    // 순차적으로 카드 추가 애니메이션
+    cardsToDrawData.forEach((cardData, index) => {
+      this.scene.time.delayedCall(index * 150, () => {
+        this.addCardToHandWithAnimation(cardData, currentHandSize + index, finalHandSize);
+        // 카드 드로우 사운드 재생
+        if (this.soundManager) {
+          this.soundManager.playCardDraw();
+        }
+      });
     });
+
+    // 이번 배치의 카드 드로우가 끝난 후
+    const batchDuration = cardsDrawn * 150 + 500;
+
+    this.scene.time.delayedCall(batchDuration, () => {
+      const newDrawnCount = drawnCount + cardsDrawn;
+
+      // 아직 더 드로우해야 하는데 덱이 비었다면 리셔플
+      if (newDrawnCount < totalCount && this.deckManager.needsReshuffle()) {
+        // 리셔플 연출
+        this.playReshuffleAnimation(() => {
+          this.deckManager.reshuffleDiscardIntoDeck();
+          // 리셔플 후 나머지 카드 드로우
+          this.drawCardsRecursive(totalCount, newDrawnCount, onComplete);
+        });
+      } else {
+        // 더 드로우할 카드가 있으면 계속, 없으면 종료
+        this.drawCardsRecursive(totalCount, newDrawnCount, onComplete);
+      }
+    });
+  }
+
+  /**
+   * 리셔플 애니메이션을 재생합니다.
+   */
+  private playReshuffleAnimation(onComplete: () => void): void {
+    // 버린 카드 더미에서 덱으로 카드가 이동하는 연출
+    const discardPileContainer = this.uiManager.getDiscardPileContainer();
+    const deckPileContainer = this.uiManager.getDeckPileContainer();
+
+    const discardWorldPos = discardPileContainer.getWorldTransformMatrix();
+    const deckWorldPos = deckPileContainer.getWorldTransformMatrix();
+
+    // 버린 카드 더미의 카드 수 가져오기
+    const discardPileSize = this.deckManager.getDiscardPileSize();
+    const cardsToShow = Math.min(discardPileSize, 10); // 최대 10장까지만 연출
+
+    const tempCards: Phaser.GameObjects.Rectangle[] = [];
+
+    // 버린 카드 더미 애니메이션
+    this.uiManager.animateDiscardPile();
+
+    // 여러 장의 카드를 시간차를 두고 이동
+    for (let i = 0; i < cardsToShow; i++) {
+      this.scene.time.delayedCall(i * 50, () => {
+        // 임시 카드 이미지 생성 (연출용)
+        const tempCard = this.scene.add.rectangle(
+          discardWorldPos.tx,
+          discardWorldPos.ty,
+          100,
+          140,
+          0x6366f1,
+          0.8
+        );
+        tempCard.setDepth(1000 + i);
+        tempCards.push(tempCard);
+
+        // 카드가 버린 더미에서 덱으로 이동
+        this.scene.tweens.add({
+          targets: tempCard,
+          x: deckWorldPos.tx,
+          y: deckWorldPos.ty,
+          scaleX: 0.8,
+          scaleY: 0.8,
+          duration: 400,
+          ease: 'Power2',
+          onComplete: () => {
+            tempCard.destroy();
+
+            // 마지막 카드일 때만 추가 처리
+            if (i === cardsToShow - 1) {
+              // 덱 파일 애니메이션
+              this.uiManager.animateDeckPile();
+
+              // 리셔플 사운드 재생 (있다면)
+              if (this.soundManager) {
+                this.soundManager.playCardDraw();
+              }
+
+              // 약간의 딜레이 후 콜백
+              this.scene.time.delayedCall(200, onComplete);
+            }
+          }
+        });
+
+        // 카드 이동 사운드 (첫 번째와 중간중간만)
+        if (i % 3 === 0 && this.soundManager) {
+          this.soundManager.playCardDraw();
+        }
+      });
+    }
   }
 
   /**
@@ -154,6 +257,30 @@ export default class CardHandManager {
         // 애니메이션 완료 후 인터랙션 활성화
         card.enableInteraction();
       }
+    });
+  }
+
+  /**
+   * 기존 카드들을 새로운 finalHandSize 기준으로 재배치합니다.
+   */
+  private rearrangeExistingCards(finalHandSize: number): void {
+    const spacing = 150;
+    const totalWidth = (finalHandSize - 1) * spacing;
+    const startX = -totalWidth / 2;
+
+    this.hand.forEach((card, index) => {
+      const targetX = startX + (index * spacing);
+      const targetY = 0;
+
+      this.scene.tweens.add({
+        targets: card,
+        x: targetX,
+        y: targetY,
+        duration: 300,
+        ease: 'Power2'
+      });
+
+      (card as any).originalY = targetY;
     });
   }
 

@@ -44,6 +44,25 @@ export default class DeckManager {
   }
 
   /**
+   * 리셔플 없이 덱에서 카드를 드로우합니다.
+   * @returns 드로우한 카드 데이터, 덱이 비어있으면 null
+   */
+  public drawCardWithoutReshuffle(): CardData | null {
+    const card = this.deck.pop();
+    if (!card) {
+      return null;
+    }
+    return this.deepCopyCard(card);
+  }
+
+  /**
+   * 리셔플이 필요한지 확인합니다.
+   */
+  public needsReshuffle(): boolean {
+    return this.deck.length === 0 && this.discardPile.length > 0;
+  }
+
+  /**
    * 카드를 버린 카드 더미에 추가합니다.
    * @param cardData 버릴 카드 데이터 (깊은 복사됨)
    */
