@@ -129,24 +129,21 @@ export default class BattleManager {
           target.takeDamage(cardData.damage);
         }
       }
-
-      // 자신에게 피해
-      if (cardData.selfDamage) {
-        this.player.takeDamage(cardData.selfDamage);
-      }
-    } else {
-      // 비공격 카드 처리 (속성으로 체크)
-      if (cardData.block) {
-        this.player.applyDefense(cardData.block);
-      } 
-      if (cardData.heal) {
-        this.player.heal(cardData.heal);
-      } 
-      if (cardData.energy) {
-        this.player.setEnergy(this.player.energy + cardData.energy);
-      }
     }
 
+    if (cardData.selfDamage) {
+      this.player.takeDamage(cardData.selfDamage);
+    }
+    if (cardData.block) {
+      this.player.applyDefense(cardData.block);
+    } 
+    if (cardData.heal) {
+      this.player.heal(cardData.heal);
+    } 
+    if (cardData.energy) {
+      this.player.setEnergy(this.player.energy + cardData.energy);
+    }
+    
     return true; // 카드 사용 성공
   }
 
