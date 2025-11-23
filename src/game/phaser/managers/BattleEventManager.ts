@@ -247,12 +247,9 @@ export default class BattleEventManager {
 
     if (cardType === 'attack') {
       // 공격 사운드 재생
-      const damageValue = cardData.damage || 0;
-      const isHeavy = damageValue >= 10;
       if (this.soundManager) {
         this.soundManager.play('attack', 0.8);
       }
-
       if (cardData.allEnemies) {
         // 전체 공격: 파티클만 화면 중앙으로 날아가고, 카드는 버린 카드 더미로
         (card as any).playParticleEffect(this.scene.cameras.main.width / 2, 250);
@@ -268,7 +265,6 @@ export default class BattleEventManager {
       // 방어 카드 (block 속성으로 판단)
       // 플레이어 캐릭터 방어 애니메이션
       this.playerCharacter.playDefendAnimation();
-
       // 방어 사운드 재생 (약간 딜레이를 줘서 카드 사용 사운드와 겹치지 않도록)
       this.scene.time.delayedCall(100, () => {
         if (this.soundManager) {

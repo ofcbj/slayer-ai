@@ -10,5 +10,50 @@
     "description_ko": "적에게 <span class='card-damage'>7</span> 피해를 줍니다.",
     "description_ja": "敵に<span class='card-damage'>7</span>ダメージを与える."
   },
-
+  "fireball": {
+    "type": "attack",
+    "cost": 2,
+    "damage": 16,
+    "image": "🔥",
+    "sound": "",
+    "name_ko": "화염구",
+    "name_ja": "火炎球",
+    "description_ko": "적에게 <span class='card-damage'>14</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>14</span>ダメージを与える."
+  },
+  "arrow_barrage": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 4,
+    "hits": 3,
+    "image": "🏹",
+    "sound": "",
+    "name_ko": "화살 난사",
+    "name_ja": "矢の乱射",
+    "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 3번 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>4</span>ダメージを3回与える."
+  },
+  "double_slash": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 6,
+    "hits": 2,
+    "image": "⚡",
+    "sound": "",
+    "name_ko": "연속 베기",
+    "name_ja": "連続斬撃",
+    "description_ko": "적에게 <span class='card-damage'>6</span> 피해를 2번 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>6</span>ダメージを2回与える."
+  },
+  "focused_strike": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 12,
+    "image": "🎯",
+    "sound": "",
+    "name_ko": "집중 타격",
+    "name_ja": "集中打撃",
+    "description_ko": "적에게 <span class='card-damage'>12</span> 피해를 줍니다.",
+    "description_ja": "敵に<span class='card-damage'>12</span>ダメージを与える."
+  }
 }

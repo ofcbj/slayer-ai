@@ -138,9 +138,11 @@ export default class BattleManager {
       // 비공격 카드 처리 (속성으로 체크)
       if (cardData.block) {
         this.player.applyDefense(cardData.block);
-      } else if (cardData.heal) {
+      } 
+      if (cardData.heal) {
         this.player.heal(cardData.heal);
-      } else if (cardData.energy) {
+      } 
+      if (cardData.energy) {
         this.player.setEnergy(this.player.energy + cardData.energy);
       }
     }

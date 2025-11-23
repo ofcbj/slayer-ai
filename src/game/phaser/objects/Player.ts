@@ -5,7 +5,6 @@ import { PlayerStateObservable } from '../state/PlayerStateObservable';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { UIFactory } from '../../utils/UIFactory';
-import { isBattleScene } from '../../../types/SceneTypes';
 
 /**
  * Player - 플레이어 캐릭터 클래스
@@ -34,6 +33,11 @@ export default class Player extends Actor {
     this.maxEnergy = initialState.maxEnergy;
 
     this.createPlayer();
+    
+    // 초기 값으로 UI 업데이트
+    this.updateHealthDisplay();
+    this.updateDefenseDisplay();
+    
     scene.add.existing(this);
 
     // 자신의 상태 변경을 구독하여 Actor의 내부 상태와 동기화
@@ -132,6 +136,10 @@ export default class Player extends Actor {
       state.health = this.health;
     });
     this.updateHealthDisplay();
+    const soundManager = (this.scene as any).soundManager;
+    if (soundManager) {
+        soundManager.play('heal', 0.5);
+    }
   }
 
   public resetDefense(): void {
