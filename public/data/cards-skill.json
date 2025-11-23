@@ -63,8 +63,8 @@
     "sound": "",
     "name_ko": "재생",
     "name_ja": "再生",
-    "description_ko": "체력을 <span class='card-energy'>8</span> 회복하고 <span class='card-block'>8</span> 방어도를 얻습니다.",
-    "description_ja": "HPを<span class='card-energy'>8</span>回復し、<span class='card-block'>8</span>防御力を得る."
+    "description_ko": "체력을 <span class='card-energy'>6</span> 회복하고 <span class='card-block'>6</span> 방어도를 얻습니다.",
+    "description_ja": "HPを<span class='card-energy'>6</span>回復し、<span class='card-block'>6</span>防御力を得る."
   },
   "healing_spell": {
     "type": "skill",

@@ -243,6 +243,12 @@ export default class CardHandManager {
         // 핸드 컨테이너 내에서의 로컬 좌표 설정
         card.setPosition(finalLocalX, 0);
         (card as any).originalY = 0;
+        // 카드의 depth를 index 기반으로 설정 (왼쪽부터 오른쪽으로 쌓임)
+        card.setDepth(cardIndex);
+        // 원래 depth도 함께 설정 (호버 해제 시 복원용)
+        card.setOriginalDepth(cardIndex);
+        // 핸드 컨테이너 참조 설정 (호버 시 컨테이너에서 제거하기 위해 필요)
+        card.setHandContainer(this.handContainer);
 
         // 애니메이션 완료 후 인터랙션 활성화
         card.enableInteraction();
@@ -268,6 +274,10 @@ export default class CardHandManager {
       });
 
       (card as any).originalY = targetY;
+      // 카드의 depth를 index 기반으로 재설정
+      card.setDepth(index);
+      // 원래 depth도 함께 설정 (호버 해제 시 복원용)
+      card.setOriginalDepth(index);
     });
   }
 
@@ -286,6 +296,10 @@ export default class CardHandManager {
       });
 
       (card as any).originalY = targetY;
+      // 카드의 depth를 index 기반으로 설정
+      card.setDepth(index);
+      // 원래 depth도 함께 설정 (호버 해제 시 복원용)
+      card.setOriginalDepth(index);
     });
   }
 

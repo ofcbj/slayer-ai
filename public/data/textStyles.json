@@ -141,36 +141,36 @@
   },
   "cards": {
     "name": {
-      "fontSize": "15px",
+      "fontSize": "22px",
       "fontFamily": "Arial, sans-serif",
       "fontStyle": "bold",
       "color": "#ffffff",
       "align": "center"
     },
     "description": {
-      "fontSize": "11px",
+      "fontSize": "16px",
       "fontFamily": "Arial, sans-serif",
       "color": "#e0e0e0",
       "wordWrap": true
     },
     "cost": {
-      "fontSize": "17px",
+      "fontSize": "24px",
       "fontFamily": "Arial, sans-serif",
       "fontStyle": "bold",
       "color": "#ffffff"
     },
     "value": {
-      "fontSize": "30px",
+      "fontSize": "43px",
       "fontFamily": "Arial, sans-serif",
       "fontStyle": "bold",
       "color": "#ffffff"
     },
     "emoji": {
-      "fontSize": "44px",
+      "fontSize": "64px",
       "fontFamily": "Arial, sans-serif"
     },
     "emojiSmall": {
-      "fontSize": "10px",
+      "fontSize": "14px",
       "fontFamily": "Arial, sans-serif",
       "color": "#ffffff",
       "align": "center"

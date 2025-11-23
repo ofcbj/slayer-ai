@@ -7,7 +7,11 @@ export default class Card extends Phaser.GameObjects.Container {
   private cardData: CardData;
   private isSelected: boolean;
   private originalY: number;
+  private originalDepth: number;
   private bg!: Phaser.GameObjects.Rectangle;
+  private handContainer: Phaser.GameObjects.Container | null = null;
+  private originalLocalX: number = 0;
+  private originalLocalY: number = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number, cardData: CardData) {
     super(scene, x, y);
@@ -15,6 +19,7 @@ export default class Card extends Phaser.GameObjects.Container {
     this.cardData = cardData;
     this.isSelected = false;
     this.originalY = y;
+    this.originalDepth = 0; // 초기화, 나중에 설정됨
 
     this.createCard();
     this.setupInteraction();
@@ -29,7 +34,7 @@ export default class Card extends Phaser.GameObjects.Container {
       0,
       0,
       this.cardData,
-      { width: 140, height: 200, showInteraction: true }
+      { width: 168, height: 240, showInteraction: true }
     );
 
     // CardRenderer가 생성한 모든 자식 요소를 이 컨테이너에 추가
@@ -43,7 +48,7 @@ export default class Card extends Phaser.GameObjects.Container {
     this.bg = (cardContainer as any).bg;
 
     // 컨테이너 크기 설정
-    this.setSize(140, 200);
+    this.setSize(168, 240);
 
     // cardContainer 제거 (자식들은 이미 this로 이동됨)
     cardContainer.destroy();
@@ -55,12 +60,17 @@ export default class Card extends Phaser.GameObjects.Container {
 
     this.bg.on('pointerover', () => {
       if (!this.isSelected) {
+        this.bringToTop();
         tweenConfig.apply(this.scene, 'interactive.cardHover', this);
       }
     });
 
     this.bg.on('pointerout', () => {
       if (!this.isSelected) {
+        // 컨테이너에 다시 추가
+        this.restoreToContainer();
+        // 원래 depth로 복원
+        this.setDepth(this.originalDepth);
         tweenConfig.apply(this.scene, 'interactive.cardHoverOut', this);
       }
     });
@@ -91,6 +101,9 @@ export default class Card extends Phaser.GameObjects.Container {
     this.isSelected = true;
     this.bg.setStrokeStyle(4, 0xffff00);
 
+    // 선택 시에도 맨 위로 올리기
+    this.bringToTop();
+
     tweenConfig.apply(this.scene, 'cards.select', this);
   }
 
@@ -98,11 +111,96 @@ export default class Card extends Phaser.GameObjects.Container {
     this.isSelected = false;
     this.bg.setStrokeStyle(3, CardRenderer.getCardColor(this.cardData));
 
+    // 선택 해제 시 컨테이너에 다시 추가하고 원래 depth로 복원
+    this.restoreToContainer();
+    this.setDepth(this.originalDepth);
+
     tweenConfig.apply(this.scene, 'cards.deselect', this, {
       y: this.originalY,
       scaleX: 1,
       scaleY: 1
     });
+  }
+
+  /**
+   * 카드의 원래 depth를 설정합니다.
+   * CardHandManager에서 카드의 depth를 설정할 때 함께 호출됩니다.
+   */
+  public setOriginalDepth(depth: number): void {
+    // 호버 중이 아닐 때만 originalDepth 업데이트
+    if (this.depth < 10000) {
+      this.originalDepth = depth;
+    }
+  }
+
+  /**
+   * 핸드 컨테이너 참조를 설정합니다.
+   * 호버 시 컨테이너에서 제거하고 씬에 직접 추가하기 위해 필요합니다.
+   */
+  public setHandContainer(container: Phaser.GameObjects.Container): void {
+    this.handContainer = container;
+  }
+
+  /**
+   * 카드를 맨 위로 올립니다.
+   * 호버 시 컨테이너에서 제거하고 씬에 직접 추가하여 depth가 제대로 작동하도록 합니다.
+   */
+  private bringToTop(): void {
+    if (!this.handContainer) {
+      // 컨테이너가 없으면 일반 depth 설정만 사용
+      this.originalDepth = this.depth;
+      this.setDepth(10000);
+      return;
+    }
+
+    // 현재 depth 저장
+    this.originalDepth = this.depth;
+
+    // 컨테이너의 자식인지 확인
+    if (this.handContainer.list.includes(this)) {
+      // 로컬 좌표 저장 (복원 시 사용)
+      this.originalLocalX = this.x;
+      this.originalLocalY = this.y;
+
+      // 현재 월드 변환 행렬 저장
+      const worldMatrix = this.getWorldTransformMatrix();
+      const worldX = worldMatrix.tx;
+      const worldY = worldMatrix.ty;
+
+      // 컨테이너에서 제거 (removeFromDisplayList: false로 월드 좌표 유지)
+      this.handContainer.remove(this, false);
+      
+      // 씬에 직접 추가
+      this.scene.add.existing(this);
+      
+      // 월드 좌표로 설정 (remove가 월드 좌표를 유지하므로 이미 설정되어 있지만 명시적으로 설정)
+      this.setPosition(worldX, worldY);
+    }
+
+    // 최상위 depth로 설정
+    this.setDepth(10000);
+  }
+
+  /**
+   * 카드를 원래 위치로 복원합니다.
+   * 호버 해제 시 컨테이너에 다시 추가합니다.
+   */
+  private restoreToContainer(): void {
+    if (!this.handContainer) {
+      return;
+    }
+
+    // 컨테이너의 자식이 아니면 (씬에 직접 추가된 상태)
+    if (!this.handContainer.list.includes(this)) {
+      // 씬에서 제거
+      this.scene.children.remove(this);
+
+      // 컨테이너에 다시 추가
+      this.handContainer.add(this);
+
+      // 저장된 로컬 좌표로 복원
+      this.setPosition(this.originalLocalX, this.originalLocalY);
+    }
   }
 
 

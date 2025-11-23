@@ -61,11 +61,11 @@ export default class CardRenderer {
 
     // PNG 이미지가 있으면 Sprite로, 없으면 Text(이모지)로 표시
     if (imageKey && scene.textures.exists(imageKey)) {
-      const sprite = scene.add.sprite(0, -20, imageKey);
+      const sprite = scene.add.sprite(0, -25, imageKey);
       sprite.setDisplaySize(80, 80); // 이미지 크기 조정
       cardImage = sprite;
     } else {
-      const text = scene.add.text(0, -20, this.getCardImage(cardData),
+      const text = scene.add.text(0, -25, this.getCardImage(cardData),
         textStyle.getStyle('cards.emoji')
       );
       text.setOrigin(0.5);

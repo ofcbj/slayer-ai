@@ -3,8 +3,8 @@
     "cardHover": {
       "duration": 200,
       "properties": {
-        "scaleX": 1.05,
-        "scaleY": 1.05
+        "scaleX": 1.26,
+        "scaleY": 1.26
       }
     },
     "cardHoverOut": {
