@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import Character from './Character';
+import Actor from './Actor';
 import { EnemyData } from '../../../types';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
@@ -11,32 +11,30 @@ interface Intent {
   value?: number;
 }
 
-export default class Enemy extends Character {
-  enemyData: EnemyData;
-  enemyIndex: number;
-  intent: Intent | null;
-  isTargeted: boolean;
-  bg!: Phaser.GameObjects.Rectangle;
-  hpText!: Phaser.GameObjects.Text;
-  intentIcon!: Phaser.GameObjects.Text;
+export default class Enemy extends Actor {
+  enemyData   : EnemyData;
+  enemyIndex  : number;
+  intent      : Intent | null;
+  isTargeted  : boolean;
+  bg          : Phaser.GameObjects.Rectangle;
+  intentIcon! : Phaser.GameObjects.Text;
   intentValue!: Phaser.GameObjects.Text;
-  defenseText!: Phaser.GameObjects.Text;
 
   constructor(
     scene: Phaser.Scene,
-    x: number,
+    x: number, 
     y: number,
     enemyData: EnemyData,
     index: number
   ) {
     super(scene, x, y);
 
-    this.enemyData = enemyData;
+    this.enemyData  = enemyData;
     this.enemyIndex = index;
-    this.health = enemyData.health || enemyData.hp || 0;
-    this.maxHealth = enemyData.health || enemyData.hp || 0;
-    this.defense = 0;
-    this.intent = null;
+    this.health     = enemyData.health || enemyData.hp || 0;
+    this.maxHealth  = enemyData.health || enemyData.hp || 0;
+    this.defense    = 0;
+    this.intent     = null;
     this.isTargeted = false;
 
     this.createEnemy();
@@ -67,7 +65,7 @@ export default class Enemy extends Character {
 
     // UIFactory를 사용하여 HP 컨테이너 생성
     const hp = UIFactory.createHPContainer(this.scene, -width/2+35, height/2-30, this.health);
-    this.hpText = hp.healthText;
+    this.healthText = hp.healthText;
 
     // UIFactory를 사용하여 Defense 컨테이너 생성
     const def = UIFactory.createDefenseContainer(this.scene, width/2-65, height/2-30, this.defense);
@@ -98,7 +96,6 @@ export default class Enemy extends Character {
     if (this.enemyData.image) {
       return this.enemyData.image;
     }
-
     // 기본 이미지
     return '👾';
   }
@@ -167,41 +164,21 @@ export default class Enemy extends Character {
     }
   }
 
-  /**
-   * 피격 애니메이션 (Character 추상 메서드 구현)
-   */
   protected override playHitAnimation(): void {
     // 좌우 흔들림
     tweenConfig.apply(this.scene, 'combat.enemyHit', this, {
       x: this.x
     });
-
     // 배경 깜빡임
     tweenConfig.apply(this.scene, 'combat.enemyHitFlash', this.bg);
-
     // 죽었으면 죽음 애니메이션
     if (this.isDead()) {
       this.playDeathAnimation();
     }
   }
 
-  /**
-   * 피격 사운드 재생 (Character 추상 메서드 구현)
-   */
-  protected override playDamageSound(): void {
-    const soundManager = (this.scene as any).soundManager;
-    if (soundManager) {
-      soundManager.play('damage-enemy', 0.7);
-    }
-  }
-
-  /**
-   * 방어력 적용 (베이스 클래스 오버라이드)
-   */
   applyDefense(amount: number): void {
     super.applyDefense(amount);
-
-    // 방어력 증가 시각 효과
     const defensePopup = this.scene.add.text(this.x, this.y-50, `+${amount} 🛡️`,
       textStyle.getStyle('damage.enemyDamage', { color: '#4ecdc4' })
     );
@@ -212,21 +189,7 @@ export default class Enemy extends Character {
       onComplete: () => defensePopup.destroy()
     });
   }
-
-  /**
-   * 방어력 표시 업데이트 (Character 추상 메서드 구현)
-   */
-  protected override updateDefenseDisplay(): void {
-    this.defenseText.setText(this.defense.toString());
-  }
-
-  /**
-   * 체력 표시 업데이트 (Character 추상 메서드 구현)
-   */
-  protected override updateHealthDisplay(): void {
-    this.hpText.setText(this.health.toString());
-  }
-
+  
   playAttackAnimation(callback?: () => void): void {
     tweenConfig.apply(this.scene, 'combat.enemyAttack', this, {
       x: this.x,

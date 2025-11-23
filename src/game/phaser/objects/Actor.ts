@@ -5,19 +5,21 @@ import { Logger } from '../../utils/Logger';
 import { isBattleScene } from '../../../types/SceneTypes';
 
 /**
- * Character - Player와 Enemy의 공통 베이스 클래스
+ * Actor - Player와 Enemy의 공통 베이스 클래스
  * 체력, 방어력, 데미지 처리 등 공통 기능을 제공
  */
-export default abstract class Character extends Phaser.GameObjects.Container {
-  health: number;
-  maxHealth: number;
-  defense: number;
+export default abstract class Actor extends Phaser.GameObjects.Container {
+  health       : number;
+  maxHealth    : number;
+  defense      : number;
+  healthText!  : Phaser.GameObjects.Text;
+  defenseText! : Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
-    this.health = 0;
+    this.health    = 0;
     this.maxHealth = 0;
-    this.defense = 0;
+    this.defense   = 0;
   }
 
   /**
@@ -39,11 +41,9 @@ export default abstract class Character extends Phaser.GameObjects.Container {
       damageToHealth = amount - blockedDamage;
 
       Logger.debug(`  -> Blocked: ${blockedDamage}, Remaining damage: ${damageToHealth}, New defense: ${this.defense}`);
-
       // 막힌 데미지 표시
       if (blockedDamage > 0) {
         this.showBlockedDamage(blockedDamage);
-        // 방어 성공 사운드
       }
 
       // 모든 데미지를 방어로 막았는지 확인
@@ -53,6 +53,9 @@ export default abstract class Character extends Phaser.GameObjects.Container {
         if (isBattleScene(this.scene)) {
           this.scene.soundManager.play('block', 1.0);
         }
+        if (this.playDefendAnimation) {
+          this.playDefendAnimation();
+        }
       }
     }
 
@@ -61,39 +64,22 @@ export default abstract class Character extends Phaser.GameObjects.Container {
       this.health = Math.max(0, this.health - damageToHealth);
       Logger.debug(`  -> Health damage: ${damageToHealth}, New health: ${this.health}`);
       this.showDamageNumber(damageToHealth);
-
-      // 피격 사운드 재생 (각 클래스에서 구현)
-      this.playDamageSound();
-
-      // 피격 애니메이션 (체력 데미지를 받았을 때)
+      this.playDamageSound(damageToHealth);
       this.playHitAnimation();
-    } else if (fullBlock) { // 전체 피해 방어
-      Logger.debug(`  -> Full block!`);
-      // 완전히 막았을 때는 방어 애니메이션 (있다면)
-      if (this.playDefendAnimation) {
-        this.playDefendAnimation();
-      }
     }
-
-    // 방어력 표시 먼저 업데이트 (방어력이 감소한 것을 먼저 보여줌)
     this.updateDefenseDisplay();
-    // 체력바/체력 표시 업데이트
     this.updateHealthDisplay();
   }
 
-  /**
-   * 방어력을 추가하는 공통 메서드
-   */
   applyDefense(amount: number): void {
-    Logger.debug(`${this.constructor.name} applyDefense called - adding: ${amount}, current defense: ${this.defense}`);
+    const soundManager = (this.scene as any).soundManager;
+    if (soundManager)
+        soundManager.play('defend', 0.5);
+
     this.defense += amount;
-    Logger.debug(`  -> New defense: ${this.defense}`);
     this.updateDefenseDisplay();
   }
 
-  /**
-   * 방어력으로 막힌 데미지 표시
-   */
   protected showBlockedDamage(amount: number): void {
     const blockText = this.scene.add.text(this.x-40, this.y-50, `🛡️-${amount}`,
       textStyle.getStyle('damage.defenseBlock')
@@ -106,9 +92,6 @@ export default abstract class Character extends Phaser.GameObjects.Container {
     });
   }
 
-  /**
-   * 체력 데미지 숫자 표시
-   */
   protected showDamageNumber(amount: number): void {
     const damageText = this.scene.add.text(this.x+40, this.y-50, `-${amount} HP`,
       textStyle.getStyle('damage.hp')
@@ -121,35 +104,33 @@ export default abstract class Character extends Phaser.GameObjects.Container {
     });
   }
 
-  /**
-   * 죽었는지 확인
-   */
   isDead(): boolean {
     return this.health <= 0;
   }
 
-  /**
-   * 체력 표시 업데이트 (각 클래스에서 구현)
-   */
-  protected abstract updateHealthDisplay(): void;
+  playDamageSound(damage : number): void {
+    const soundManager = (this.scene as any).soundManager;
+    if (soundManager) {
+      if (damage > 10) {
+        soundManager.play('damage-big', 0.5);
+      } else {
+        soundManager.play('damage-small', 0.5);
+      }
+    }
+  }
 
-  /**
-   * 방어력 표시 업데이트 (각 클래스에서 구현)
-   */
-  protected abstract updateDefenseDisplay(): void;
+  protected updateHealthDisplay(): void {
+    if (this.healthText) {
+      this.healthText.setText(this.health.toString());
+    }
+  }
 
-  /**
-   * 피격 애니메이션 (각 클래스에서 구현)
-   */
+  protected updateDefenseDisplay(): void {
+    if (this.defenseText) {
+      this.defenseText.setText(this.defense.toString());
+    }
+  }
+
   protected abstract playHitAnimation(): void;
-
-  /**
-   * 피격 사운드 재생 (각 클래스에서 구현)
-   */
-  protected abstract playDamageSound(): void;
-
-  /**
-   * 방어 애니메이션 (각 클래스에서 구현, 선택적)
-   */
   protected playDefendAnimation?(): void;
 }
