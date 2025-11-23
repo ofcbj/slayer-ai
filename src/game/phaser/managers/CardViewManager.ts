@@ -15,9 +15,6 @@ export default class CardViewManager {
     this.scene = scene;
   }
 
-  /**
-   * 덱 뷰를 표시합니다.
-   */
   public showDeckView(deck: readonly CardData[], onEmpty?: () => void): void {
     if (deck.length === 0) {
       if (onEmpty) {
@@ -30,9 +27,6 @@ export default class CardViewManager {
     this.showCardListView(langManager.t('battle.deck'), [...deck]);
   }
 
-  /**
-   * 버린 카드 더미 뷰를 표시합니다.
-   */
   public showDiscardPileView(discardPile: readonly CardData[], onEmpty?: () => void): void {
     if (discardPile.length === 0) {
       if (onEmpty) {
@@ -45,9 +39,6 @@ export default class CardViewManager {
     this.showCardListView(langManager.t('battle.discard'), [...discardPile]);
   }
 
-  /**
-   * 카드 목록을 팝업으로 표시합니다.
-   */
   private showCardListView(title: string, cards: CardData[]): void {
     const width   = this.scene.cameras.main.width;
     const height  = this.scene.cameras.main.height;

@@ -40,16 +40,10 @@ export default class BattleManager {
     Logger.debug(`BattleManager Created with ${enemies.length} enemies:`, enemies.map((e: any) => e.enemyData?.name));
   }
 
-  /**
-   * 현재 턴을 반환합니다.
-   */
   public getTurn(): 'player' | 'enemy' {
     return this.turn;
   }
 
-  /**
-   * 플레이어 턴을 시작합니다.
-   */
   public startPlayerTurn(): void {
     this.turn = 'player';
 
@@ -62,16 +56,10 @@ export default class BattleManager {
     }
   }
 
-  /**
-   * 플레이어 턴을 종료합니다.
-   */
   public endPlayerTurn(): void {
     this.turn = 'enemy';
   }
 
-  /**
-   * 적 턴을 시작합니다.
-   */
   public startEnemyTurn(): void {
     this.turn = 'enemy';
 
@@ -80,9 +68,6 @@ export default class BattleManager {
     }
   }
 
-  /**
-   * 적의 행동을 실행합니다.
-   */
   public executeEnemyAction(enemy: Enemy): void {
     const intent: EnemyIntent = (enemy as any).intent;
 
@@ -97,9 +82,6 @@ export default class BattleManager {
     }
   }
 
-  /**
-   * 적의 다음 의도를 설정합니다.
-   */
   public setEnemyIntent(enemy: Enemy, enemyData: EnemyData, randomFn?: () => number): void {
     // 랜덤 함수가 제공되지 않으면 기본 Math.random 사용
     const random = randomFn || (() => Math.random());
@@ -118,9 +100,6 @@ export default class BattleManager {
     }
   }
 
-  /**
-   * 카드를 사용합니다.
-   */
   public useCard(cardData: CardData, target: Enemy | null = null): boolean {
     Logger.debug(`BattleManager useCard - ${cardData.name}, Current enemies in BattleManager:`, this.enemies.map((e: any) => e.enemyData?.name));
 
@@ -168,31 +147,17 @@ export default class BattleManager {
 
     return true; // 카드 사용 성공
   }
-  /**
-   * 적이 패배했을 때 호출됩니다.
-   */
-  public onEnemyDefeated(enemy: Enemy): void {
-    Logger.debug(`BattleManager onEnemyDefeated - Enemy: ${(enemy as any).enemyData?.name}, enemy.active: ${enemy.active}`);
 
+  public onEnemyDefeated(enemy: Enemy): void {
     // 좀비 Enemy 체크 - 이미 파괴된 적이면 무시
     if (!enemy.active) {
-      Logger.warn(`BattleManager onEnemyDefeated - Ignoring inactive/destroyed enemy: ${(enemy as any).enemyData?.name}`);
       return;
     }
 
-    Logger.debug(`BattleManager onEnemyDefeated - Current enemies array:`, this.enemies.map((e: any) => e.enemyData?.name));
     const index = this.enemies.indexOf(enemy);
-    Logger.debug(`BattleManager onEnemyDefeated - Enemy index in array: ${index}, Total enemies before: ${this.enemies.length}`);
-
     if (index > -1) {
       this.enemies.splice(index, 1);
-      Logger.debug(`BattleManager onEnemyDefeated - Removed enemy, Total enemies after: ${this.enemies.length}`);
-      Logger.debug(`BattleManager onEnemyDefeated - Remaining enemies:`, this.enemies.map((e: any) => e.enemyData?.name));
     } else {
-      Logger.warn(`BattleManager onEnemyDefeated - Enemy not found in enemies array!`);
-      Logger.warn(`BattleManager onEnemyDefeated - Looking for:`, (enemy as any).enemyData?.name);
-      Logger.warn(`BattleManager onEnemyDefeated - Current array:`, this.enemies.map((e: any) => e.enemyData?.name));
-      // Enemy가 배열에 없으면 이미 다른 BattleManager의 적일 가능성이 높음
       return;
     }
 
@@ -202,13 +167,9 @@ export default class BattleManager {
 
     this.checkBattleEnd();
   }
-  /**
-   * 전투 종료를 확인합니다.
-   */
+
   public checkBattleEnd(): void {
-    Logger.debug(`BattleManager checkBattleEnd - Total enemies: ${this.enemies.length}`);
     const aliveEnemies = this.enemies.filter(e => !e.isDead());
-    Logger.debug(`BattleManager checkBattleEnd - Alive enemies: ${aliveEnemies.length}`, aliveEnemies.map((e: any) => ({ name: e.enemyData?.name, health: e.health })));
 
     if (aliveEnemies.length === 0) {
       // 승리
@@ -224,9 +185,7 @@ export default class BattleManager {
       }
     }
   }
-  /**
-   * 전투 승리 처리를 합니다.
-   */
+
   public winBattle(selectedStage: StageData, gameState: GameState): void {
     // 스테이지 클리어 처리
     if (!gameState.stagesCleared.includes(selectedStage.id)) {
@@ -246,27 +205,19 @@ export default class BattleManager {
       gameState.currentStage = nextStages[0];
     }
   }
-  /**
-   * 플레이어 상태를 반환합니다.
-   */
+
   public getPlayerState(): PlayerState {
     return this.player.getState();
   }
-  /**
-   * Player 객체를 반환합니다.
-   */
+
   public getPlayer(): Player {
     return this.player;
   }
-  /**
-   * 살아있는 적 목록을 반환합니다.
-   */
+
   public getAliveEnemies(): Enemy[] {
     return this.enemies.filter(e => !e.isDead());
   }
-  /**
-   * 모든 적 목록을 반환합니다.
-   */
+
   public getAllEnemies(): Enemy[] {
     return [...this.enemies];
   }

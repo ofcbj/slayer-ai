@@ -55,9 +55,6 @@ export default class DeckManager {
     return this.deepCopyCard(card);
   }
 
-  /**
-   * 리셔플이 필요한지 확인합니다.
-   */
   public needsReshuffle(): boolean {
     return this.deck.length === 0 && this.discardPile.length > 0;
   }
@@ -82,9 +79,6 @@ export default class DeckManager {
     });
   }
 
-  /**
-   * 버린 카드 더미를 덱으로 리셔플합니다.
-   */
   public reshuffleDiscardIntoDeck(): void {
     // 깊은 복사를 통해 객체 참조 문제 방지
     this.deck = this.discardPile.map(card => this.deepCopyCard(card));
@@ -92,37 +86,22 @@ export default class DeckManager {
     this.shuffleDeck();
   }
 
-  /**
-   * 덱을 섞습니다.
-   */
   public shuffleDeck(): void {
     Phaser.Utils.Array.Shuffle(this.deck);
   }
 
-  /**
-   * 덱의 카드 수를 반환합니다.
-   */
   public getDeckSize(): number {
     return this.deck.length;
   }
 
-  /**
-   * 버린 카드 더미의 카드 수를 반환합니다.
-   */
   public getDiscardPileSize(): number {
     return this.discardPile.length;
   }
 
-  /**
-   * 덱의 모든 카드를 반환합니다 (읽기 전용).
-   */
   public getDeck(): readonly CardData[] {
     return this.deck;
   }
 
-  /**
-   * 버린 카드 더미의 모든 카드를 반환합니다 (읽기 전용).
-   */
   public getDiscardPile(): readonly CardData[] {
     return this.discardPile;
   }

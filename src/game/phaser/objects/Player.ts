@@ -5,6 +5,7 @@ import { PlayerStateObservable } from '../state/PlayerStateObservable';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { UIFactory } from '../../utils/UIFactory';
+import { isBattleScene } from '../../../types/SceneTypes';
 
 /**
  * Player - 플레이어 캐릭터 클래스
@@ -201,9 +202,8 @@ export default class Player extends Character {
    * 피격 사운드 재생 (Character의 abstract 메서드 구현)
    */
   protected override playDamageSound(): void {
-    const soundManager = (this.scene as any).soundManager;
-    if (soundManager) {
-      soundManager.play('damage-player');
+    if (isBattleScene(this.scene)) {
+      this.scene.soundManager.play('damage-player');
     }
   }
 

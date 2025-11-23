@@ -63,9 +63,7 @@ export default class BattleUIManager {
 
     this.energyContainer = energyContainer;
   }
-  /**
-   * 턴 종료 버튼을 생성합니다.
-   */
+
   public createEndTurnButton(onClick: () => void): void {
     const width = this.scene.cameras.main.width;
     this.onEndTurnClick = onClick;
@@ -111,9 +109,7 @@ export default class BattleUIManager {
     this.endTurnButtonBg = bg;
     this.endTurnButtonText = text;
   }
-  /**
-   * 턴 종료 버튼을 활성화/비활성화합니다.
-   */
+
   public setEndTurnButtonEnabled(enabled: boolean): void {
     this.isEndTurnButtonEnabled = enabled;
 
@@ -130,123 +126,114 @@ export default class BattleUIManager {
     }
   }
   /**
-   * 덱 더미 UI를 생성합니다.
+   * 카드 더미 UI를 생성하는 공통 헬퍼 메서드
    */
+  private createCardPile(
+    x: number, y: number,
+    icon: string, label: string,
+    cardColor: number, strokeColor: number,
+    offsetDirection: number,
+    onClick: () => void
+  ): { container: Phaser.GameObjects.Container; countText: Phaser.GameObjects.Text } {
+    const container = this.scene.add.container(x, y);
+
+    // 카드 더미 시각화 (여러 장 겹쳐진 효과)
+    for (let i = 0; i < 5; i++) {
+      const cardBg = this.scene.add.rectangle(
+        offsetDirection*i*2, -i*2,
+        120, 160,
+        cardColor
+      );
+      cardBg.setStrokeStyle(3, strokeColor);
+      container.add(cardBg);
+    }
+
+    // 아이콘
+    const iconText = this.scene.add.text(0, 0, icon, { fontSize: '48px' }).setOrigin(0.5);
+    container.add(iconText);
+
+    // 카드 수 텍스트
+    const countText = this.scene.add.text(
+      0, 100,
+      '0',
+      textStyle.getStyle('buttons.secondary', { stroke: '#000000', strokeThickness: 4 })
+    ).setOrigin(0.5);
+    container.add(countText);
+
+    // 라벨
+    const labelText = this.scene.add.text(
+      0, 130,
+      label,
+      textStyle.getStyle('character.name', { color: '#95a5a6' })
+    ).setOrigin(0.5);
+    container.add(labelText);
+
+    // 클릭 가능한 영역
+    const clickArea = this.scene.add.rectangle(0, 0, 150, 200, 0x000000, 0);
+    clickArea.setInteractive({ useHandCursor: true });
+    container.add(clickArea);
+
+    // 호버 이벤트
+    clickArea.on('pointerover', () => {
+      tweenConfig.apply(this.scene, 'ui.deckPileHover', container);
+    });
+
+    clickArea.on('pointerout', () => {
+      tweenConfig.apply(this.scene, 'ui.deckPileHoverOut', container);
+    });
+
+    clickArea.on('pointerdown', () => {
+      onClick();
+    });
+
+    return { container, countText };
+  }
+
   public createDeckPile(onClick: () => void): void {
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
     this.onDeckPileClick = onClick;
 
-    // 덱의 위치 (핸드 오른쪽)
-    const deckX = width - 200;
-    const deckY = height - 250;
-
-    this.deckPileContainer = this.scene.add.container(deckX, deckY);
-
-    // 카드 더미 시각화 (여러 장 겹쳐진 효과)
-    for (let i = 0; i < 5; i++) {
-      const cardBg = this.scene.add.rectangle(-i * 2, -i * 2, 120, 160, 0x2c3e50);
-      cardBg.setStrokeStyle(3, 0x34495e);
-      this.deckPileContainer.add(cardBg);
-    }
-    // 덱 아이콘
-    const deckIcon = this.scene.add.text(0, 0, '🎴', {
-      fontSize: '48px'
-    }).setOrigin(0.5);
-    this.deckPileContainer.add(deckIcon);
-    // 덱 카드 수 텍스트
-    this.deckCountText = this.scene.add.text(0,100,'0',
-      textStyle.getStyle('buttons.secondary', { stroke: '#000000', strokeThickness: 4 })
-    ).setOrigin(0.5);
-    this.deckPileContainer.add(this.deckCountText);
-    // 라벨
     const langManager = LanguageManager.getInstance();
-    const deckLabel = this.scene.add.text(0, 130, langManager.t('battle.deck'),
-      textStyle.getStyle('character.name', { color: '#95a5a6' })
-    ).setOrigin(0.5);
-    this.deckPileContainer.add(deckLabel);
-    // 클릭 가능한 영역 추가
-    const clickArea = this.scene.add.rectangle(0, 0, 150, 200, 0x000000, 0);
-    clickArea.setInteractive({ useHandCursor: true });
-    this.deckPileContainer.add(clickArea);
-
-    clickArea.on('pointerover', () => {
-      tweenConfig.apply(this.scene, 'ui.deckPileHover', this.deckPileContainer);
-    });
-
-    clickArea.on('pointerout', () => {
-      tweenConfig.apply(this.scene, 'ui.deckPileHoverOut', this.deckPileContainer);
-    });
-
-    clickArea.on('pointerdown', () => {
-      if (this.onDeckPileClick) {
-        this.onDeckPileClick();
+    const result = this.createCardPile(
+      width-200, height-250,
+      '🎴',
+      langManager.t('battle.deck'),
+      0x2c3e50, 0x34495e,
+      -1, // 왼쪽으로 오프셋
+      () => {
+        if (this.onDeckPileClick) {
+          this.onDeckPileClick();
+        }
       }
-    });
+    );
+
+    this.deckPileContainer = result.container;
+    this.deckCountText = result.countText;
   }
-  /**
-   * 버린 카드 더미 UI를 생성합니다.
-   */
+
   public createDiscardPile(onClick: () => void): void {
     const height = this.scene.cameras.main.height;
     this.onDiscardPileClick = onClick;
 
-    // 버린 카드 더미의 위치 (핸드 왼쪽)
-    const discardX = 200;
-    const discardY = height - 250;
-
-    this.discardPileContainer = this.scene.add.container(discardX, discardY);
-
-    // 카드 더미 시각화 (여러 장 겹쳐진 효과)
-    for (let i = 0; i < 5; i++) {
-      const cardBg = this.scene.add.rectangle(i * 2, -i * 2, 120, 160, 0x34495e);
-      cardBg.setStrokeStyle(3, 0x7f8c8d);
-      this.discardPileContainer.add(cardBg);
-    }
-
-    // 버린 카드 더미 아이콘
-    const discardIcon = this.scene.add.text(0, 0, '🗑️', {
-      fontSize: '48px'
-    }).setOrigin(0.5);
-    this.discardPileContainer.add(discardIcon);
-
-    // 버린 카드 수 텍스트
-    this.discardCountText = this.scene.add.text(0, 100, '0',
-      textStyle.getStyle('buttons.secondary', { stroke: '#000000', strokeThickness: 4 })
-    ).setOrigin(0.5);
-    this.discardPileContainer.add(this.discardCountText);
-
-    // 라벨
     const langManager = LanguageManager.getInstance();
-    const discardLabel = this.scene.add.text(0, 130,
+    const result = this.createCardPile(
+      200, height-250,
+      '🗑️',
       langManager.t('battle.discard'),
-      textStyle.getStyle('character.name', { color: '#95a5a6' })
-    ).setOrigin(0.5);
-    this.discardPileContainer.add(discardLabel);
-
-    // 클릭 가능한 영역 추가
-    const clickArea = this.scene.add.rectangle(0, 0, 150, 200, 0x000000, 0);
-    clickArea.setInteractive({ useHandCursor: true });
-    this.discardPileContainer.add(clickArea);
-
-    clickArea.on('pointerover', () => {
-      tweenConfig.apply(this.scene, 'ui.deckPileHover', this.discardPileContainer);
-    });
-
-    clickArea.on('pointerout', () => {
-      tweenConfig.apply(this.scene, 'ui.deckPileHoverOut', this.discardPileContainer);
-    });
-
-    clickArea.on('pointerdown', () => {
-      if (this.onDiscardPileClick) {
-        this.onDiscardPileClick();
+      0x34495e, 0x7f8c8d,
+      1, // 오른쪽으로 오프셋
+      () => {
+        if (this.onDiscardPileClick) {
+          this.onDiscardPileClick();
+        }
       }
-    });
+    );
+
+    this.discardPileContainer = result.container;
+    this.discardCountText = result.countText;
   }
 
-  /**
-   * 덱 정보 텍스트를 생성합니다.
-   */
   public createDeckInfoText(): void {
     const height = this.scene.cameras.main.height;
 
@@ -255,9 +242,6 @@ export default class BattleUIManager {
     );
   }
 
-  /**
-   * 에너지 UI를 업데이트합니다.
-   */
   public updateEnergyUI(playerState: PlayerState): void {
     const currentEnergy = playerState.energy;
     const maxEnergy = playerState.maxEnergy;
@@ -327,9 +311,7 @@ export default class BattleUIManager {
     });
   }
 
-  /**
-   * 덱 정보를 업데이트합니다.
-   */
+
   public updateDeckInfo(deckSize: number, handSize: number, discardSize: number): void {
     const totalCards = deckSize + handSize + discardSize;
     console.log(`[BattleUIManager] updateDeckInfo - Deck: ${deckSize}, Hand: ${handSize}, Discard: ${discardSize}, Total: ${totalCards}`);
@@ -349,9 +331,6 @@ export default class BattleUIManager {
     }
   }
 
-  /**
-   * 메시지를 표시합니다.
-   */
   public showMessage(text: string): void {
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
@@ -368,27 +347,18 @@ export default class BattleUIManager {
     });
   }
 
-  /**
-   * 덱 더미 애니메이션을 재생합니다.
-   */
   public animateDeckPile(): void {
     if (this.deckPileContainer) {
       tweenConfig.apply(this.scene, 'ui.deckPileBounce', this.deckPileContainer);
     }
   }
 
-  /**
-   * 버린 카드 더미 애니메이션을 재생합니다.
-   */
   public animateDiscardPile(): void {
     if (this.discardPileContainer) {
       tweenConfig.apply(this.scene, 'ui.discardPileBounce', this.discardPileContainer);
     }
   }
 
-  /**
-   * 리셔플 애니메이션을 재생합니다.
-   */
   public playReshuffleAnimation(onComplete?: () => void): void {
     if (this.discardPileContainer && this.deckPileContainer) {
       tweenConfig.apply(this.scene, 'ui.reshuffleScale', this.discardPileContainer, {
@@ -401,9 +371,6 @@ export default class BattleUIManager {
     }
   }
 
-  /**
-   * 리셔플 메시지를 표시합니다.
-   */
   public showReshuffleMessage(): void {
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
@@ -418,16 +385,10 @@ export default class BattleUIManager {
     });
   }
 
-  /**
-   * 덱 더미 컨테이너를 반환합니다.
-   */
   public getDeckPileContainer(): Phaser.GameObjects.Container {
     return this.deckPileContainer;
   }
 
-  /**
-   * 버린 카드 더미 컨테이너를 반환합니다.
-   */
   public getDiscardPileContainer(): Phaser.GameObjects.Container {
     return this.discardPileContainer;
   }

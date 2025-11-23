@@ -79,16 +79,10 @@ export default class Card extends Phaser.GameObjects.Container {
     });
   }
 
-  /**
-   * 인터랙션을 비활성화합니다.
-   */
   public disableInteraction(): void {
     this.bg.disableInteractive();
   }
 
-  /**
-   * 인터랙션을 활성화합니다.
-   */
   public enableInteraction(): void {
     this.bg.setInteractive({ useHandCursor: true });
   }
@@ -111,9 +105,7 @@ export default class Card extends Phaser.GameObjects.Container {
     });
   }
 
-  /**
-   * 파티클 효과만 재생합니다 (카드는 destroy하지 않음)
-   */
+
   public playParticleEffect(targetX: number, targetY: number): void {
     // 카드의 현재 월드 좌표를 가져옴
     const matrix = this.getWorldTransformMatrix();
@@ -121,35 +113,6 @@ export default class Card extends Phaser.GameObjects.Container {
     const worldY = matrix.ty;
 
     // 파티클 효과만 재생
-    this.createParticleEffect(worldX, worldY, targetX, targetY);
-  }
-
-  /**
-   * 카드가 목표로 날아가는 효과 (레거시 - 필요시 사용)
-   */
-  public playEffect(targetX: number, targetY: number, callback?: () => void): void {
-    // 카드의 현재 월드 좌표를 가져옴
-    const matrix = this.getWorldTransformMatrix();
-    const worldX = matrix.tx;
-    const worldY = matrix.ty;
-
-    // 카드가 부모 컨테이너에 있다면 제거하고 월드 좌표로 이동
-    if (this.parentContainer) {
-      this.parentContainer.remove(this);
-      this.setPosition(worldX, worldY);
-    }
-
-    // 카드가 목표로 날아가는 애니메이션
-    tweenConfig.apply(this.scene, 'cards.play', this, {
-      x: targetX,
-      y: targetY,
-      onComplete: () => {
-        if (callback) callback();
-        this.destroy();
-      }
-    });
-
-    // 파티클 효과 (월드 좌표 기준)
     this.createParticleEffect(worldX, worldY, targetX, targetY);
   }
 

@@ -18,32 +18,52 @@ export interface PlayerState {
  * 카드 데이터
  */
 export interface CardData {
-  name        : string;
-  type?       : string;
-  cost        : number;
-  damage?     : number;
-  block?      : number;
-  heal?       : number;
-  energy?     : number;
-  allEnemies? : boolean;
-  hits?       : number;
-  selfDamage? : number;
+  id: string;
+  name: string;
+  cost: number;
+  type: 'attack' | 'skill' | 'power';
+  damage?: number;
+  defense?: number;
+  block?: number;  // 방어력 (defense와 동일)
+  heal?: number;
+  energy?: number;
+  selfDamage?: number;
+  effect?: string;
   description?: string;
-  image?      : string;
-  sound?      : string;  // 카드 사용 시 재생할 사운드
-  [key: string]: unknown;
+  image?: string;
+  sound?: string;  // 카드 사용 시 재생할 사운드
+  rarity?: 'common' | 'uncommon' | 'rare' | 'epic';
+  allEnemies?: boolean;
+  hits?: number;
 }
 
 /**
- * 적 데이터
+ * Card 컨테이너의 확장 프로퍼티
  */
+export interface CardExtended {
+  cardData: CardData;
+  originalY: number;
+  bg: Phaser.GameObjects.Rectangle;
+  playParticleEffect: (targetX: number, targetY: number) => void;
+}
+
 export interface EnemyData {
-  name      : string;
-  health?   : number;
-  hp?       : number;
-  attack?   : number;
-  defense?  : number;
-  image?    : string;
+  id: string;
+  name: string;
+  health?: number;
+  hp?: number;
+  attack?: number;
+  defense?: number;
+  attackPattern?: Array<{ type: string; damage?: number; defense?: number }>;
+  image?: string;
+}
+
+/**
+ * Enemy 객체의 확장 프로퍼티
+ */
+export interface EnemyExtended {
+  enemyData: EnemyData;
+  intent: { type: 'attack' | 'defend' | 'special' | string; value?: number } | null;
 }
 
 /**

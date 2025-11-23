@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { Logger } from '../../utils/Logger';
+import { isBattleScene } from '../../../types/SceneTypes';
 
 /**
  * Character - Player와 Enemy의 공통 베이스 클래스
@@ -48,9 +49,9 @@ export default abstract class Character extends Phaser.GameObjects.Container {
       // 모든 데미지를 방어로 막았는지 확인
       fullBlock = damageToHealth === 0;
       if (fullBlock) {
-        const soundManager = (this.scene as any).soundManager;
-        if (soundManager) {
-          soundManager.play('block', 0.8);
+        // 방어막 이펙트 표시
+        if (isBattleScene(this.scene)) {
+          this.scene.soundManager.play('block', 1.0);
         }
       }
     }

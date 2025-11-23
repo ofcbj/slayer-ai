@@ -36,9 +36,6 @@ export default class CardHandManager {
     this.initializeHandContainer();
   }
 
-  /**
-   * 핸드 컨테이너를 초기화합니다.
-   */
   public initializeHandContainer(): void {
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
@@ -47,9 +44,6 @@ export default class CardHandManager {
     this.handContainer = this.scene.add.container(width / 2, height - 130);
   }
 
-  /**
-   * 카드를 드로우합니다.
-   */
   public drawCards(count: number, onComplete?: () => void): void {
     // 드로우 시작 - 턴 종료 불가 및 버튼 비활성화
     if (this.setEndTurnAllowed) {
@@ -60,9 +54,6 @@ export default class CardHandManager {
     this.drawCardsRecursive(count, 0, onComplete);
   }
 
-  /**
-   * 재귀적으로 카드를 드로우합니다. (리셔플 연출 포함)
-   */
   private drawCardsRecursive(totalCount: number, drawnCount: number, onComplete?: () => void): void {
     if (drawnCount >= totalCount) {
       // 모든 카드 드로우 완료
@@ -169,12 +160,9 @@ export default class CardHandManager {
       this.scene.time.delayedCall(i * 50, () => {
         // 임시 카드 이미지 생성 (연출용)
         const tempCard = this.scene.add.rectangle(
-          discardWorldPos.tx,
-          discardWorldPos.ty,
-          100,
-          140,
-          0x6366f1,
-          0.8
+          discardWorldPos.tx, discardWorldPos.ty,
+          100, 140,
+          0x6366f1, 0.8
         );
         tempCard.setDepth(1000 + i);
 
@@ -283,9 +271,6 @@ export default class CardHandManager {
     });
   }
 
-  /**
-   * 핸드를 재배치합니다.
-   */
   public arrangeHand(): void {
     const cardCount = this.hand.length;
     const spacing = 150;
@@ -297,17 +282,13 @@ export default class CardHandManager {
       const targetY = 0;
 
       tweenConfig.apply(this.scene, 'cards.arrange', card, {
-        x: targetX,
-        y: targetY
+        x: targetX, y: targetY
       });
 
       (card as any).originalY = targetY;
     });
   }
 
-  /**
-   * 카드를 선택합니다.
-   */
   public selectCard(card: Card): void {
     // 같은 카드를 다시 선택하는 경우는 소리 재생 안 함
     const isDifferentCard = this.selectedCard !== card;
@@ -327,9 +308,6 @@ export default class CardHandManager {
     }
   }
 
-  /**
-   * 선택된 카드를 해제합니다.
-   */
   public deselectCard(): void {
     if (this.selectedCard) {
       this.selectedCard.deselect();
@@ -337,9 +315,6 @@ export default class CardHandManager {
     }
   }
 
-  /**
-   * 카드를 핸드에서 제거합니다.
-   */
   public removeCardFromHand(card: Card): void {
     const index = this.hand.indexOf(card);
     if (index > -1) {
@@ -432,39 +407,24 @@ export default class CardHandManager {
     this.selectedCard = null;
   }
 
-  /**
-   * 선택된 카드를 반환합니다.
-   */
   public getSelectedCard(): Card | null {
     return this.selectedCard;
   }
 
-  /**
-   * 핸드의 카드 목록을 반환합니다.
-   */
   public getHand(): readonly Card[] {
     return [...this.hand];
   }
 
-  /**
-   * 핸드의 카드 수를 반환합니다.
-   */
   public getHandSize(): number {
     return this.hand.length;
   }
 
-  /**
-   * 핸드를 초기화합니다.
-   */
   public clearHand(): void {
     this.hand.forEach(card => card.destroy());
     this.hand = [];
     this.selectedCard = null;
   }
 
-  /**
-   * 핸드 컨테이너를 반환합니다.
-   */
   public getHandContainer(): Phaser.GameObjects.Container {
     return this.handContainer;
   }
