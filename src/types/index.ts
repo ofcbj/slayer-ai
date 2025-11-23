@@ -28,6 +28,7 @@ export interface CardData {
   heal?: number;
   energy?: number;
   selfDamage?: number;
+  draw?: number;  // 카드 사용 시 드로우할 카드 수
   effect?: string;
   description?: string;
   image?: string;

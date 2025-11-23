@@ -18,6 +18,7 @@ export interface BattleCallbacks {
   onEnemyAction?        : (enemy: Enemy, intent: EnemyIntent) => void;
   onEnemyDefeated?      : (enemy: Enemy) => void;
   onBattleEnd?          : (victory: boolean) => void;
+  onDrawCards?          : (count: number) => void;
 }
 
 /**
@@ -142,6 +143,12 @@ export default class BattleManager {
     } 
     if (cardData.energy) {
       this.player.setEnergy(this.player.energy + cardData.energy);
+    }
+    if (cardData.draw) {
+      // 카드 드로우 효과
+      if (this.callbacks.onDrawCards) {
+        this.callbacks.onDrawCards(cardData.draw);
+      }
     }
     
     return true; // 카드 사용 성공

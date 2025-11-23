@@ -36,12 +36,13 @@
     "type": "skill",
     "cost": 1,
     "block": 8,
+    "draw": 1,
     "image": "🏰",
     "sound": "",
     "name_ko": "철벽",
     "name_ja": "鉄壁",
-    "description_ko": "<span class='card-block'>8</span> 방어도를 얻습니다.",
-    "description_ja": "<span class='card-block'>8</span>防御力を得る."
+    "description_ko": "<span class='card-block'>8</span> 방어도를 얻고 카드 1장을 뽑습니다.",
+    "description_ja": "<span class='card-block'>8</span>防御力を得る。カードを1枚引く."
   },
   "magic_shield": {
     "type": "skill",
@@ -91,12 +92,13 @@
   "energy_wave": {
     "type": "skill",
     "cost": 0,
-    "energy": 3,
+    "draw": 1,
+    "energy": 1,
     "image": "💫",
     "sound": "",
     "name_ko": "에너지 파동",
     "name_ja": "エネルギー波動",
-    "description_ko": "<span class='card-energy'>3</span> 에너지를 얻습니다.",
-    "description_ja": "<span class='card-energy'>3</span>エネルギーを得る."
+    "description_ko": "카드 1장을 뽑고 <span class='card-energy'>1</span> 에너지를 얻습니다.",
+    "description_ja": "カードを1枚引く。エネルギーを<span class='card-energy'>1</span>回復する."
   }
 }

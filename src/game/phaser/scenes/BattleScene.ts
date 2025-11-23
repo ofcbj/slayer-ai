@@ -271,6 +271,12 @@ export default class BattleScene extends Phaser.Scene {
             this.resultHandler.checkGameOver();
           });
         }
+      },
+      onDrawCards: (count: number) => {
+        // 카드 드로우 효과 처리
+        this.cardHandManager.drawCards(count, () => {
+          this.stateSynchronizer.updateDeckInfo();
+        });
       }
     };
 

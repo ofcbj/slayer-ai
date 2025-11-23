@@ -14,12 +14,13 @@
     "type": "attack",
     "cost": 0,
     "damage": 5,
+    "draw": 1,
     "image": "😡",
     "sound": "",
     "name_ko": "분노",
     "name_ja": "怒り",
-    "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 줍니다.",
-    "description_ja": "敵に<span class='card-damage'>4</span>ダメージを与える."
+    "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 줍니다. 카드 1장을 뽑습니다.",
+    "description_ja": "敵に<span class='card-damage'>4</span>ダメージを与える. カードを1枚引く."
   },
   "sword_wind": {
     "type": "attack",

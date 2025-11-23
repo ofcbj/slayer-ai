@@ -22,7 +22,8 @@
     "energy_wave"
   ],
   "start_deck": {
-    "strike": 5,
+    "anger": 1,
+    "strike": 4,
     "defend": 4,
     "focus": 1
   }  
