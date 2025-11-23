@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import { Logger } from '../../utils/Logger';
 
 /**
  * Character - Player와 Enemy의 공통 베이스 클래스
@@ -25,7 +26,7 @@ export default abstract class Character extends Phaser.GameObjects.Container {
    * 3. UI 업데이트 및 애니메이션 실행
    */
   takeDamage(amount: number): void {
-    console.log(`[${this.constructor.name}] takeDamage called - amount: ${amount}, defense: ${this.defense}, health: ${this.health}`);
+    Logger.debug(`${this.constructor.name} takeDamage called - amount: ${amount}, defense: ${this.defense}, health: ${this.health}`);
 
     let damageToHealth = amount;
     let fullBlock = false;
@@ -36,7 +37,7 @@ export default abstract class Character extends Phaser.GameObjects.Container {
       this.defense -= blockedDamage;
       damageToHealth = amount - blockedDamage;
 
-      console.log(`  -> Blocked: ${blockedDamage}, Remaining damage: ${damageToHealth}, New defense: ${this.defense}`);
+      Logger.debug(`  -> Blocked: ${blockedDamage}, Remaining damage: ${damageToHealth}, New defense: ${this.defense}`);
 
       // 막힌 데미지 표시
       if (blockedDamage > 0) {
@@ -57,7 +58,7 @@ export default abstract class Character extends Phaser.GameObjects.Container {
     // 방어력으로 막지 못한 나머지 데미지만 체력에서 차감
     if (damageToHealth > 0) {
       this.health = Math.max(0, this.health - damageToHealth);
-      console.log(`  -> Health damage: ${damageToHealth}, New health: ${this.health}`);
+      Logger.debug(`  -> Health damage: ${damageToHealth}, New health: ${this.health}`);
       this.showDamageNumber(damageToHealth);
 
       // 피격 사운드 재생 (각 클래스에서 구현)
@@ -65,8 +66,8 @@ export default abstract class Character extends Phaser.GameObjects.Container {
 
       // 피격 애니메이션 (체력 데미지를 받았을 때)
       this.playHitAnimation();
-    } else if (fullBlock) {
-      console.log(`  -> Full block!`);
+    } else if (fullBlock) { // 전체 피해 방어
+      Logger.debug(`  -> Full block!`);
       // 완전히 막았을 때는 방어 애니메이션 (있다면)
       if (this.playDefendAnimation) {
         this.playDefendAnimation();
@@ -83,9 +84,9 @@ export default abstract class Character extends Phaser.GameObjects.Container {
    * 방어력을 추가하는 공통 메서드
    */
   applyDefense(amount: number): void {
-    console.log(`[${this.constructor.name}] applyDefense called - adding: ${amount}, current defense: ${this.defense}`);
+    Logger.debug(`${this.constructor.name} applyDefense called - adding: ${amount}, current defense: ${this.defense}`);
     this.defense += amount;
-    console.log(`  -> New defense: ${this.defense}`);
+    Logger.debug(`  -> New defense: ${this.defense}`);
     this.updateDefenseDisplay();
   }
 

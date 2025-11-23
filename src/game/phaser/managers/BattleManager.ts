@@ -1,6 +1,7 @@
 import Enemy from '../objects/Enemy';
 import Player from '../objects/Player';
 import { CardData, EnemyData, PlayerState, StageData, GameState } from '../../../types';
+import { Logger } from '../../utils/Logger';
 
 export interface EnemyIntent {
   type: 'attack' | 'defend';
@@ -36,7 +37,7 @@ export default class BattleManager {
     this.player    = player;
     this.enemies   = enemies;
     this.callbacks = callbacks;
-    console.log(`[BattleManager] Created with ${enemies.length} enemies:`, enemies.map((e: any) => e.enemyData?.name));
+    Logger.debug(`BattleManager Created with ${enemies.length} enemies:`, enemies.map((e: any) => e.enemyData?.name));
   }
 
   /**
@@ -121,7 +122,7 @@ export default class BattleManager {
    * 카드를 사용합니다.
    */
   public useCard(cardData: CardData, target: Enemy | null = null): boolean {
-    console.log(`[BattleManager] useCard - ${cardData.name}, Current enemies in BattleManager:`, this.enemies.map((e: any) => e.enemyData?.name));
+    Logger.debug(`BattleManager useCard - ${cardData.name}, Current enemies in BattleManager:`, this.enemies.map((e: any) => e.enemyData?.name));
 
     // 에너지 확인
     if (!this.player.consumeEnergy(cardData.cost)) {
@@ -134,7 +135,7 @@ export default class BattleManager {
 
       if (cardData.allEnemies) {
         // 모든 적에게 공격 (내부 enemies 배열 사용)
-        console.log(`[BattleManager] useCard - Attacking all enemies, count: ${this.enemies.length}`);
+        Logger.debug(`BattleManager useCard - Attacking all enemies, count: ${this.enemies.length}`);
         this.enemies.forEach(enemy => {
           if (!enemy.isDead()) {
             for (let i = 0; i < hits; i++) {
@@ -144,7 +145,7 @@ export default class BattleManager {
         });
       } else if (target) {
         // 단일 적 공격
-        console.log(`[BattleManager] useCard - Attacking single target: ${(target as any).enemyData?.name}`);
+        Logger.debug(`BattleManager useCard - Attacking single target: ${(target as any).enemyData?.name}`);
         for (let i = 0; i < hits; i++) {
           target.takeDamage(cardData.damage);
         }
@@ -171,26 +172,26 @@ export default class BattleManager {
    * 적이 패배했을 때 호출됩니다.
    */
   public onEnemyDefeated(enemy: Enemy): void {
-    console.log(`[BattleManager] onEnemyDefeated - Enemy: ${(enemy as any).enemyData?.name}, enemy.active: ${enemy.active}`);
+    Logger.debug(`BattleManager onEnemyDefeated - Enemy: ${(enemy as any).enemyData?.name}, enemy.active: ${enemy.active}`);
 
     // 좀비 Enemy 체크 - 이미 파괴된 적이면 무시
     if (!enemy.active) {
-      console.warn(`[BattleManager] onEnemyDefeated - Ignoring inactive/destroyed enemy: ${(enemy as any).enemyData?.name}`);
+      Logger.warn(`BattleManager onEnemyDefeated - Ignoring inactive/destroyed enemy: ${(enemy as any).enemyData?.name}`);
       return;
     }
 
-    console.log(`[BattleManager] onEnemyDefeated - Current enemies array:`, this.enemies.map((e: any) => e.enemyData?.name));
+    Logger.debug(`BattleManager onEnemyDefeated - Current enemies array:`, this.enemies.map((e: any) => e.enemyData?.name));
     const index = this.enemies.indexOf(enemy);
-    console.log(`[BattleManager] onEnemyDefeated - Enemy index in array: ${index}, Total enemies before: ${this.enemies.length}`);
+    Logger.debug(`BattleManager onEnemyDefeated - Enemy index in array: ${index}, Total enemies before: ${this.enemies.length}`);
 
     if (index > -1) {
       this.enemies.splice(index, 1);
-      console.log(`[BattleManager] onEnemyDefeated - Removed enemy, Total enemies after: ${this.enemies.length}`);
-      console.log(`[BattleManager] onEnemyDefeated - Remaining enemies:`, this.enemies.map((e: any) => e.enemyData?.name));
+      Logger.debug(`BattleManager onEnemyDefeated - Removed enemy, Total enemies after: ${this.enemies.length}`);
+      Logger.debug(`BattleManager onEnemyDefeated - Remaining enemies:`, this.enemies.map((e: any) => e.enemyData?.name));
     } else {
-      console.warn(`[BattleManager] onEnemyDefeated - Enemy not found in enemies array!`);
-      console.warn(`[BattleManager] onEnemyDefeated - Looking for:`, (enemy as any).enemyData?.name);
-      console.warn(`[BattleManager] onEnemyDefeated - Current array:`, this.enemies.map((e: any) => e.enemyData?.name));
+      Logger.warn(`BattleManager onEnemyDefeated - Enemy not found in enemies array!`);
+      Logger.warn(`BattleManager onEnemyDefeated - Looking for:`, (enemy as any).enemyData?.name);
+      Logger.warn(`BattleManager onEnemyDefeated - Current array:`, this.enemies.map((e: any) => e.enemyData?.name));
       // Enemy가 배열에 없으면 이미 다른 BattleManager의 적일 가능성이 높음
       return;
     }
@@ -205,19 +206,19 @@ export default class BattleManager {
    * 전투 종료를 확인합니다.
    */
   public checkBattleEnd(): void {
-    console.log(`[BattleManager] checkBattleEnd - Total enemies: ${this.enemies.length}`);
+    Logger.debug(`BattleManager checkBattleEnd - Total enemies: ${this.enemies.length}`);
     const aliveEnemies = this.enemies.filter(e => !e.isDead());
-    console.log(`[BattleManager] checkBattleEnd - Alive enemies: ${aliveEnemies.length}`, aliveEnemies.map((e: any) => ({ name: e.enemyData?.name, health: e.health })));
+    Logger.debug(`BattleManager checkBattleEnd - Alive enemies: ${aliveEnemies.length}`, aliveEnemies.map((e: any) => ({ name: e.enemyData?.name, health: e.health })));
 
     if (aliveEnemies.length === 0) {
       // 승리
-      console.log('[BattleManager] Battle won!');
+      Logger.debug('BattleManager Battle won!');
       if (this.callbacks.onBattleEnd) {
         this.callbacks.onBattleEnd(true);
       }
     } else if (this.player.isDead()) {
       // 패배
-      console.log('[BattleManager] Battle lost!');
+      Logger.debug('BattleManager Battle lost!');
       if (this.callbacks.onBattleEnd) {
         this.callbacks.onBattleEnd(false);
       }

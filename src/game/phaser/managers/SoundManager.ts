@@ -2,11 +2,10 @@ import Phaser from 'phaser';
 
 /**
  * 게임 사운드를 관리하는 매니저
- * 모든 게임 사운드 효과를 중앙에서 관리하고 재생합니다.
+ * public/assets/sounds/ 폴더의 모든 사운드 파일을 자동으로 감지하고 로드합니다.
  */
 export default class SoundManager {
   private scene: Phaser.Scene;
-  private sounds: Map<string, Phaser.Sound.BaseSound> = new Map();
   private enabled: boolean = true;
   private volume: number = 0.5;
 
@@ -14,119 +13,49 @@ export default class SoundManager {
     this.scene = scene;
   }
 
-  /**
-   * 사운드 파일 로드
-   */
   static preloadSounds(scene: Phaser.Scene): void {
-    const basePath = import.meta.env.BASE_URL;
+    // Vite의 import.meta.glob을 사용하여 sounds 폴더의 모든 .mp3 파일을 자동으로 찾습니다
+    // eager: true로 설정하면 빌드 타임에 모든 파일을 즉시 로드합니다
+    const soundModules = import.meta.glob('/public/assets/sounds/*.mp3', { 
+      eager: true,
+      as: 'url' 
+    });
 
-    // 게임 시작 사운드
-    scene.load.audio('game-start',  `${basePath}assets/sounds/game-start.mp3`);
-
-    // 카드 관련 사운드
-    scene.load.audio('card-draw',   `${basePath}assets/sounds/card-draw.mp3`);
-    scene.load.audio('card-click',  `${basePath}assets/sounds/card-click.mp3`);
-    scene.load.audio('focus',       `${basePath}assets/sounds/focus.mp3`);
-
-    // 공격 사운드
-    scene.load.audio('attack',      `${basePath}assets/sounds/attack.mp3`);
-    scene.load.audio('attack-heavy',`${basePath}assets/sounds/attack_heavy.mp3`);
-
-    // 방어 사운드
-    scene.load.audio('block',       `${basePath}assets/sounds/block.mp3`);
-
-    // 데미지 사운드
-    scene.load.audio('damage-player',`${basePath}assets/sounds/damage-player.mp3`);
-  }
-
-  /**
-   * 사운드 초기화 (create에서 호출)
-   */
-  initialize(): void {
-    // 각 사운드를 생성하고 Map에 저장
-    const soundKeys = [
-      'game-start',
-      'card-draw',
-      'card-click',
-      'focus',
-      'attack',
-      'attack-heavy',
-      'block',
-      'damage-player'
-    ];
-
-    soundKeys.forEach(key => {
-      if (this.scene.cache.audio.exists(key)) {
-        const sound = this.scene.sound.add(key, { volume: this.volume });
-        this.sounds.set(key, sound);
+    // 각 파일에 대해 Phaser에 로드
+    Object.entries(soundModules).forEach(([path, url]) => {
+      // 파일 경로에서 파일명 추출 (예: '/public/assets/sounds/attack.mp3' -> 'attack')
+      const fileName = path.split('/').pop()?.replace('.mp3', '') || '';
+      
+      if (fileName) {
+        // url은 이미 Vite가 처리한 경로이므로 바로 사용
+        scene.load.audio(fileName, url as string);
       }
     });
   }
 
-  /**
-   * 사운드 재생
-   */
-  play(key: string, volumeMod: number=1.0, config?: Phaser.Types.Sound.SoundConfig): void {
+  play(key: string, volumeMod: number = 1.0): void {
     if (!this.enabled) return;
 
-    const sound = this.sounds.get(key);
-    if (sound) {
-      sound.play(config);
+    if (this.scene.cache.audio.exists(key)) {
+      this.scene.sound.play(key, { volume: this.volume * volumeMod });
     } else {
-      // Map에 없으면 직접 재생 시도 (fallback)
-      if (this.scene.cache.audio.exists(key)) {
-        this.scene.sound.play(key, { ...config, volume: this.volume*volumeMod });
-      } else {
-        console.warn(`[SoundManager] Sound not found: ${key}`);
-      }
+      console.warn(`[SoundManager] Sound not found: ${key}`);
     }
   }
 
-  /**
-   * 공격 사운드
-   */
-  playAttack(isHeavy: boolean = false): void {
-    this.play(isHeavy ? 'attack-heavy' : 'attack', 0.8);
-  }
-
-  /**
-   * 볼륨 설정
-   */
   setVolume(volume: number): void {
     this.volume = Math.max(0, Math.min(1, volume));
-    this.sounds.forEach(sound => {
-      if ('setVolume' in sound) {
-        (sound as any).setVolume(this.volume);
-      }
-    });
+    this.scene.sound.setVolume(this.volume);
   }
 
-  /**
-   * 사운드 활성화/비활성화
-   */
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
     if (!enabled) {
-      this.stopAll();
+      this.scene.sound.stopAll();
     }
   }
 
-  /**
-   * 모든 사운드 정지
-   */
   stopAll(): void {
-    this.sounds.forEach(sound => {
-      if (sound.isPlaying) {
-        sound.stop();
-      }
-    });
-  }
-
-  /**
-   * 정리
-   */
-  destroy(): void {
-    this.stopAll();
-    this.sounds.clear();
+    this.scene.sound.stopAll();
   }
 }

@@ -4,6 +4,7 @@ import Character from './Character';
 import { PlayerStateObservable } from '../state/PlayerStateObservable';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import { UIFactory } from '../../utils/UIFactory';
 
 /**
  * Player - 플레이어 캐릭터 클래스
@@ -63,39 +64,21 @@ export default class Player extends Character {
       textStyle.getStyle('character.emojiLarge')
     );
     playerHead.setOrigin(0.5);
-    // HP 컨테이너 (왼쪽 하단)
-    const hpContainer: Phaser.GameObjects.Container = this.scene.add.container(-width/2 + 50, height/2 - 40);
-    const hpIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '❤️',
-      textStyle.getStyle('damage.healEffect')
-    );
-    hpIcon.setOrigin(0.5);
+    
+    // UIFactory를 사용하여 HP 컨테이너 생성
+    const hp = UIFactory.createHPContainer(this.scene, -width/2 + 50, height/2 - 40, this.health);
+    this.hpContainer = hp.container;
+    this.healthText = hp.healthText;
 
-    this.healthText = this.scene.add.text(25, 0, '100',
-      textStyle.getStyle('damage.defenseEffect')
-    );
-    this.healthText.setOrigin(0, 0.5);
+    // UIFactory를 사용하여 Defense 컨테이너 생성
+    const def = UIFactory.createDefenseContainer(this.scene, width/2 - 70, height/2 - 40, this.defense);
+    this.defContainer = def.container;
+    this.defenseText = def.defenseText;
 
-    hpContainer.add([hpIcon, this.healthText]);
-
-    // Defense 컨테이너 (오른쪽 하단)
-    const defContainer: Phaser.GameObjects.Container = this.scene.add.container(width/2 - 70, height/2 - 40);
-    const defIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🛡️',
-      textStyle.getStyle('damage.healEffect')
-    );
-    defIcon.setOrigin(0.5);
-
-    this.defenseText = this.scene.add.text(25, 0, '0',
-      textStyle.getStyle('damage.defenseEffect')
-    );
-    this.defenseText.setOrigin(0, 0.5);
-    defContainer.add([defIcon, this.defenseText]);
-
-    this.add([bg, nameText, playerHead, hpContainer, defContainer]);
+    this.add([bg, nameText, playerHead, this.hpContainer, this.defContainer]);
 
     this.bg = bg;
     this.playerHead = playerHead;
-    this.hpContainer = hpContainer;
-    this.defContainer = defContainer;
     this.setSize(width, height);
   }
   

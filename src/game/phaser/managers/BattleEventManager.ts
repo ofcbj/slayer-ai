@@ -220,7 +220,6 @@ export default class BattleEventManager {
 
     // type 확인 (언어 독립적)
     const cardType = cardData.type;
-
     // 공격 카드이고 타겟이 필요한데 타겟이 없으면 사용 불가
     if (cardType === 'attack' && !cardData.allEnemies && !target) {
       this.uiManager.showMessage('Select a target');
@@ -251,7 +250,7 @@ export default class BattleEventManager {
       const damageValue = cardData.damage || 0;
       const isHeavy = damageValue >= 10;
       if (this.soundManager) {
-        this.soundManager.playAttack(isHeavy);
+        this.soundManager.play('attack', 0.8);
       }
 
       if (cardData.allEnemies) {

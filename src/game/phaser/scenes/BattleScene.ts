@@ -18,6 +18,7 @@ import BattleTurnController         from '../controllers/BattleTurnController';
 import BattleStateSynchronizer      from '../controllers/BattleStateSynchronizer';
 import BattleResultHandler          from '../controllers/BattleResultHandler';
 import BattleConsoleCommandHandler  from '../controllers/BattleConsoleCommandHandler';
+import { Logger }                   from '../../utils/Logger';
 
 /**
  * 전투 씬
@@ -53,14 +54,14 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   init(): void {
-    console.log('[BattleScene] init called');
+    Logger.debug('BattleScene init called');
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     this.events.once(Phaser.Scenes.Events.DESTROY, this.shutdown, this);
     this.deckManager = new DeckManager();
   }
 
   shutdown(): void {
-    console.log('[BattleScene] shutdown called - START');
+    Logger.debug('BattleScene shutdown called - START');
 
     // 옵저버 구독 해제
     if (this.unsubscribePlayerState) {
@@ -105,11 +106,11 @@ export default class BattleScene extends Phaser.Scene {
     this.resultHandler        = null as any;
     this.consoleCommandHandler= null as any;
 
-    console.log('[BattleScene] shutdown called - END');
+    Logger.debug('BattleScene shutdown called - END');
   }
 
   create(): void {
-    console.log('[BattleScene] create called');
+    Logger.debug('BattleScene create called');
 
     // Scene에 EventBus 참조 추가 (Card, Enemy에서 사용)
     (this as any).eventBus = EventBus;
@@ -125,11 +126,10 @@ export default class BattleScene extends Phaser.Scene {
     // 게임 상태 가져오기
     this.gameState      = this.registry.get('gameState');
     this.selectedStage  = this.registry.get('selectedStage');
-    console.log('[BattleScene] create - Stage:', this.selectedStage?.id);
+    Logger.debug('BattleScene create - Stage:', this.selectedStage?.id);
 
     // Sound Manager 초기화
     this.soundManager = new SoundManager(this);
-    this.soundManager.initialize();
 
     // UI Manager와 Card Managers 먼저 초기화
     this.uiManager      = new BattleUIManager(this);
@@ -259,7 +259,7 @@ export default class BattleScene extends Phaser.Scene {
         // BattleManager에서 enemies 배열 처리 완료
         // 여기서는 추가 UI 업데이트만 필요하면 처리
         const remainingEnemies = this.battleManager.getAllEnemies();
-        console.log(`[BattleScene] onEnemyDefeated callback - Enemy removed, remaining: ${remainingEnemies.length}`);
+        Logger.debug(`BattleScene onEnemyDefeated callback - Enemy removed, remaining: ${remainingEnemies.length}`);
       },
       onBattleEnd: (victory: boolean) => {
         if (victory) {

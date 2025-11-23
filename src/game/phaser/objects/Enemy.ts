@@ -3,6 +3,8 @@ import Character from './Character';
 import { EnemyData } from '../../../types';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import { UIFactory } from '../../utils/UIFactory';
+import { Logger } from '../../utils/Logger';
 
 interface Intent {
   type: 'attack' | 'defend' | 'special' | string;
@@ -15,11 +17,9 @@ export default class Enemy extends Character {
   intent: Intent | null;
   isTargeted: boolean;
   bg!: Phaser.GameObjects.Rectangle;
-  hpBar!: Phaser.GameObjects.Rectangle;
   hpText!: Phaser.GameObjects.Text;
   intentIcon!: Phaser.GameObjects.Text;
   intentValue!: Phaser.GameObjects.Text;
-  hpBarWidth!: number;
   defenseText!: Phaser.GameObjects.Text;
 
   constructor(
@@ -65,26 +65,13 @@ export default class Enemy extends Character {
     );
     enemyImage.setOrigin(0.5);   
 
-    // 체력 바 배경
-    const hpBarBg = this.scene.add.rectangle(
-      0, height/2-25, 
-      width-20, 20, 
-      0x333333);
-    // 체력 바
-    const hpBar = this.scene.add.rectangle(
-      -(width-20)/2, height/2-25,
-      width-20, 20,
-      0xff6b6b
-    );
-    hpBar.setOrigin(0, 0.5);
+    // UIFactory를 사용하여 HP 컨테이너 생성
+    const hp = UIFactory.createHPContainer(this.scene, -width/2+35, height/2-30, this.health);
+    this.hpText = hp.healthText;
 
-    // 체력 텍스트
-    const hpText = this.scene.add.text(
-      0, height/2-25,
-      `${this.health}/${this.maxHealth}`,
-      textStyle.getStyle('character.defense', { fontFamily: 'monospace', stroke: '#000000', strokeThickness: 3 })
-    );
-    hpText.setOrigin(0.5);
+    // UIFactory를 사용하여 Defense 컨테이너 생성
+    const def = UIFactory.createDefenseContainer(this.scene, width/2-65, height/2-30, this.defense);
+    this.defenseText = def.defenseText;
 
     // 의도 표시 - 아이콘과 숫자만 (배경 없이)
     const intentIcon = this.scene.add.text(-30, -40, '?',
@@ -97,21 +84,11 @@ export default class Enemy extends Character {
     );
     intentValue.setOrigin(0.5);
 
-    // 방어도 표시
-    const defenseText = this.scene.add.text(width/2-25, -height/2+30, '',
-      textStyle.getStyle('character.emojiSmall', { color: '#4ecdc4', stroke: '#000000', strokeThickness: 3 })
-    );
-    defenseText.setOrigin(0.5);
-
-    this.add([bg, nameText, enemyImage, hpBarBg, hpBar, hpText, intentIcon, intentValue, defenseText]);
+    this.add([bg, nameText, enemyImage, hp.container, def.container, intentIcon, intentValue]);
 
     this.bg = bg;
-    this.hpBar = hpBar;
-    this.hpText = hpText;
     this.intentIcon = intentIcon;
     this.intentValue = intentValue;
-    this.defenseText = defenseText;
-    this.hpBarWidth = width - 20;
 
     this.setSize(width, height);
   }
@@ -240,27 +217,14 @@ export default class Enemy extends Character {
    * 방어력 표시 업데이트 (Character 추상 메서드 구현)
    */
   protected override updateDefenseDisplay(): void {
-    if (this.defense > 0) {
-      this.defenseText.setText(`🛡️${this.defense}`);
-      this.defenseText.setVisible(true);
-    } else {
-      this.defenseText.setText('');
-      this.defenseText.setVisible(false);
-    }
+    this.defenseText.setText(this.defense.toString());
   }
 
   /**
-   * 체력바 업데이트 (Character 추상 메서드 구현)
+   * 체력 표시 업데이트 (Character 추상 메서드 구현)
    */
   protected override updateHealthDisplay(): void {
-    const healthPercent = this.health / this.maxHealth;
-    const newWidth = this.hpBarWidth * healthPercent;
-
-    tweenConfig.apply(this.scene, 'combat.healthBarUpdate', this.hpBar, {
-      width: newWidth
-    });
-
-    this.hpText.setText(`${this.health}/${this.maxHealth}`);
+    this.hpText.setText(this.health.toString());
   }
 
   playAttackAnimation(callback?: () => void): void {
@@ -279,7 +243,7 @@ export default class Enemy extends Character {
       y: this.y,
       onComplete: () => {
         const sceneActive = this.scene && this.scene.scene && this.scene.scene.isActive('BattleScene');
-        console.log(`[Enemy] Death animation complete - ${this.enemyData?.name}, Scene active: ${sceneActive}, this.active: ${this.active}`);
+        Logger.debug(`Enemy Death animation complete - ${this.enemyData?.name}, Scene active: ${sceneActive}, this.active: ${this.active}`);
 
         // Scene이 여전히 활성화되어 있고, 이 Enemy가 파괴되지 않았을 때만 이벤트 발생
         if (sceneActive && this.active) {
@@ -332,7 +296,7 @@ export default class Enemy extends Character {
    * Enemy를 파괴할 때 모든 tween을 정리합니다.
    */
   destroy(fromScene?: boolean): void {
-    console.log(`[Enemy] destroy called for ${this.enemyData?.name}, fromScene: ${fromScene}`);
+    Logger.debug(`Enemy destroy called for ${this.enemyData?.name}, fromScene: ${fromScene}`);
 
     // 이 Enemy를 타겟으로 하는 모든 tween 제거
     if (this.scene && this.scene.tweens) {
