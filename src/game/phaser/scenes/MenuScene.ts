@@ -37,6 +37,21 @@ export default class MenuScene extends Phaser.Scene {
       height / 2 + 50,
       langManager.t('menu.startGame'),
       () => {
+        // 게임 상태 초기화 (새 게임 시작)
+        const gameState = {
+          player: {
+            maxHealth: 100,
+            health: 100,
+            energy: 3,
+            maxEnergy: 3,
+            defense: 0
+          },
+          deck: [],
+          currentStage: 0,
+          stagesCleared: []
+        };
+        this.registry.set('gameState', gameState);
+        
         this.scene.start('StageSelectScene');
       }
     );
