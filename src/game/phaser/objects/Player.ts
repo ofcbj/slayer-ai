@@ -59,12 +59,12 @@ export default class Player extends Character {
     );
     nameText.setOrigin(0.5);
     // 플레이어 캐릭터 이미지 - 머리와 목
-    const playerHead: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '🧙‍♂️',
+    const playerHead: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '⚔️',
       textStyle.getStyle('character.emojiLarge')
     );
     playerHead.setOrigin(0.5);
     // HP 컨테이너 (왼쪽 하단)
-    const hpContainer: Phaser.GameObjects.Container = this.scene.add.container(-width/2 + 70, height/2 - 40);
+    const hpContainer: Phaser.GameObjects.Container = this.scene.add.container(-width/2 + 50, height/2 - 40);
     const hpIcon: Phaser.GameObjects.Text = this.scene.add.text(0, 0, '❤️',
       textStyle.getStyle('damage.healEffect')
     );
@@ -220,7 +220,7 @@ export default class Player extends Character {
   protected override playDamageSound(): void {
     const soundManager = (this.scene as any).soundManager;
     if (soundManager) {
-      soundManager.playPlayerDamage();
+      soundManager.play('damage-player');
     }
   }
 

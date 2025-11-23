@@ -21,17 +21,6 @@
     "description_ko": "적에게 <span class='card-damage'>4</span> 피해를 줍니다.",
     "description_ja": "敵に<span class='card-damage'>4</span>ダメージを与える."
   },
-  "slash": {
-    "type": "attack",
-    "cost": 1,
-    "damage": 7,
-    "image": "⚔️",
-    "sound": "",
-    "name_ko": "베기",
-    "name_ja": "斬撃",
-    "description_ko": "적에게 <span class='card-damage'>7</span> 피해를 줍니다.",
-    "description_ja": "敵に<span class='card-damage'>7</span>ダメージを与える."
-  },
   "sword_wind": {
     "type": "attack",
     "cost": 1,

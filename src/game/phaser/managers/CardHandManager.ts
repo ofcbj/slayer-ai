@@ -120,7 +120,7 @@ export default class CardHandManager {
         this.addCardToHandWithAnimation(cardData, currentHandSize + index, finalHandSize);
         // 카드 드로우 사운드 재생
         if (this.soundManager) {
-          this.soundManager.playCardDraw();
+          this.soundManager.play('card-draw', 0.7);
         }
       });
     });
@@ -192,7 +192,7 @@ export default class CardHandManager {
 
               // 리셔플 사운드 재생 (있다면)
               if (this.soundManager) {
-                this.soundManager.playCardDraw();
+                this.soundManager.play('card-draw', 0.7);
               }
 
               // 약간의 딜레이 후 콜백
@@ -203,7 +203,7 @@ export default class CardHandManager {
 
         // 카드 이동 사운드 (첫 번째와 중간중간만)
         if (i % 3 === 0 && this.soundManager) {
-          this.soundManager.playCardDraw();
+          this.soundManager.play('card-draw', 0.7);
         }
       });
     }
@@ -323,7 +323,7 @@ export default class CardHandManager {
 
     // 새로운 카드를 선택할 때만 소리 재생
     if (isDifferentCard && this.soundManager) {
-      this.soundManager.playCardClick();
+      this.soundManager.play('card-click', 0.5);
     }
   }
 

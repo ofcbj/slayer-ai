@@ -54,48 +54,51 @@ export default class Enemy extends Character {
     bg.setStrokeStyle(3, 0xff6b6b);
 
     // 적 이름
-    const nameText = this.scene.add.text(0, -height/2+25, this.enemyData.name,
+    const nameText = this.scene.add.text(0, -height/2+30, this.enemyData.name,
       textStyle.getStyle('character.name', { align: 'center', wordWrap: { width: width - 10 } })
     );
     nameText.setOrigin(0.5);
 
     // 적 이미지 (이모지) - 중앙에 크게 표시
-    const enemyImage = this.scene.add.text(0, 15, this.getEnemyImage(),
+    const enemyImage = this.scene.add.text(0, 30, this.getEnemyImage(),
       textStyle.getStyle('character.emoji')
     );
-    enemyImage.setOrigin(0.5);
+    enemyImage.setOrigin(0.5);   
 
     // 체력 바 배경
-    const hpBarBg = this.scene.add.rectangle(0, height / 2 - 40, width - 20, 20, 0x333333);
-
+    const hpBarBg = this.scene.add.rectangle(
+      0, height/2-25, 
+      width-20, 20, 
+      0x333333);
     // 체력 바
     const hpBar = this.scene.add.rectangle(
-      -(width-20)/2, height/2-40,
-      width - 20, 20,
+      -(width-20)/2, height/2-25,
+      width-20, 20,
       0xff6b6b
     );
     hpBar.setOrigin(0, 0.5);
 
     // 체력 텍스트
-    const hpText = this.scene.add.text(0, height/2-40,
+    const hpText = this.scene.add.text(
+      0, height/2-25,
       `${this.health}/${this.maxHealth}`,
       textStyle.getStyle('character.defense', { fontFamily: 'monospace', stroke: '#000000', strokeThickness: 3 })
     );
     hpText.setOrigin(0.5);
 
     // 의도 표시 - 아이콘과 숫자만 (배경 없이)
-    const intentIcon = this.scene.add.text(-30, -55, '?',
+    const intentIcon = this.scene.add.text(-30, -40, '?',
       textStyle.getStyle('intent.emoji')
     );
     intentIcon.setOrigin(0.5);
 
-    const intentValue = this.scene.add.text(30, -55, '',
+    const intentValue = this.scene.add.text(30, -40, '',
       textStyle.getStyle('intent.emojiSmall', { stroke: '#000000', strokeThickness: 4 })
     );
     intentValue.setOrigin(0.5);
 
     // 방어도 표시
-    const defenseText = this.scene.add.text(width/2-25, -height/2+25, '',
+    const defenseText = this.scene.add.text(width/2-25, -height/2+30, '',
       textStyle.getStyle('character.emojiSmall', { color: '#4ecdc4', stroke: '#000000', strokeThickness: 3 })
     );
     defenseText.setOrigin(0.5);
@@ -211,7 +214,7 @@ export default class Enemy extends Character {
   protected override playDamageSound(): void {
     const soundManager = (this.scene as any).soundManager;
     if (soundManager) {
-      soundManager.playEnemyDamage();
+      soundManager.play('damage-enemy', 0.7);
     }
   }
 
@@ -283,7 +286,7 @@ export default class Enemy extends Character {
           // 적 사망 사운드 재생
           const soundManager = (this.scene as any).soundManager;
           if (soundManager) {
-            soundManager.playEnemyDeath();
+            soundManager.play('enemy-death')
           }
 
           this.scene.events.emit('enemyDefeated', this);

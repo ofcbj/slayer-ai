@@ -49,7 +49,7 @@ export default abstract class Character extends Phaser.GameObjects.Container {
       if (fullBlock) {
         const soundManager = (this.scene as any).soundManager;
         if (soundManager) {
-          soundManager.playBlock();
+          soundManager.play('block', 0.8);
         }
       }
     }

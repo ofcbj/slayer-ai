@@ -66,7 +66,7 @@ export default class SoundManager {
   /**
    * 사운드 재생
    */
-  play(key: string, config?: Phaser.Types.Sound.SoundConfig): void {
+  play(key: string, volumeMod: number=1.0, config?: Phaser.Types.Sound.SoundConfig): void {
     if (!this.enabled) return;
 
     const sound = this.sounds.get(key);
@@ -75,7 +75,7 @@ export default class SoundManager {
     } else {
       // Map에 없으면 직접 재생 시도 (fallback)
       if (this.scene.cache.audio.exists(key)) {
-        this.scene.sound.play(key, { ...config, volume: this.volume });
+        this.scene.sound.play(key, { ...config, volume: this.volume*volumeMod });
       } else {
         console.warn(`[SoundManager] Sound not found: ${key}`);
       }
@@ -83,94 +83,10 @@ export default class SoundManager {
   }
 
   /**
-   * 게임 시작 사운드
-   */
-  playGameStart(): void {
-    this.play('game-start');
-  }
-
-  /**
-   * 카드 드로우 사운드
-   */
-  playCardDraw(): void {
-    this.play('card-draw', { volume: this.volume * 0.7 });
-  }
-
-  /**
-   * 카드 클릭 사운드
-   */
-  playCardClick(): void {
-    this.play('card-click', { volume: this.volume * 0.5 });
-  }
-
-  /**
-   * 카드 사용 사운드 (card-play가 없으므로 card-click 사용)
-   */
-  playCardPlay(): void {
-    //this.play('card-click', { volume: this.volume * 0.8 });
-  }
-
-  /**
    * 공격 사운드
    */
   playAttack(isHeavy: boolean = false): void {
-    this.play(isHeavy ? 'attack-heavy' : 'attack', { volume: this.volume * 0.8 });
-  }
-
-  /**
-   * 방어 사운드
-   */
-  playDefend(): void {
-    this.play('defend', { volume: this.volume * 0.7 });
-  }
-
-  /**
-   * 방어 성공 (블록) 사운드
-   */
-  playBlock(): void {
-    this.play('block', { volume: this.volume * 0.8 });
-  }
-
-  /**
-   * 적 피격 사운드
-   */
-  playHit(): void {
-    this.play('hit', { volume: this.volume * 0.6 });
-  }
-
-  /**
-   * 플레이어 데미지 사운드
-   */
-  playPlayerDamage(): void {
-    this.play('damage-player');
-  }
-
-  /**
-   * 적 데미지 사운드
-   */
-  playEnemyDamage(): void {
-    this.play('damage-enemy', { volume: this.volume * 0.7 });
-  }
-
-  /**
-   * 승리 사운드
-   */
-  playVictory(): void {
-    this.play('victory');
-  }
-
-  /**
-   * 패배 사운드
-   */
-  playDefeat(): void {
-    this.play('defeat');
-  }
-
-  /**
-   * 적 사망 사운드
-   */
-  playEnemyDeath(): void {
-    this.play('enemy-death');
+    this.play(isHeavy ? 'attack-heavy' : 'attack', 0.8);
   }
 
   /**

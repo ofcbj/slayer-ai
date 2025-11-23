@@ -4,16 +4,14 @@
       "duration": 200,
       "properties": {
         "scaleX": 1.05,
-        "scaleY": 1.05,
-        "yOffset": -20
+        "scaleY": 1.05
       }
     },
     "cardHoverOut": {
       "duration": 200,
       "properties": {
         "scaleX": 1,
-        "scaleY": 1,
-        "yOffset": 0
+        "scaleY": 1
       }
     },
     "buttonHover": {

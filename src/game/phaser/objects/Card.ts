@@ -55,17 +55,13 @@ export default class Card extends Phaser.GameObjects.Container {
 
     this.bg.on('pointerover', () => {
       if (!this.isSelected) {
-        tweenConfig.apply(this.scene, 'interactive.cardHover', this, {
-          y: this.originalY - 20
-        });
+        tweenConfig.apply(this.scene, 'interactive.cardHover', this);
       }
     });
 
     this.bg.on('pointerout', () => {
       if (!this.isSelected) {
-        tweenConfig.apply(this.scene, 'interactive.cardHoverOut', this, {
-          y: this.originalY
-        });
+        tweenConfig.apply(this.scene, 'interactive.cardHoverOut', this);
       }
     });
 

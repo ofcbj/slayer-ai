@@ -100,9 +100,9 @@ class LanguageManager {
     try {
       const basePath = import.meta.env.BASE_URL || '/';
       const [cardsAttackRes, cardsSkillRes, cardsCatRes, enemiesRes, stagesRes] = await Promise.all([
-        fetch(`${basePath}data/cards_attack.json`),
-        fetch(`${basePath}data/cards_skill.json`),
-        fetch(`${basePath}data/cards_cat.json`),
+        fetch(`${basePath}data/cards-attack.json`),
+        fetch(`${basePath}data/cards-skill.json`),
+        fetch(`${basePath}data/cards-category.json`),
         fetch(`${basePath}data/enemies.json`),
         fetch(`${basePath}data/stages.json`)
       ]);

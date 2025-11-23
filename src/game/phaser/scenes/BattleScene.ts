@@ -219,7 +219,7 @@ export default class BattleScene extends Phaser.Scene {
       this.battleManager.setEnemyIntent(enemy, enemyData, () => Phaser.Math.Between(0, 100) / 100);
     });
     // 게임 시작 사운드 재생
-    this.soundManager.playGameStart();
+    this.soundManager.play('game-start');
 
     // 첫 턴 시작
     this.turnController.startPlayerTurn();

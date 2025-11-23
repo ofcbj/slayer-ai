@@ -169,10 +169,8 @@ export class ObjectHighlighter {
     }
 
     return {
-      x,
-      y,
-      width,
-      height,
+      x, y,
+      width,height,
       centerX: x + width / 2,
       centerY: y + height / 2,
     };

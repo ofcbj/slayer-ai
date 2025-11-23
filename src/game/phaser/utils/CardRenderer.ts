@@ -55,11 +55,22 @@ export default class CardRenderer {
     );
     costText.setOrigin(0.5);
 
-    // 카드 이미지 (이모지) - 중앙에 크게 표시
-    const cardImage = scene.add.text(0, -20, this.getCardImage(cardData),
-      textStyle.getStyle('cards.emoji')
-    );
-    cardImage.setOrigin(0.5);
+    // 카드 이미지 - 중앙에 크게 표시 (PNG 또는 이모지)
+    let cardImage: Phaser.GameObjects.GameObject;
+    const imageKey = this.getCardImageKey(cardData);
+
+    // PNG 이미지가 있으면 Sprite로, 없으면 Text(이모지)로 표시
+    if (imageKey && scene.textures.exists(imageKey)) {
+      const sprite = scene.add.sprite(0, -20, imageKey);
+      sprite.setDisplaySize(80, 80); // 이미지 크기 조정
+      cardImage = sprite;
+    } else {
+      const text = scene.add.text(0, -20, this.getCardImage(cardData),
+        textStyle.getStyle('cards.emoji')
+      );
+      text.setOrigin(0.5);
+      cardImage = text;
+    }
 
     // 카드 값 (데미지, 방어도 등) - 이미지 아래
     const valueText = scene.add.text(0, 25, this.getValueDisplay(cardData),
@@ -87,6 +98,23 @@ export default class CardRenderer {
     container.setSize(width, height);
 
     return container;
+  }
+
+  /**
+   * 카드 이미지 키 가져오기 (PNG 파일용)
+   */
+  static getCardImageKey(cardData: CardData | NormalizedCardData): string | null {
+    // rawData에서 imageKey 가져오기 (NormalizedCardData인 경우)
+    if ('rawData' in cardData && cardData.rawData && cardData.rawData.imageKey) {
+      return cardData.rawData.imageKey;
+    }
+
+    // CardData에서 직접 가져오기
+    if ('imageKey' in cardData && cardData.imageKey) {
+      return cardData.imageKey;
+    }
+
+    return null;
   }
 
   /**

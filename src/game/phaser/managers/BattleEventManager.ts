@@ -240,8 +240,6 @@ export default class BattleEventManager {
       // 카드에 커스텀 사운드가 있으면 그것을 재생, 없으면 기본 사운드
       if (cardData.sound && cardData.sound !== '') {
         this.soundManager.play(cardData.sound);
-      } else {
-        this.soundManager.playCardPlay();
       }
     }
 
@@ -275,7 +273,7 @@ export default class BattleEventManager {
       // 방어 사운드 재생 (약간 딜레이를 줘서 카드 사용 사운드와 겹치지 않도록)
       this.scene.time.delayedCall(100, () => {
         if (this.soundManager) {
-          this.soundManager.playDefend();
+          this.soundManager.play('defend', 0.7);
         }
       });
       // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
