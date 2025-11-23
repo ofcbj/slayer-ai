@@ -38,6 +38,13 @@ export default class BattleTurnController {
   startPlayerTurn(): void {
     this.canEndTurn = true;
     this.battleManager.startPlayerTurn();
+    
+    // 새 턴 시작 시 모든 적의 의도를 업데이트
+    const aliveEnemies = this.battleManager.getAliveEnemies();
+    aliveEnemies.forEach(enemy => {
+      const enemyData: EnemyData = (enemy as any).enemyData;
+      this.battleManager.setEnemyIntent(enemy, enemyData, () => Phaser.Math.Between(0, 100) / 100);
+    });
   }
 
   /**
@@ -95,9 +102,5 @@ export default class BattleTurnController {
   private executeEnemyAction(enemy: Enemy): void {
     // BattleManager에서 적 행동 실행 (콜백에서 애니메이션 처리)
     this.battleManager.executeEnemyAction(enemy);
-
-    // 다음 의도 설정
-    const enemyData: EnemyData = (enemy as any).enemyData;
-    this.battleManager.setEnemyIntent(enemy, enemyData, () => Phaser.Math.Between(0, 100) / 100);
   }
 }
