@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { CardData, NormalizedCardData } from '../managers/BattleManager';
+import { CardData } from '../../../types';
 import { textStyle } from '../managers/TextStyleManager';
 
 /**
@@ -23,7 +23,7 @@ export default class CardRenderer {
     scene: Phaser.Scene,
     x: number,
     y: number,
-    cardData: CardData | NormalizedCardData,
+    cardData: CardData,
     options: CardRenderOptions = {}
   ): Phaser.GameObjects.Container {
     const container = scene.add.container(x, y);
@@ -80,7 +80,7 @@ export default class CardRenderer {
 
     // 카드 효과 설명 - 하단
     const descText = scene.add.text(0, 65, this.getEffectDescription(cardData),
-      textStyle.getStyle('cards.emojiSmall', { color: '#cccccc', wordWrap: { width: width - 30, useAdvancedWrap: true }, lineSpacing: 2 })
+      textStyle.getStyle('cards.emojiSmall', { color: '#cccccc', wordWrap: { width: width - 30 }, lineSpacing: 2 })
     );
     descText.setOrigin(0.5, 0.5);
 
@@ -103,79 +103,54 @@ export default class CardRenderer {
   /**
    * 카드 이미지 키 가져오기 (PNG 파일용)
    */
-  static getCardImageKey(cardData: CardData | NormalizedCardData): string | null {
-    // rawData에서 imageKey 가져오기 (NormalizedCardData인 경우)
-    if ('rawData' in cardData && cardData.rawData && cardData.rawData.imageKey) {
-      return cardData.rawData.imageKey;
-    }
-
-    // CardData에서 직접 가져오기
-    if ('imageKey' in cardData && cardData.imageKey) {
-      return cardData.imageKey;
-    }
-
+  static getCardImageKey(cardData: CardData): string | null {
+    // CardData에서 이미지 키 가져오기 (아직 구현되지 않음)
+    // 향후 이미지 파일 지원 시 사용
     return null;
   }
 
   /**
    * 카드 이미지 (이모지) 가져오기
    */
-  static getCardImage(cardData: CardData | NormalizedCardData): string {
-    // rawData에서 이미지(이모지) 가져오기 (NormalizedCardData인 경우)
-    if ('rawData' in cardData && cardData.rawData && cardData.rawData.image) {
-      return cardData.rawData.image;
-    }
-
-    // CardData에서 직접 가져오기
-    if ('image' in cardData && cardData.image) {
+  static getCardImage(cardData: CardData): string {
+    // CardData에서 이미지(이모지) 가져오기
+    if (cardData.image) {
       return cardData.image;
     }
 
     // 기본 이모지 (타입별)
-    const type = this.getCardType(cardData);
-    if (type === '공격') return '⚔️';
-    if (type === '방어') return '🛡️';
-    if (type === '치유') return '💚';
-    if (type === '에너지') return '🧘';
+    if (cardData.type === 'attack') return '⚔️';
+    if (cardData.type === 'skill' && cardData.block) return '🛡️';
+    if (cardData.heal) return '💚';
+    if (cardData.energy) return '🧘';
     return '✨';
   }
 
   /**
    * 카드 타입 가져오기
    */
-  static getCardType(cardData: CardData | NormalizedCardData): string | undefined {
-    // NormalizedCardData인 경우 (rawData 속성으로 구분)
-    if ('rawData' in cardData && cardData.rawData) {
-      return cardData.type;
+  static getCardType(cardData: CardData): string | undefined {
+    // CardData 타입 추론
+    if (cardData.type === 'attack') return '공격';
+    if (cardData.type === 'skill') {
+      if (cardData.block) return '방어';
+      if (cardData.heal) return '치유';
+      if (cardData.energy) return '에너지';
     }
-
-    // CardData인 경우 타입 추론
-    const data = cardData as CardData;
-    if (data.damage) return '공격';
-    if (data.block) return '방어';
-    if (data.heal) return '치유';
-    if (data.energy) return '에너지';
     return '스킬';
   }
 
   /**
    * 카드 값 가져오기
    */
-  static getCardValue(cardData: CardData | NormalizedCardData): number {
-    // NormalizedCardData인 경우
-    if ('value' in cardData && typeof cardData.value === 'number') {
-      return cardData.value;
-    }
-
-    // CardData인 경우
-    const data = cardData as CardData;
-    return data.damage || data.block || data.heal || data.energy || 0;
+  static getCardValue(cardData: CardData): number {
+    return cardData.damage || cardData.block || cardData.heal || cardData.energy || 0;
   }
 
   /**
    * 카드 색상 가져오기
    */
-  static getCardColor(cardData: CardData | NormalizedCardData): number {
+  static getCardColor(cardData: CardData): number {
     const type = this.getCardType(cardData);
     if (type === '공격') return 0xff6b6b;
     if (type === '방어') return 0x4ecdc4;
@@ -187,7 +162,7 @@ export default class CardRenderer {
   /**
    * 값 색상 가져오기 (문자열)
    */
-  static getValueColor(cardData: CardData | NormalizedCardData): string {
+  static getValueColor(cardData: CardData): string {
     const type = this.getCardType(cardData);
     if (type === '공격') return '#ff6b6b';
     if (type === '방어') return '#4ecdc4';
@@ -199,7 +174,7 @@ export default class CardRenderer {
   /**
    * 값 표시 텍스트 가져오기
    */
-  static getValueDisplay(cardData: CardData | NormalizedCardData): string {
+  static getValueDisplay(cardData: CardData): string {
     const type = this.getCardType(cardData);
     const value = this.getCardValue(cardData);
 
@@ -213,10 +188,10 @@ export default class CardRenderer {
   /**
    * 효과 설명 가져오기
    */
-  static getEffectDescription(cardData: CardData | NormalizedCardData): string {
-    // description이 있으면 우선 사용 (HTML 태그 제거)
+  static getEffectDescription(cardData: CardData): string {
+    // description이 있으면 우선 사용 (HTML 태그를 Rich Text로 변환)
     if (cardData.description) {
-      return this.stripHtmlTags(cardData.description);
+      return this.convertHtmlToRichText(cardData.description);
     }
 
     // description이 없으면 기본 텍스트 사용
@@ -232,11 +207,22 @@ export default class CardRenderer {
   }
 
   /**
-   * HTML 태그를 제거합니다.
+   * HTML 태그를 Phaser Rich Text 형식으로 변환합니다.
    */
   private static stripHtmlTags(text: string): string {
     if (!text) return '';
     // HTML 태그 제거
+    return text.replace(/<[^>]*>/g, '');
+  }
+
+  /**
+   * HTML 태그를 제거하여 일반 텍스트로 변환합니다.
+   * Phaser Text 객체는 Rich Text를 지원하지 않으므로 HTML 태그만 제거합니다.
+   */
+  private static convertHtmlToRichText(text: string): string {
+    if (!text) return '';
+    
+    // 모든 HTML 태그 제거
     return text.replace(/<[^>]*>/g, '');
   }
 }
