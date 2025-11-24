@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import SoundManager from '../managers/SoundManager';
 import LanguageManager from '../../../i18n/LanguageManager';
+import GameDataManager from '../../../managers/GameDataManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 
@@ -20,16 +21,13 @@ interface GameState {
 
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'PreloadScene' });
+    super('PreloadScene');
   }
 
   preload(): void {
     // 보스 패턴 데이터 로드 (기존 파일 유지)
     const basePath: string = import.meta.env.BASE_URL;
     this.load.json('bossPatterns', `${basePath}data/boss-patterns.json`);
-
-    // 사운드 파일 로드
-    SoundManager.preloadSounds(this);
 
     // 에셋 로드 (나중에 추가)
     // this.load.image('card-bg', '/assets/card-bg.png');
@@ -40,15 +38,16 @@ export default class PreloadScene extends Phaser.Scene {
     // React에 현재 Scene이 준비되었음을 알림
     EventBus.emit('current-scene-ready', this);
 
-    // 게임 데이터 로드 (LanguageManager를 통해)
-    const langManager = LanguageManager.getInstance();
-
+    // GameDataManager로 게임 데이터 로드
+    const gameDataManager = GameDataManager.getInstance();
+    
     try {
-      await langManager.loadGameData();
+      await gameDataManager.loadGameData();
       // Tween 설정 로드
       await tweenConfig.load();
       // 텍스트 스타일 설정 로드
       await textStyle.load();
+      console.log('게임 데이터 로드 완료');
     } catch (error) {
       console.error('Failed to load game data:', error);
       return;

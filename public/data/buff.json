@@ -1,0 +1,20 @@
+{
+  "vulnerable": {
+    "type": "debuff",
+    "duration": 2,
+    "image": "💔",
+    "name_ko": "취약",
+    "name_ja": "弱体",
+    "description_kr": "피해량이 50% 증가",
+    "description_ja": "ダメージが50%上昇"
+  },
+  "weak": {
+    "type": "debuff",
+    "duration": 2,
+    "image": "🫥",
+    "name_ko": "약화",
+    "name_ja": "弱化",
+    "description_kr": "공격력이 50% 감소",
+    "description_ja": "攻撃力が50%減少"
+  }
+}

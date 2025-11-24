@@ -4,7 +4,6 @@
     "cost": 1,
     "damage": 7,
     "image": "⚔️",
-    "sound": "",
     "name_ko": "베기",
     "name_ja": "斬撃"
   },
@@ -13,7 +12,6 @@
     "cost": 2,
     "damage": 16,
     "image": "🔥",
-    "sound": "",
     "name_ko": "화염구",
     "name_ja": "火炎球"
   },
@@ -23,7 +21,6 @@
     "damage": 4,
     "hits": 3,
     "image": "🏹",
-    "sound": "",
     "name_ko": "화살 난사",
     "name_ja": "矢の乱射"
   },
@@ -33,17 +30,7 @@
     "damage": 6,
     "hits": 2,
     "image": "⚡",
-    "sound": "",
     "name_ko": "연속 베기",
     "name_ja": "連続斬撃"
-  },
-  "focused_strike": {
-    "type": "attack",
-    "cost": 1,
-    "damage": 12,
-    "image": "🎯",
-    "sound": "",
-    "name_ko": "집중 타격",
-    "name_ja": "集中打撃"
   }
 }

@@ -49,6 +49,11 @@
     "energy": "エネルギーを{value}回復する.",
     "draw": "カードを{value}枚引く.",
     "selfDamage": "自身が{value}ダメージを受ける.",
+    "applyBuff": "{buff}を付与する.",
     "separator": "\n"
+  },
+  "buffs": {
+    "vulnerable": "弱体",
+    "weak": "弱化"
   }
 }

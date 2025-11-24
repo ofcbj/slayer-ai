@@ -36,7 +36,19 @@ export interface CardData {
   rarity?: 'common' | 'uncommon' | 'rare' | 'epic';
   allEnemies?: boolean;
   hits?: number;
+  buff?: string;  // 적용할 디버프 ID (vulnerable, weak 등)
 }
+
+/**
+ * Buff/Debuff 인터페이스
+ */
+export interface Buff {
+  id: string;
+  type: 'buff' | 'debuff';
+  duration: number;  // 남은 턴 수
+}
+
+export type BuffType = 'vulnerable' | 'weak';
 
 /**
  * Card 컨테이너의 확장 프로퍼티

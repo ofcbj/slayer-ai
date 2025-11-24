@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import Actor from './Actor';
-import { EnemyData } from '../../../types';
+import { EnemyData, Buff } from '../../../types';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { UIFactory } from '../../utils/UIFactory';
 import { Logger } from '../../utils/Logger';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 interface Intent {
   type: 'attack' | 'defend' | 'special' | string;
@@ -12,13 +13,15 @@ interface Intent {
 }
 
 export default class Enemy extends Actor {
-  enemyData   : EnemyData;
-  enemyIndex  : number;
-  intent      : Intent | null;
-  isTargeted  : boolean;
-  bg          : Phaser.GameObjects.Rectangle;
-  intentIcon! : Phaser.GameObjects.Text;
-  intentValue!: Phaser.GameObjects.Text;
+  enemyData      : EnemyData;
+  enemyIndex     : number;
+  intent         : Intent | null;
+  isTargeted     : boolean;
+  bg             : Phaser.GameObjects.Rectangle;
+  intentIcon!    : Phaser.GameObjects.Text;
+  intentValue!   : Phaser.GameObjects.Text;
+  private buffs  : Map<string, Buff> = new Map();
+  private buffContainer?: Phaser.GameObjects.Container;
 
   constructor(
     scene: Phaser.Scene,
@@ -177,6 +180,20 @@ export default class Enemy extends Actor {
     }
   }
 
+  /**
+   * 데미지를 받을 때 vulnerable 효과 적용
+   */
+  override takeDamage(amount: number): void {
+    let finalDamage = amount;
+
+    // vulnerable 효과: 받는 피해 50% 증가
+    if (this.hasBuff('vulnerable')) {
+      finalDamage = Math.floor(finalDamage * 1.5);
+    }
+
+    super.takeDamage(finalDamage);
+  }
+
   applyDefense(amount: number): void {
     super.applyDefense(amount);
     const defensePopup = this.scene.add.text(this.x, this.y-50, `+${amount} 🛡️`,
@@ -253,6 +270,169 @@ export default class Enemy extends Actor {
         onComplete: () => particle.destroy()
       });
     }
+  }
+
+  /**
+   * 버프 적용
+   */
+  public applyBuff(buffId: string, duration: number = 2): void {
+    if (this.buffs.has(buffId)) {
+      const buff = this.buffs.get(buffId)!;
+      // 지속시간을 더하기
+      buff.duration = buff.duration + duration;
+    } else {
+      this.buffs.set(buffId, { id: buffId, type: 'debuff', duration });
+    }
+    this.updateBuffDisplay();
+  }
+
+  /**
+   * 턴 종료 시 버프 지속시간 감소
+   */
+  public decreaseBuffDurations(): void {
+    for (const [id, buff] of this.buffs) {
+      buff.duration--;
+      if (buff.duration <= 0) {
+        this.buffs.delete(id);
+      }
+    }
+    this.updateBuffDisplay();
+  }
+
+  /**
+   * 버프 확인
+   */
+  public hasBuff(buffId: string): boolean {
+    return this.buffs.has(buffId);
+  }
+
+  public getBuff(buffId: string): Buff | undefined {
+    return this.buffs.get(buffId);
+  }
+
+  /**
+   * 버프 UI 표시
+   */
+  private updateBuffDisplay(): void {
+    if (this.buffContainer) {
+      this.buffContainer.destroy();
+    }
+
+    if (this.buffs.size === 0) return;
+
+    // 버프 컨테이너를 적 카드 상단 경계선 위에 배치
+    this.buffContainer = this.scene.add.container(-90, -147);
+    this.add(this.buffContainer);
+
+    let offsetX = 0; // 왼쪽에서 시작해서 오른쪽으로
+
+    for (const buff of this.buffs.values()) {
+      const iconBg = this.scene.add.rectangle(offsetX + 14, 14, 28, 28, 0x000000, 0.7);
+      iconBg.setStrokeStyle(2, 0xffaa00);
+      
+      const icon = this.scene.add.text(offsetX + 14, 14, this.getBuffIcon(buff.id), {
+        fontSize: '18px'
+      });
+      icon.setOrigin(0.5);
+
+      // 툴팁을 위한 인터랙션 설정
+      iconBg.setInteractive({ useHandCursor: true });
+      
+      // 툴팁 참조를 저장
+      const tooltipRef = { current: null as Phaser.GameObjects.Container | null };
+
+      iconBg.on('pointerover', () => {
+        // 툴팁 생성 - scene에 직접 추가 (buffContainer가 아닌)
+        const worldPos = iconBg.getWorldTransformMatrix();
+        tooltipRef.current = this.createBuffTooltip(buff.id, worldPos.tx, worldPos.ty - 50);
+        if (tooltipRef.current) {
+          this.scene.add.existing(tooltipRef.current);
+        }
+      });
+
+      iconBg.on('pointerout', () => {
+        // 툴팁 제거
+        if (tooltipRef.current) {
+          tooltipRef.current.destroy();
+          tooltipRef.current = null;
+        }
+      });
+
+      this.buffContainer.add([iconBg, icon]);
+
+      // 지속시간 표시 - 아이콘 오른쪽 위 꼭지점
+      const durationText = this.scene.add.text(offsetX + 28, 0,
+        buff.duration.toString(), {
+          fontSize: '22px',
+          color: '#ffff00',
+          stroke: '#000000',
+          strokeThickness: 3,
+          fontStyle: 'bold'
+        });
+      durationText.setOrigin(0.5);
+      this.buffContainer.add(durationText);
+
+      offsetX += 32;
+    }
+  }
+
+  /**
+   * 버프 툴팁 생성
+   */
+  private createBuffTooltip(buffId: string, worldX: number, worldY: number): Phaser.GameObjects.Container | null {
+    // LanguageManager 가져오기
+    const langManager = LanguageManager.getInstance();
+    const lang = langManager.getLanguage();
+    const suffix = lang === 'ko' ? '_kr' : '_ja';
+    
+    // 버프 설명
+    const buffDescriptions: Record<string, Record<string, string>> = {
+      'vulnerable': {
+        '_kr': '피해량이 50% 증가',
+        '_ja': 'ダメージが50%上昇'
+      },
+      'weak': {
+        '_kr': '공격력이 50% 감소',
+        '_ja': '攻撃力が50%減少'
+      }
+    };
+
+    const buffName = langManager.t(`buffs.${buffId}`);
+    const description = buffDescriptions[buffId]?.[suffix] || '';
+
+    const tooltipContainer = this.scene.add.container(worldX, worldY);
+
+    // 툴팁 배경
+    const padding = 8;
+    const text = this.scene.add.text(0, 0, `${buffName}\n${description}`, {
+      fontSize: '12px',
+      color: '#ffffff',
+      align: 'center',
+      padding: { x: padding, y: padding }
+    });
+    text.setOrigin(0.5);
+
+    const bg = this.scene.add.rectangle(0, 0, 
+      text.width + padding * 2, 
+      text.height + padding * 2, 
+      0x222222, 0.95);
+    bg.setStrokeStyle(2, 0xffaa00);
+
+    tooltipContainer.add([bg, text]);
+    tooltipContainer.setDepth(10000); // 최상위에 표시
+
+    return tooltipContainer;
+  }
+
+  /**
+   * 버프 아이콘 가져오기
+   */
+  private getBuffIcon(buffId: string): string {
+    const icons: Record<string, string> = {
+      'vulnerable': '💔',
+      'weak': '🫥'
+    };
+    return icons[buffId] || '❓';
   }
 
   /**

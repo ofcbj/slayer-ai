@@ -49,8 +49,9 @@ export default class CardRenderer {
     const costCircle = scene.add.circle(-width/2+20, -height/2+18, 15, borderColor);
     costCircle.setStrokeStyle(2, 0xffffff);
 
+    const costValue = cardData.cost ?? 0; // cost가 undefined일 때 기본값 0 사용
     const costText = scene.add.text(-width/2+20, -height/2+18,
-      cardData.cost.toString(),
+      costValue.toString(),
       textStyle.getStyle('cards.cost')
     );
     costText.setOrigin(0.5);
@@ -176,6 +177,10 @@ export default class CardRenderer {
     }
     if (cardData.selfDamage) {
       effects.push(langManager.t('cardEffects.selfDamage', { value: cardData.selfDamage }));
+    }
+    if (cardData.buff) {
+      const buffName = langManager.t(`buffs.${cardData.buff}`);
+      effects.push(langManager.t('cardEffects.applyBuff', { buff: buffName }));
     }
 
     // 효과들을 구분자로 연결

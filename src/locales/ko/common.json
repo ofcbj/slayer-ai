@@ -49,6 +49,11 @@
     "energy": "{value} 에너지를 얻습니다.",
     "draw": "카드 {value}장을 뽑습니다.",
     "selfDamage": "자신이 {value} 피해를 받습니다.",
+    "applyBuff": "{buff}을(를) 부여합니다.",
     "separator": "\n"
+  },
+  "buffs": {
+    "vulnerable": "취약",
+    "weak": "약화"
   }
 }

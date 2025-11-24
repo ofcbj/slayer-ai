@@ -244,9 +244,13 @@ export default class BattleScene extends Phaser.Scene {
       onEnemyAction: (enemy: Enemy, intent) => {
         if (intent.type === 'attack') {
           enemy.playAttackAnimation(() => {
+            let damage = intent.value;
+            // weak 효과: 공격력 50% 감소
+            if (enemy.hasBuff('weak')) {
+              damage = Math.floor(damage * 0.5);
+            }
             // Player에게 직접 데미지 적용
-            this.playerCharacter.takeDamage(intent.value);
-
+            this.playerCharacter.takeDamage(damage);
             // 플레이어 사망 시 처리
             if (this.playerCharacter.isDead()) {
               this.cameras.main.flash(200, 255, 0, 0);

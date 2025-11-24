@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import LanguageManager from '../../../i18n/LanguageManager';
+import GameDataManager from '../../../managers/GameDataManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 
@@ -71,7 +72,8 @@ export default class StageSelectScene extends Phaser.Scene {
     this.createPlayerStats(gameState.player);
 
     // 스테이지 데이터 로드 (번역된 데이터 사용)
-    const stagesData: StagesDataMap = langManager.getAllStageData();
+    const gameDataManager = GameDataManager.getInstance();
+    const stagesData: StagesDataMap = gameDataManager.getStageData();
     const currentStage: number = gameState.currentStage || 1;
     const clearedStages: number[] = gameState.stagesCleared || [];
 
@@ -489,8 +491,14 @@ export default class StageSelectScene extends Phaser.Scene {
       '중보스': '👹',
       '보스': '👑',
       'ノーマル': '⚔️',
+      'エリート': '👹',
       '中ボス': '👹',
-      'ボス': '👑'
+      'ボス': '👑',
+      // 원본 타입도 지원 (번역 실패 시 대비)
+      'normal': '⚔️',
+      'elite': '👹',
+      'mid_boss': '👹',
+      'boss': '👑'
     };
     return icons[type] || '❓';
   }

@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import Card from '../objects/Card';
-import { CardData, GameState } from '../../types';
+import { CardData, GameState } from '../../../types';
 import LanguageManager from '../../../i18n/LanguageManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
+import GameDataManager from '../../../managers/GameDataManager';
 
 interface CardsDataRegistry {
   rewards: CardData[];
@@ -58,11 +59,13 @@ export default class RewardScene extends Phaser.Scene {
   private createRewardCards(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
-    const langManager = LanguageManager.getInstance();
-    const cardsData = langManager.getCardData();
-
+    const gameDataManager = GameDataManager.getInstance();
+    
+    // 보상 카드 목록 가져오기
+    const rewardCardsPool = gameDataManager.getRewardCards();
+    
     // 랜덤 보상 카드 3장 선택
-    const rewardCards: CardData[] = Phaser.Utils.Array.Shuffle([...cardsData.rewards]).slice(0, 3);
+    const rewardCards: CardData[] = Phaser.Utils.Array.Shuffle([...rewardCardsPool]).slice(0, 3);
 
     const spacing = 200;
     const startX = width / 2 - spacing;

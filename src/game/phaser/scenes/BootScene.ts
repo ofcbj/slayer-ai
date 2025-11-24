@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
+import SoundManager from '../managers/SoundManager';
 
 export default class BootScene extends Phaser.Scene {
   constructor() {
@@ -7,6 +8,8 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload(): void {
+    // 사운드 파일들 로드
+    SoundManager.preloadSounds(this);
     // 로딩 바 배경
     const width: number = this.cameras.main.width;
     const height: number = this.cameras.main.height;

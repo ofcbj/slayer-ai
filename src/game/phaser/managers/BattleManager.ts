@@ -2,6 +2,7 @@ import Enemy from '../objects/Enemy';
 import Player from '../objects/Player';
 import { CardData, EnemyData, PlayerState, StageData, GameState } from '../../../types';
 import { Logger } from '../../utils/Logger';
+import GameDataManager from '../../../managers/GameDataManager';
 
 export interface EnemyIntent {
   type: 'attack' | 'defend';
@@ -47,6 +48,13 @@ export default class BattleManager {
 
   public startPlayerTurn(): void {
     this.turn = 'player';
+
+    // 적들의 버프 지속시간 감소 (턴 시작 시)
+    this.enemies.forEach(enemy => {
+      if (!enemy.isDead()) {
+        enemy.decreaseBuffDurations();
+      }
+    });
 
     // 에너지 회복 및 방어도 초기화
     this.player.setEnergy(this.player.maxEnergy);
@@ -152,6 +160,23 @@ export default class BattleManager {
       // 카드 드로우 효과
       if (this.callbacks.onDrawCards) {
         this.callbacks.onDrawCards(cardData.draw);
+      }
+    }
+    // 버프 적용
+    if (cardData.buff) {
+      const gameDataManager = GameDataManager.getInstance();
+      const buffDuration = gameDataManager.getBuffDuration(cardData.buff);
+      
+      if (cardData.allEnemies) {
+        // 모든 적에게 버프 적용
+        this.enemies.forEach(enemy => {
+          if (!enemy.isDead()) {
+            enemy.applyBuff(cardData.buff!, buffDuration);
+          }
+        });
+      } else if (target) {
+        // 단일 적에게 버프 적용
+        target.applyBuff(cardData.buff, buffDuration);
       }
     }
     

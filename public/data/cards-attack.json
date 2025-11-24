@@ -4,7 +4,6 @@
     "cost": 1,
     "damage": 6,
     "image": "🗡️",
-    "sound": "",
     "name_ko": "공격",
     "name_ja": "攻撃"
   },
@@ -14,9 +13,26 @@
     "damage": 5,
     "draw": 1,
     "image": "😡",
-    "sound": "",
     "name_ko": "분노",
     "name_ja": "怒り"
+  },
+  "focused_strike": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 8,
+    "image": "🎯",
+    "buff": "vulnerable",
+    "name_ko": "집중 타격",
+    "name_ja": "集中打撃"
+  },
+  "ice_lance": {
+    "type": "attack",
+    "cost": 1,
+    "damage": 8,
+    "image": "🧊",
+    "buff": "weak",    
+    "name_ko": "얼음창",
+    "name_ja": "氷槍"
   },
   "sword_wind": {
     "type": "attack",
@@ -24,18 +40,8 @@
     "damage": 6,
     "allEnemies": true,
     "image": "🌪️",
-    "sound": "",
     "name_ko": "검풍",
     "name_ja": "剣風"
-  },
-  "ice_lance": {
-    "type": "attack",
-    "cost": 1,
-    "damage": 10,
-    "image": "🧊",
-    "sound": "",
-    "name_ko": "얼음창",
-    "name_ja": "氷槍"
   },
   "lightning": {
     "type": "attack",
@@ -43,7 +49,6 @@
     "damage": 9,
     "allEnemies": true,
     "image": "⚡",
-    "sound": "",
     "name_ko": "번개",
     "name_ja": "雷"
   },
@@ -52,7 +57,6 @@
     "cost": 2,
     "damage": 18,
     "image": "🌩️",
-    "sound": "",
     "name_ko": "폭풍검",
     "name_ja": "嵐剣"
   },
@@ -62,16 +66,14 @@
     "damage": 12,
     "selfDamage": 3,
     "image": "💀",
-    "sound": "",
     "name_ko": "광전사의 일격",
     "name_ja": "狂戦士の一撃"
   },
   "dark_orb": {
     "type": "attack",
     "cost": 3,
-    "damage": 24,
+    "damage": 27,
     "image": "🌑",
-    "sound": "",
     "name_ko": "암흑 구체",
     "name_ja": "暗黒球"
   },
@@ -81,7 +83,6 @@
     "damage": 14,
     "heal": 4,
     "image": "✨",
-    "sound": "",
     "name_ko": "신성한 일격",
     "name_ja": "神聖なる一撃"
   }

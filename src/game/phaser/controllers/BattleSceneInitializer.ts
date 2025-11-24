@@ -4,7 +4,7 @@ import Player from '../objects/Player';
 import DeckManager from '../managers/DeckManager';
 import BattleUIManager from '../managers/BattleUIManager';
 import { GameState, StageData } from '../managers/BattleManager';
-import LanguageManager from '../../../i18n/LanguageManager';
+import GameDataManager from '../../../managers/GameDataManager';
 
 /**
  * BattleScene 초기화를 담당하는 컨트롤러
@@ -63,7 +63,7 @@ export default class BattleSceneInitializer {
    */
   createEnemies(): Enemy[] {
     const width = this.scene.cameras.main.width;
-    const langManager = LanguageManager.getInstance();
+    const gameDataManager = GameDataManager.getInstance();
     const stageEnemies: string[] = this.selectedStage.data.enemies;
 
     console.log(`[BattleSceneInitializer] createEnemies - Stage: ${this.selectedStage.id}, Expected enemies:`, stageEnemies);
@@ -73,7 +73,7 @@ export default class BattleSceneInitializer {
 
     const createdEnemies: Enemy[] = [];
     stageEnemies.forEach((enemyName: string, index: number) => {
-      const enemyData = langManager.getEnemyData(enemyName);
+      const enemyData = gameDataManager.getEnemyData()[enemyName];
       if (enemyData) {
         const x = startX + (index * spacing);
         const y = 220; // 적들을 상단에 배치
@@ -91,15 +91,29 @@ export default class BattleSceneInitializer {
    * 덱 설정
    */
   setupDeck(): void {
-    const langManager = LanguageManager.getInstance();
+    const gameDataManager = GameDataManager.getInstance();
 
     console.log(`[BattleSceneInitializer] setupDeck - gameState.deck.length: ${this.gameState.deck.length}`);
 
     // 기본 덱 생성 (플레이어 덱이 비어있으면)
     if (this.gameState.deck.length === 0) {
-      // cards_cat.json의 start_deck 설정에서 시작 덱 가져오기
-      this.gameState.deck = langManager.getStartDeck();
+      // cards_cat.json의 start_deck 설정에서 시작 덱 가져오기 (카드 ID 배열)
+      const cardIds = gameDataManager.getStartDeck();
+      // 카드 ID 배열을 CardData 배열로 변환
+      this.gameState.deck = gameDataManager.convertCardIdsToCardData(cardIds);
       console.log(`[BattleSceneInitializer] setupDeck - Created start deck with ${this.gameState.deck.length} cards from cards_cat.json`);
+    } else {
+      // gameState.deck이 이미 CardData 배열인지 확인
+      // 만약 카드 ID 배열이라면 변환 필요
+      if (this.gameState.deck.length > 0) {
+        const firstItem = this.gameState.deck[0];
+        // 카드 ID 문자열인지 확인 (CardData는 객체이므로 'id' 속성을 가짐)
+        if (typeof firstItem === 'string') {
+          // 카드 ID 배열인 경우 CardData로 변환
+          this.gameState.deck = gameDataManager.convertCardIdsToCardData(this.gameState.deck as any);
+          console.log(`[BattleSceneInitializer] setupDeck - Converted card IDs to CardData`);
+        }
+      }
     }
 
     // DeckManager를 사용하여 덱 초기화
