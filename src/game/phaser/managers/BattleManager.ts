@@ -101,8 +101,12 @@ export default class BattleManager {
     }
   }
 
-  public useCard(cardData: CardData, target: Enemy | null = null): boolean {
-    Logger.debug(`BattleManager useCard - ${cardData.name}, Current enemies in BattleManager:`, this.enemies.map((e: any) => e.enemyData?.name));
+  /**
+   * 카드 효과를 적용합니다 (순수 게임 로직만 처리)
+   * UI/애니메이션은 BattleEventManager에서 처리
+   */
+  public applyCardEffects(cardData: CardData, target: Enemy | null = null): boolean {
+    Logger.debug(`BattleManager applyCardEffects - ${cardData.name}, Current enemies in BattleManager:`, this.enemies.map((e: any) => e.enemyData?.name));
 
     // 에너지 확인
     if (!this.player.consumeEnergy(cardData.cost)) {
@@ -115,7 +119,7 @@ export default class BattleManager {
 
       if (cardData.allEnemies) {
         // 모든 적에게 공격 (내부 enemies 배열 사용)
-        Logger.debug(`BattleManager useCard - Attacking all enemies, count: ${this.enemies.length}`);
+        Logger.debug(`BattleManager applyCardEffects - Attacking all enemies, count: ${this.enemies.length}`);
         this.enemies.forEach(enemy => {
           if (!enemy.isDead()) {
             for (let i = 0; i < hits; i++) {
@@ -125,7 +129,7 @@ export default class BattleManager {
         });
       } else if (target) {
         // 단일 적 공격
-        Logger.debug(`BattleManager useCard - Attacking single target: ${(target as any).enemyData?.name}`);
+        Logger.debug(`BattleManager applyCardEffects - Attacking single target: ${(target as any).enemyData?.name}`);
         for (let i = 0; i < hits; i++) {
           target.takeDamage(cardData.damage);
         }

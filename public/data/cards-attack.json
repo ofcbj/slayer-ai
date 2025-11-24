@@ -19,8 +19,8 @@
     "sound": "",
     "name_ko": "분노",
     "name_ja": "怒り",
-    "description_ko": "적에게 4 피해를 줍니다. 카드 1장을 뽑습니다.",
-    "description_ja": "敵に4ダメージを与える. カードを1枚引く."
+    "description_ko": "적에게 5 피해를 줍니다. 카드 1장을 뽑습니다.",
+    "description_ja": "敵に5ダメージを与える. カードを1枚引く."
   },
   "sword_wind": {
     "type": "attack",

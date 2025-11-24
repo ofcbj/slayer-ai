@@ -214,7 +214,9 @@ export default class Card extends Phaser.GameObjects.Container {
     this.createParticleEffect(worldX, worldY, targetX, targetY);
   }
 
-  private createParticleEffect(worldX: number, worldY: number, targetX?: number, targetY?: number): void {
+  private createParticleEffect(
+    worldX: number, worldY: number, 
+    targetX?: number, targetY?: number): void {
     const color: number = CardRenderer.getCardColor(this.cardData);
     const particleCount: number = 20;
 
@@ -228,13 +230,13 @@ export default class Card extends Phaser.GameObjects.Container {
       // 타겟이 지정되면 타겟을 향해 날아가고, 없으면 방사형으로 퍼짐
       if (targetX !== undefined && targetY !== undefined) {
         // 타겟을 향해 날아가는 파티클
-        const angle: number = Math.atan2(targetY - worldY, targetX - worldX);
-        const distance: number = Phaser.Math.Distance.Between(worldX, worldY, targetX, targetY);
+        const angle       : number = Math.atan2(targetY - worldY, targetX - worldX);
+        const distance    : number = Phaser.Math.Distance.Between(worldX, worldY, targetX, targetY);
         const randomOffset: number = Phaser.Math.Between(-30, 30);
 
         tweenConfig.apply(this.scene, 'cards.particleBurst', particle, {
-          x: targetX + Math.cos(angle + randomOffset * 0.01) * (distance * 0.3),
-          y: targetY + Math.sin(angle + randomOffset * 0.01) * (distance * 0.3),
+          x: targetX + Math.cos(angle+randomOffset*0.01)*(distance*0.3),
+          y: targetY + Math.sin(angle+randomOffset*0.01)*(distance*0.3),
           duration: 600,
           onComplete: () => particle.destroy()
         });
@@ -244,7 +246,8 @@ export default class Card extends Phaser.GameObjects.Container {
         const speed: number = Phaser.Math.Between(50, 150);
 
         tweenConfig.apply(this.scene, 'cards.particleBurst', particle, {
-          x: worldX + Math.cos(angle) * speed, y: worldY + Math.sin(angle) * speed,
+          x: worldX + Math.cos(angle)*speed, 
+          y: worldY + Math.sin(angle)*speed,
           onComplete: () => particle.destroy()
         });
       }

@@ -226,75 +226,69 @@ export default class BattleEventManager {
       return;
     }
 
-    // BattleManager를 사용하여 카드 사용 (BattleManager가 내부 enemies 배열을 직접 사용)
-    const success = this.battleManager.useCard(cardData, target);
+    // BattleManager를 사용하여 카드 효과 적용 (게임 로직)
+    const success = this.battleManager.applyCardEffects(cardData, target);
 
     if (!success) {
       this.uiManager.showMessage('Not enough energy!');
       return;
     }
 
-    // 카드 사용 사운드 재생 (애니메이션보다 먼저)
+    this.playCardEffects(card, cardData, target);
+    this.cleanupCard(card, cardData);
+  }
+
+  /**
+   * 카드 시각/청각 효과를 재생합니다 (사운드, 애니메이션, 파티클)
+   */
+  private playCardEffects(card: Card, cardData: CardData, target: Enemy | null): void {
+    // 카드 사용 사운드 재생
     if (this.soundManager) {
-      // 카드에 커스텀 사운드가 있으면 그것을 재생, 없으면 기본 사운드
       if (cardData.sound && cardData.sound !== '') {
         this.soundManager.play(cardData.sound);
       }
     }
 
-    // 애니메이션 처리
-    let shouldDiscardWithAnimation = true; // discardCardWithAnimation을 호출할지 여부
-
-    if (cardType === 'attack') {
-      // 공격 사운드 재생
+    // 공격 카드 효과
+    if (cardData.type === 'attack') {
       if (this.soundManager) {
         this.soundManager.play('attack', 0.8);
       }
       if (cardData.allEnemies) {
-        // 전체 공격: 파티클만 화면 중앙으로 날아가고, 카드는 버린 카드 더미로
         (card as any).playParticleEffect(this.scene.cameras.main.width / 2, 250);
       } else if (target) {
-        // 단일 공격: 파티클만 타겟으로 날아가고, 카드는 버린 카드 더미로
         const targetMatrix = target.getWorldTransformMatrix();
         const targetWorldX = targetMatrix.tx;
         const targetWorldY = targetMatrix.ty;
         (card as any).playParticleEffect(targetWorldX, targetWorldY);
       }
-      // 공격 카드도 버린 카드 더미로 이동
-    } else if (cardData.block) {
-      // 방어 카드 (block 속성으로 판단)
-      // 플레이어 캐릭터 방어 애니메이션
+    }
+
+    // 방어 카드 효과
+    if (cardData.block) {
       this.playerCharacter.playDefendAnimation();
-      // 방어 사운드 재생 (약간 딜레이를 줘서 카드 사용 사운드와 겹치지 않도록)
       this.scene.time.delayedCall(100, () => {
         if (this.soundManager) {
           this.soundManager.play('defend', 0.7);
         }
       });
-      // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
-    } else if (cardData.heal) {
-      // 치유 카드 (heal 속성으로 판단)
-      // 플레이어 캐릭터 치유 애니메이션
-      this.playerCharacter.playHealAnimation();
-      // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
-    } else if (cardData.energy) {
-      // 에너지 카드 (energy 속성으로 판단)
-      // playEffect를 호출하지 않고 discardCardWithAnimation만 사용
     }
 
-    // 핸드에서 제거
-    this.cardHandManager.removeCardFromHand(card);
-    // DeckManager를 사용하여 버린 카드 더미에 추가
-    this.deckManager.discardCard(cardData);
-    
-    // 카드를 버린 카드 더미로 이동 애니메이션 (playEffect를 사용하지 않은 경우만)
-    if (shouldDiscardWithAnimation) {
-      this.cardHandManager.discardCardWithAnimation(card);
+    // 치유 카드 효과
+    if (cardData.heal) {
+      this.playerCharacter.playHealAnimation();
     }
-    
-    // 핸드 재배치
+  }
+
+  /**
+   * 카드를 정리합니다 (핸드에서 제거, 버린 카드 더미로 이동)
+   */
+  private cleanupCard(card: Card, cardData: CardData): void {
+    this.cardHandManager.removeCardFromHand(card);
+    this.deckManager.discardCard(cardData);
+    this.cardHandManager.discardCardWithAnimation(card);
     this.cardHandManager.arrangeHand();
-    // 덱 정보 업데이트
+    
     if (this.onDeckInfoUpdate) {
       this.onDeckInfoUpdate();
     }

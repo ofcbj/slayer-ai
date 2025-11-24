@@ -21,8 +21,7 @@ export default class CardRenderer {
    */
   static createCardContainer(
     scene: Phaser.Scene,
-    x: number,
-    y: number,
+    x: number, y: number,
     cardData: CardData,
     options: CardRenderOptions = {}
   ): Phaser.GameObjects.Container {
@@ -56,21 +55,13 @@ export default class CardRenderer {
     costText.setOrigin(0.5);
 
     // 카드 이미지 - 중앙에 크게 표시 (PNG 또는 이모지)
+    const text = scene.add.text(0, -25, this.getCardImage(cardData),
+      textStyle.getStyle('cards.emoji')
+    );
+    text.setOrigin(0.5);
+    
     let cardImage: Phaser.GameObjects.GameObject;
-    const imageKey = this.getCardImageKey(cardData);
-
-    // PNG 이미지가 있으면 Sprite로, 없으면 Text(이모지)로 표시
-    if (imageKey && scene.textures.exists(imageKey)) {
-      const sprite = scene.add.sprite(0, -25, imageKey);
-      sprite.setDisplaySize(80, 80); // 이미지 크기 조정
-      cardImage = sprite;
-    } else {
-      const text = scene.add.text(0, -25, this.getCardImage(cardData),
-        textStyle.getStyle('cards.emoji')
-      );
-      text.setOrigin(0.5);
-      cardImage = text;
-    }
+    cardImage = text;
 
     // 카드 값 (데미지, 방어도 등) - 이미지 아래
     const valueText = scene.add.text(0, 25, this.getValueDisplay(cardData),
@@ -101,15 +92,6 @@ export default class CardRenderer {
   }
 
   /**
-   * 카드 이미지 키 가져오기 (PNG 파일용)
-   */
-  static getCardImageKey(cardData: CardData): string | null {
-    // CardData에서 이미지 키 가져오기 (아직 구현되지 않음)
-    // 향후 이미지 파일 지원 시 사용
-    return null;
-  }
-
-  /**
    * 카드 이미지 (이모지) 가져오기
    */
   static getCardImage(cardData: CardData): string {
@@ -131,13 +113,13 @@ export default class CardRenderer {
    */
   static getCardType(cardData: CardData): string | undefined {
     // CardData 타입 추론
-    if (cardData.type === 'attack') return '공격';
+    if (cardData.type === 'attack') return 'attack';
     if (cardData.type === 'skill') {
-      if (cardData.block) return '방어';
-      if (cardData.heal) return '치유';
-      if (cardData.energy) return '에너지';
+      if (cardData.block) return 'defend';
+      if (cardData.heal) return 'heal';
+      if (cardData.energy) return 'energy';
     }
-    return '스킬';
+    return 'skill';
   }
 
   /**
@@ -152,10 +134,10 @@ export default class CardRenderer {
    */
   static getCardColor(cardData: CardData): number {
     const type = this.getCardType(cardData);
-    if (type === '공격') return 0xff6b6b;
-    if (type === '방어') return 0x4ecdc4;
-    if (type === '치유') return 0x2ecc71;
-    if (type === '에너지') return 0xf39c12;
+    if (type === 'attack') return 0xff6b6b;
+    if (type === 'defend') return 0x4ecdc4;
+    if (type === 'heal') return 0x2ecc71;
+    if (type === 'energy') return 0xf39c12;
     return 0x9b59b6;
   }
 
@@ -164,10 +146,10 @@ export default class CardRenderer {
    */
   static getValueColor(cardData: CardData): string {
     const type = this.getCardType(cardData);
-    if (type === '공격') return '#ff6b6b';
-    if (type === '방어') return '#4ecdc4';
-    if (type === '치유') return '#2ecc71';
-    if (type === '에너지') return '#f39c12';
+    if (type === 'attack') return '#ff6b6b';
+    if (type === 'defend') return '#4ecdc4';
+    if (type === 'heal') return '#2ecc71';
+    if (type === 'energy') return '#f39c12';
     return '#ffffff';
   }
 
@@ -178,10 +160,10 @@ export default class CardRenderer {
     const type = this.getCardType(cardData);
     const value = this.getCardValue(cardData);
 
-    if (type === '공격') return value.toString();
-    if (type === '방어') return value.toString();
-    if (type === '치유') return `+${value}`;
-    if (type === '에너지') return `+${value}`;
+    if (type === 'attack') return value.toString();
+    if (type === 'defend') return value.toString();
+    if (type === 'heal') return `+${value}`;
+    if (type === 'energy') return `+${value}`;
     return '';
   }
 
@@ -198,21 +180,12 @@ export default class CardRenderer {
     const type = this.getCardType(cardData);
     const value = this.getCardValue(cardData);
 
-    if (type === '공격') return `Deal ${value} damage`;
-    if (type === '방어') return `Gain ${value} defense`;
-    if (type === '치유') return `Heal ${value} HP`;
-    if (type === '에너지') return `Gain ${value} energy`;
+    if (type === 'attack') return `Deal ${value} damage`;
+    if (type === 'defend') return `Gain ${value} defense`;
+    if (type === 'heal') return `Heal ${value} HP`;
+    if (type === 'energy') return `Gain ${value} energy`;
 
     return '';
-  }
-
-  /**
-   * HTML 태그를 Phaser Rich Text 형식으로 변환합니다.
-   */
-  private static stripHtmlTags(text: string): string {
-    if (!text) return '';
-    // HTML 태그 제거
-    return text.replace(/<[^>]*>/g, '');
   }
 
   /**
