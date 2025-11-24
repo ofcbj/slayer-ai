@@ -6,7 +6,7 @@
     "image": "🗡️",
     "sound": "",
     "name_ko": "공격",
-    "name_ja": "攻撃",
+    "name_ja": "攻撃"
   },
   "anger": {
     "type": "attack",
@@ -16,7 +16,7 @@
     "image": "😡",
     "sound": "",
     "name_ko": "분노",
-    "name_ja": "怒り",
+    "name_ja": "怒り"
   },
   "sword_wind": {
     "type": "attack",
@@ -26,7 +26,7 @@
     "image": "🌪️",
     "sound": "",
     "name_ko": "검풍",
-    "name_ja": "剣風",
+    "name_ja": "剣風"
   },
   "ice_lance": {
     "type": "attack",
@@ -35,7 +35,7 @@
     "image": "🧊",
     "sound": "",
     "name_ko": "얼음창",
-    "name_ja": "氷槍",
+    "name_ja": "氷槍"
   },
   "lightning": {
     "type": "attack",
@@ -45,7 +45,7 @@
     "image": "⚡",
     "sound": "",
     "name_ko": "번개",
-    "name_ja": "雷",
+    "name_ja": "雷"
   },
   "storm_sword": {
     "type": "attack",
@@ -54,7 +54,7 @@
     "image": "🌩️",
     "sound": "",
     "name_ko": "폭풍검",
-    "name_ja": "嵐剣",
+    "name_ja": "嵐剣"
   },
   "berserker_strike": {
     "type": "attack",
@@ -64,7 +64,7 @@
     "image": "💀",
     "sound": "",
     "name_ko": "광전사의 일격",
-    "name_ja": "狂戦士の一撃",
+    "name_ja": "狂戦士の一撃"
   },
   "dark_orb": {
     "type": "attack",
@@ -73,7 +73,7 @@
     "image": "🌑",
     "sound": "",
     "name_ko": "암흑 구체",
-    "name_ja": "暗黒球",
+    "name_ja": "暗黒球"
   },
   "holy_strike": {
     "type": "attack",
@@ -83,6 +83,6 @@
     "image": "✨",
     "sound": "",
     "name_ko": "신성한 일격",
-    "name_ja": "神聖なる一撃",
+    "name_ja": "神聖なる一撃"
   }
 }

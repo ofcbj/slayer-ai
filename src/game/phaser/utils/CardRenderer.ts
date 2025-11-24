@@ -7,9 +7,9 @@ import LanguageManager from '../../../i18n/LanguageManager';
  * 카드 렌더링 설정
  */
 export interface CardRenderOptions {
-  width?: number;
-  height?: number;
-  showInteraction?: boolean; // 인터랙션 활성화 여부
+  width?           : number;
+  height?          : number;
+  showInteraction? : boolean; // 인터랙션 활성화 여부
 }
 
 /**
@@ -71,13 +71,13 @@ export default class CardRenderer {
     valueText.setOrigin(0.5);
 
     // 카드 효과 설명 - 하단
-    const descText = scene.add.text(0, 65, this.getEffectDescription(cardData),
+    const descText = scene.add.text(0, 78, this.getEffectDescription(cardData),
       textStyle.getStyle('cards.emojiSmall', { color: '#cccccc', wordWrap: { width: width - 30 }, lineSpacing: 2 })
     );
     descText.setOrigin(0.5, 0.5);
 
     // 설명이 카드 하단을 넘어가면 스케일을 줄여서 맞춤
-    const maxDescHeight = height / 2 - 75; // 하단 여백 고려
+    const maxDescHeight = height / 2 - 45; // 하단 여백 감소하여 설명 영역 30px 증가
     if (descText.height > maxDescHeight) {
       const scale = maxDescHeight / descText.height;
       descText.setScale(scale);
@@ -92,90 +92,69 @@ export default class CardRenderer {
     return container;
   }
 
-  /**
-   * 카드 이미지 (이모지) 가져오기
-   */
   static getCardImage(cardData: CardData): string {
     // CardData에서 이미지(이모지) 가져오기
     if (cardData.image) {
       return cardData.image;
     }
-
     // 기본 이모지 (타입별)
     if (cardData.type === 'attack') return '⚔️';
-    if (cardData.type === 'skill' && cardData.block) return '🛡️';
-    if (cardData.heal) return '💚';
-    if (cardData.energy) return '🧘';
+    if (cardData.type === 'skill') {
+      if (cardData.block)   return '🛡️';
+      if (cardData.heal)    return '💚';
+      if (cardData.energy)  return '🧘';
+    }
     return '✨';
   }
 
-  /**
-   * 카드 타입 가져오기
-   */
   static getCardType(cardData: CardData): string | undefined {
     // CardData 타입 추론
     if (cardData.type === 'attack') return 'attack';
     if (cardData.type === 'skill') {
-      if (cardData.block) return 'defend';
-      if (cardData.heal) return 'heal';
+      if (cardData.block)   return 'defend';
+      if (cardData.heal)    return 'heal';
       if (cardData.energy) return 'energy';
     }
     return 'skill';
   }
 
-  /**
-   * 카드 값 가져오기
-   */
   static getCardValue(cardData: CardData): number {
     return cardData.damage || cardData.block || cardData.heal || cardData.energy || 0;
   }
 
-  /**
-   * 카드 색상 가져오기
-   */
   static getCardColor(cardData: CardData): number {
     const type = this.getCardType(cardData);
     if (type === 'attack') return 0xff6b6b;
     if (type === 'defend') return 0x4ecdc4;
-    if (type === 'heal') return 0x2ecc71;
+    if (type === 'heal')   return 0x2ecc71;
     if (type === 'energy') return 0xf39c12;
     return 0x9b59b6;
   }
 
-  /**
-   * 값 색상 가져오기 (문자열)
-   */
   static getValueColor(cardData: CardData): string {
     const type = this.getCardType(cardData);
     if (type === 'attack') return '#ff6b6b';
     if (type === 'defend') return '#4ecdc4';
-    if (type === 'heal') return '#2ecc71';
+    if (type === 'heal')   return '#2ecc71';
     if (type === 'energy') return '#f39c12';
     return '#ffffff';
   }
 
-  /**
-   * 값 표시 텍스트 가져오기
-   */
   static getValueDisplay(cardData: CardData): string {
     const type = this.getCardType(cardData);
     const value = this.getCardValue(cardData);
 
     if (type === 'attack') return value.toString();
     if (type === 'defend') return value.toString();
-    if (type === 'heal') return `+${value}`;
+    if (type === 'heal')   return `+${value}`;
     if (type === 'energy') return `+${value}`;
     return '';
   }
 
-  /**
-   * 효과 설명 가져오기 (동적 생성)
-   */
   static getEffectDescription(cardData: CardData): string {
     const langManager = LanguageManager.getInstance();
     const effects: string[] = [];
 
-    // 데미지 효과
     if (cardData.damage) {
       if (cardData.allEnemies) {
         effects.push(langManager.t('cardEffects.damageAll', { value: cardData.damage }));
@@ -183,28 +162,18 @@ export default class CardRenderer {
         effects.push(langManager.t('cardEffects.damage', { value: cardData.damage }));
       }
     }
-
-    // 방어도 효과
     if (cardData.block) {
       effects.push(langManager.t('cardEffects.block', { value: cardData.block }));
     }
-
-    // 치유 효과
     if (cardData.heal) {
       effects.push(langManager.t('cardEffects.heal', { value: cardData.heal }));
     }
-
-    // 에너지 효과
     if (cardData.energy) {
       effects.push(langManager.t('cardEffects.energy', { value: cardData.energy }));
     }
-
-    // 카드 드로우 효과
     if (cardData.draw) {
       effects.push(langManager.t('cardEffects.draw', { value: cardData.draw }));
     }
-
-    // 자신 피해 효과
     if (cardData.selfDamage) {
       effects.push(langManager.t('cardEffects.selfDamage', { value: cardData.selfDamage }));
     }

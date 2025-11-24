@@ -40,8 +40,8 @@ export default class CardHandManager {
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
 
-    // 핸드 영역
-    this.handContainer = this.scene.add.container(width / 2, height - 130);
+    // 핸드 영역 (20px 위로 올림)
+    this.handContainer = this.scene.add.container(width / 2, height - 150);
   }
 
   public drawCards(count: number, onComplete?: () => void): void {
