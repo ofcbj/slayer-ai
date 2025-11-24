@@ -162,11 +162,11 @@ export class TweenConfigManager {
    * @param overrides - Optional overrides for the configuration
    */
   public applyStaggered(
-    scene: Phaser.Scene,
-    path: string,
-    targets: any[],
+    scene       : Phaser.Scene,
+    path        : string,
+    targets     : any[],
     staggerDelay: number,
-    overrides?: Partial<Phaser.Types.Tweens.TweenBuilderConfig>
+    overrides?  : Partial<Phaser.Types.Tweens.TweenBuilderConfig>
   ): Phaser.Tweens.Tween[] {
     const tweens: Phaser.Tweens.Tween[] = [];
 

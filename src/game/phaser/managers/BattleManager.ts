@@ -2,7 +2,7 @@ import Enemy from '../objects/Enemy';
 import Player from '../objects/Player';
 import { CardData, EnemyData, PlayerState, StageData, GameState } from '../../../types';
 import { Logger } from '../../utils/Logger';
-import GameDataManager from '../../../managers/GameDataManager';
+import GameDataManager from './GameDataManager';
 
 export interface EnemyIntent {
   type: 'attack' | 'defend';

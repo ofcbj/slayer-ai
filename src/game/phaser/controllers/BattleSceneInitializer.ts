@@ -4,7 +4,7 @@ import Player from '../objects/Player';
 import DeckManager from '../managers/DeckManager';
 import BattleUIManager from '../managers/BattleUIManager';
 import { GameState, StageData } from '../managers/BattleManager';
-import GameDataManager from '../../../managers/GameDataManager';
+import GameDataManager from '../managers/GameDataManager';
 
 /**
  * BattleScene 초기화를 담당하는 컨트롤러

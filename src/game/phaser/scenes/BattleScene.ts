@@ -220,10 +220,8 @@ export default class BattleScene extends Phaser.Scene {
     });
     // 게임 시작 사운드 재생
     this.soundManager.play('game-start');
-
     // 첫 턴 시작
     this.turnController.startPlayerTurn();
-
     // 키보드 단축키 등록
     this.registerKeyboardShortcuts();
   }

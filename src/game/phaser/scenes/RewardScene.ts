@@ -5,7 +5,7 @@ import { CardData, GameState } from '../../../types';
 import LanguageManager from '../../../i18n/LanguageManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
-import GameDataManager from '../../../managers/GameDataManager';
+import GameDataManager from '../managers/GameDataManager';
 
 interface CardsDataRegistry {
   rewards: CardData[];

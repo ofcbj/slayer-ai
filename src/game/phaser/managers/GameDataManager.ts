@@ -1,5 +1,5 @@
-import { CardData } from '../types';
-import LanguageManager from '../i18n/LanguageManager';
+import { CardData } from '../../../types';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 interface GameData {
   cards_attack: {
@@ -22,11 +22,11 @@ interface GameData {
   };
   buffs: {
     [key: string]: {
-      type: string;
-      duration: number;
-      image: string;
-      name_ko: string;
-      name_ja: string;
+      type          : string;
+      duration      : number;
+      image         : string;
+      name_ko       : string;
+      name_ja       : string;
       description_kr: string;
       description_ja: string;
     };
@@ -84,10 +84,10 @@ class GameDataManager {
   /**
    * 카드 데이터 가져오기 (언어별로 변환)
    */
-  public getCardData() {
+  public getCardData(): Record<string, CardData> {
     if (!this.gameData) {
       console.error('Game data not loaded');
-      return { rewards: [] };
+      return {};
     }
 
     const langManager = LanguageManager.getInstance();
@@ -105,24 +105,24 @@ class GameDataManager {
     Object.keys(allCards).forEach((cardId) => {
       const card = allCards[cardId];
       result[cardId] = {
-        id: cardId,
-        name: card[`name${suffix}`],
-        type: card.type,
-        cost: card.cost ?? 0, // cost가 없을 때 기본값 0 사용
-        damage: card.damage,
-        defense: card.defense,
-        block: card.block,
-        heal: card.heal,
-        energy: card.energy,
+        id        : cardId,
+        name      : card[`name${suffix}`],
+        type      : card.type,
+        cost      : card.cost ?? 0, // cost가 없을 때 기본값 0 사용
+        damage    : card.damage,
+        defense   : card.defense,
+        block     : card.block,
+        heal      : card.heal,
+        energy    : card.energy,
         selfDamage: card.selfDamage,
-        draw: card.draw,
-        effect: card.effect,
-        image: card.image,
-        sound: card.sound,
-        rarity: card.rarity,
+        draw      : card.draw,
+        effect    : card.effect,
+        image     : card.image,
+        sound     : card.sound,
+        rarity    : card.rarity,
         allEnemies: card.allEnemies,
-        hits: card.hits,
-        buff: card.buff
+        hits      : card.hits,
+        buff      : card.buff
       };
     });
 
@@ -139,8 +139,8 @@ class GameDataManager {
     }
 
     const langManager = LanguageManager.getInstance();
-    const lang = langManager.getLanguage();
-    const suffix = lang === 'ko' ? '_ko' : '_ja';
+    const lang        = langManager.getLanguage();
+    const suffix      = lang === 'ko' ? '_ko' : '_ja';
     const result: any = {};
 
     Object.keys(this.gameData.enemies).forEach((enemyId) => {
@@ -164,17 +164,17 @@ class GameDataManager {
     }
 
     const langManager = LanguageManager.getInstance();
-    const lang = langManager.getLanguage();
-    const suffix = lang === 'ko' ? '_ko' : '_ja';
+    const lang        = langManager.getLanguage();
+    const suffix      = lang === 'ko' ? '_ko' : '_ja';
     const result: any = {};
 
     Object.keys(this.gameData.stages).forEach((stageId) => {
       const stage = this.gameData!.stages[stageId];
       result[stageId] = {
         ...stage,
-        name: stage[`name${suffix}`],
-        description: stage[`description${suffix}`],
-        type: this.translateStageType(stage.type, lang),
+        name        : stage[`name${suffix}`],
+        description : stage[`description${suffix}`],
+        type        : this.translateStageType(stage.type, lang),
       };
     });
 
@@ -242,10 +242,10 @@ class GameDataManager {
    */
   private translateStageType(stageType: string, lang: 'ko' | 'ja'): string {
     const typeMap: Record<string, Record<'ko' | 'ja', string>> = {
-      'normal': { ko: '일반', ja: 'ノーマル' },
-      'elite': { ko: '중보스', ja: 'エリート' },
+      'normal'  : { ko: '일반', ja: 'ノーマル' },
+      'elite'   : { ko: '중보스', ja: 'エリート' },
       'mid_boss': { ko: '중보스', ja: '中ボス' },
-      'boss': { ko: '보스', ja: 'ボス' }
+      'boss'    : { ko: '보스', ja: 'ボス' }
     };
 
     return typeMap[stageType]?.[lang] || stageType;

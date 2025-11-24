@@ -1,22 +1,20 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
-import SoundManager from '../managers/SoundManager';
-import LanguageManager from '../../../i18n/LanguageManager';
-import GameDataManager from '../../../managers/GameDataManager';
+import GameDataManager from '../managers/GameDataManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 
 interface GameState {
   player: {
-    maxHealth: number;
-    health: number;
-    energy: number;
-    maxEnergy: number;
-    defense: number;
+    maxHealth : number;
+    health    : number;
+    energy    : number;
+    maxEnergy : number;
+    defense   : number;
   };
   deck: unknown[];
-  currentStage: number;
-  stagesCleared: unknown[];
+  currentStage  : number;
+  stagesCleared : unknown[];
 }
 
 export default class PreloadScene extends Phaser.Scene {
@@ -28,10 +26,6 @@ export default class PreloadScene extends Phaser.Scene {
     // 보스 패턴 데이터 로드 (기존 파일 유지)
     const basePath: string = import.meta.env.BASE_URL;
     this.load.json('bossPatterns', `${basePath}data/boss-patterns.json`);
-
-    // 에셋 로드 (나중에 추가)
-    // this.load.image('card-bg', '/assets/card-bg.png');
-    // this.load.image('enemy-bg', '/assets/enemy-bg.png');
   }
 
   async create(): Promise<void> {

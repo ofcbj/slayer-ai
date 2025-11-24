@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import LanguageManager from '../../../i18n/LanguageManager';
-import GameDataManager from '../../../managers/GameDataManager';
+import GameDataManager from '../managers/GameDataManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 

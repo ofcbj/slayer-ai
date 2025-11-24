@@ -6,15 +6,15 @@
 import Phaser from 'phaser';
 
 interface TextStyleConfig {
-  fontSize?: string;
-  fontFamily?: string;
-  fontStyle?: string;
-  color?: string;
-  stroke?: string;
+  fontSize?       : string;
+  fontFamily?     : string;
+  fontStyle?      : string;
+  color?          : string;
+  stroke?         : string;
   strokeThickness?: number;
-  align?: string;
-  wordWrap?: boolean | { width?: number };
-  [key: string]: any;
+  align?          : string;
+  wordWrap?       : boolean | { width?: number };
+  [key: string]   : any;
 }
 
 interface TextStyleData {

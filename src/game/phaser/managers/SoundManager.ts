@@ -5,9 +5,9 @@ import Phaser from 'phaser';
  * public/assets/sounds/ 폴더의 모든 사운드 파일을 자동으로 감지하고 로드합니다.
  */
 export default class SoundManager {
-  private scene: Phaser.Scene;
-  private enabled: boolean = true;
-  private volume: number = 0.5;
+  private scene   : Phaser.Scene;
+  private enabled : boolean = true;
+  private volume  : number = 0.5;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
