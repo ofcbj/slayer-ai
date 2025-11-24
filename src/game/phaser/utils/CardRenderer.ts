@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CardData } from '../../../types';
 import { textStyle } from '../managers/TextStyleManager';
+import LanguageManager from '../../../i18n/LanguageManager';
 
 /**
  * 카드 렌더링 설정
@@ -168,34 +169,48 @@ export default class CardRenderer {
   }
 
   /**
-   * 효과 설명 가져오기
+   * 효과 설명 가져오기 (동적 생성)
    */
   static getEffectDescription(cardData: CardData): string {
-    // description이 있으면 우선 사용 (HTML 태그를 Rich Text로 변환)
-    if (cardData.description) {
-      return this.convertHtmlToRichText(cardData.description);
+    const langManager = LanguageManager.getInstance();
+    const effects: string[] = [];
+
+    // 데미지 효과
+    if (cardData.damage) {
+      if (cardData.allEnemies) {
+        effects.push(langManager.t('cardEffects.damageAll', { value: cardData.damage }));
+      } else {
+        effects.push(langManager.t('cardEffects.damage', { value: cardData.damage }));
+      }
     }
 
-    // description이 없으면 기본 텍스트 사용
-    const type = this.getCardType(cardData);
-    const value = this.getCardValue(cardData);
+    // 방어도 효과
+    if (cardData.block) {
+      effects.push(langManager.t('cardEffects.block', { value: cardData.block }));
+    }
 
-    if (type === 'attack') return `Deal ${value} damage`;
-    if (type === 'defend') return `Gain ${value} defense`;
-    if (type === 'heal') return `Heal ${value} HP`;
-    if (type === 'energy') return `Gain ${value} energy`;
+    // 치유 효과
+    if (cardData.heal) {
+      effects.push(langManager.t('cardEffects.heal', { value: cardData.heal }));
+    }
 
-    return '';
-  }
+    // 에너지 효과
+    if (cardData.energy) {
+      effects.push(langManager.t('cardEffects.energy', { value: cardData.energy }));
+    }
 
-  /**
-   * HTML 태그를 제거하여 일반 텍스트로 변환합니다.
-   * Phaser Text 객체는 Rich Text를 지원하지 않으므로 HTML 태그만 제거합니다.
-   */
-  private static convertHtmlToRichText(text: string): string {
-    if (!text) return '';
-    
-    // 모든 HTML 태그 제거
-    return text.replace(/<[^>]*>/g, '');
+    // 카드 드로우 효과
+    if (cardData.draw) {
+      effects.push(langManager.t('cardEffects.draw', { value: cardData.draw }));
+    }
+
+    // 자신 피해 효과
+    if (cardData.selfDamage) {
+      effects.push(langManager.t('cardEffects.selfDamage', { value: cardData.selfDamage }));
+    }
+
+    // 효과들을 구분자로 연결
+    const separator = langManager.t('cardEffects.separator');
+    return effects.join(separator);
   }
 }

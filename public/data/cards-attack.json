@@ -7,8 +7,6 @@
     "sound": "",
     "name_ko": "공격",
     "name_ja": "攻撃",
-    "description_ko": "적에게 6 피해를 줍니다.",
-    "description_ja": "敵に6ダメージを与える."
   },
   "anger": {
     "type": "attack",
@@ -19,8 +17,6 @@
     "sound": "",
     "name_ko": "분노",
     "name_ja": "怒り",
-    "description_ko": "적에게 5 피해를 줍니다. 카드 1장을 뽑습니다.",
-    "description_ja": "敵に5ダメージを与える. カードを1枚引く."
   },
   "sword_wind": {
     "type": "attack",
@@ -31,8 +27,6 @@
     "sound": "",
     "name_ko": "검풍",
     "name_ja": "剣風",
-    "description_ko": "모든 적에게 6 피해를 줍니다.",
-    "description_ja": "すべての敵に6ダメージを与える."
   },
   "ice_lance": {
     "type": "attack",
@@ -42,8 +36,6 @@
     "sound": "",
     "name_ko": "얼음창",
     "name_ja": "氷槍",
-    "description_ko": "적에게 10 피해를 줍니다.",
-    "description_ja": "敵に10ダメージを与える."
   },
   "lightning": {
     "type": "attack",
@@ -54,8 +46,6 @@
     "sound": "",
     "name_ko": "번개",
     "name_ja": "雷",
-    "description_ko": "모든 적에게 8 피해를 줍니다.",
-    "description_ja": "すべての敵に8ダメージを与える."
   },
   "storm_sword": {
     "type": "attack",
@@ -65,8 +55,6 @@
     "sound": "",
     "name_ko": "폭풍검",
     "name_ja": "嵐剣",
-    "description_ko": "적에게 18 피해를 줍니다.",
-    "description_ja": "敵に18ダメージを与える."
   },
   "berserker_strike": {
     "type": "attack",
@@ -77,8 +65,6 @@
     "sound": "",
     "name_ko": "광전사의 일격",
     "name_ja": "狂戦士の一撃",
-    "description_ko": "적에게 12 피해를 주고 자신이 3 피해를 받습니다.",
-    "description_ja": "敵に12ダメージを与え、自身が3ダメージを受ける."
   },
   "dark_orb": {
     "type": "attack",
@@ -88,8 +74,6 @@
     "sound": "",
     "name_ko": "암흑 구체",
     "name_ja": "暗黒球",
-    "description_ko": "적에게 24 피해를 줍니다.",
-    "description_ja": "敵に24ダメージを与える."
   },
   "holy_strike": {
     "type": "attack",
@@ -100,7 +84,5 @@
     "sound": "",
     "name_ko": "신성한 일격",
     "name_ja": "神聖なる一撃",
-    "description_ko": "적에게 16 피해를 주고 체력을 4 회복합니다.",
-    "description_ja": "敵に16ダメージを与え、 HPを4回復する."
   }
 }

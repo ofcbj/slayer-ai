@@ -40,5 +40,15 @@
   "loading": {
     "loading": "로딩 중...",
     "complete": "완료"
+  },
+  "cardEffects": {
+    "damage": "적에게 {value} 피해를 줍니다.",
+    "damageAll": "모든 적에게 {value} 피해를 줍니다.",
+    "block": "{value} 방어도를 얻습니다.",
+    "heal": "체력을 {value} 회복합니다.",
+    "energy": "{value} 에너지를 얻습니다.",
+    "draw": "카드 {value}장을 뽑습니다.",
+    "selfDamage": "자신이 {value} 피해를 받습니다.",
+    "separator": "\n"
   }
 }

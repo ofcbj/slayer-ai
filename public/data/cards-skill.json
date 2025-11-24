@@ -6,9 +6,7 @@
     "image": "🛡️",
     "sound": "",
     "name_ko": "방어",
-    "name_ja": "防御",
-    "description_ko": "5 방어도를 얻습니다.",
-    "description_ja": "5防御力を得る."
+    "name_ja": "防御"
   },
   "focus": {
     "type": "skill",
@@ -17,9 +15,7 @@
     "image": "🧘",
     "sound": "focus",
     "name_ko": "집중",
-    "name_ja": "集中",
-    "description_ko": "1 에너지를 얻습니다.",
-    "description_ja": "1エネルギーを得る."
+    "name_ja": "集中"
   },
   "heal": {
     "type": "skill",
@@ -28,9 +24,7 @@
     "image": "💚",
     "sound": "",
     "name_ko": "치유",
-    "name_ja": "治癒",
-    "description_ko": "체력을 8 회복합니다.",
-    "description_ja": "HPを8回復する."
+    "name_ja": "治癒"
   },
   "iron_wall": {
     "type": "skill",
@@ -40,9 +34,7 @@
     "image": "🏰",
     "sound": "",
     "name_ko": "철벽",
-    "name_ja": "鉄壁",
-    "description_ko": "8 방어도를 얻고 카드 1 장을 뽑습니다.",
-    "description_ja": "8防御力を得る。カードを1枚引く."
+    "name_ja": "鉄壁"
   },
   "magic_shield": {
     "type": "skill",
@@ -51,9 +43,7 @@
     "image": "🔮",
     "sound": "",
     "name_ko": "마법 방패",
-    "name_ja": "魔法の盾",
-    "description_ko": "12 방어도를 얻습니다.",
-    "description_ja": "12防御力を得る."
+    "name_ja": "魔法の盾"
   },
   "regenerate": {
     "type": "skill",
@@ -63,9 +53,7 @@
     "image": "✨",
     "sound": "",
     "name_ko": "재생",
-    "name_ja": "再生",
-    "description_ko": "체력을 6 회복하고 6 방어도를 얻습니다.",
-    "description_ja": "HPを6回復し、6防御力を得る."
+    "name_ja": "再生"
   },
   "healing_spell": {
     "type": "skill",
@@ -74,9 +62,7 @@
     "image": "💖",
     "sound": "",
     "name_ko": "치료술",
-    "name_ja": "治療術",
-    "description_ko": "체력을 12 회복합니다.",
-    "description_ja": "HPを12回復する."
+    "name_ja": "治療術"
   },
   "absolute_defense": {
     "type": "skill",
@@ -85,9 +71,7 @@
     "image": "🏛️",
     "sound": "",
     "name_ko": "완전 방어",
-    "name_ja": "完全防御",
-    "description_ko": "18 방어도를 얻습니다.",
-    "description_ja": "18防御力を得る."
+    "name_ja": "完全防御"
   },
   "energy_wave": {
     "type": "skill",
@@ -97,8 +81,6 @@
     "image": "💫",
     "sound": "",
     "name_ko": "에너지 파동",
-    "name_ja": "エネルギー波動",
-    "description_ko": "카드 1장을 뽑고 1 에너지를 얻습니다.",
-    "description_ja": "カードを1枚引く。エネルギーを 1 回復する."
+    "name_ja": "エネルギー波動"
   }
 }

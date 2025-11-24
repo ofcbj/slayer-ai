@@ -146,7 +146,6 @@ class LanguageManager {
         id: cardId,
         ...card,
         name: card[`name${suffix}`],
-        description: card[`description${suffix}`],
       };
     };
 
@@ -193,7 +192,6 @@ class LanguageManager {
           id: cardId,
           ...card,
           name: card[`name${suffix}`],
-          description: card[`description${suffix}`],
         });
       }
     });
