@@ -158,6 +158,14 @@
     "description_ja": "魔王の城への入口"
   },
   "19": {
+    "type": "shop",
+    "nextStages": [20],
+    "name_ko": "떠돌이 상인",
+    "name_ja": "行商人",
+    "description_ko": "카드를 구매할 수 있습니다",
+    "description_ja": "カードを購入できます"
+  },  
+  "20": {
     "type": "boss",
     "enemies": ["demon_lord"],
     "nextStages": [],

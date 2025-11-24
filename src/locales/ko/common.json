@@ -21,7 +21,7 @@
     "exit": "나가기",
     "notEnoughGold": "골드가 부족합니다!",
     "purchased": "구매 완료!",
-    "removeCard": "🗑️ 카드 삭제 50G",
+    "removeCard": "카드 삭제",
     "selectCardToRemove": "삭제할 카드를 선택하세요",
     "deckEmpty": "덱에 카드가 없습니다!",
     "confirmRemove": "\"{cardName}\" 카드를 삭제하시겠습니까?",

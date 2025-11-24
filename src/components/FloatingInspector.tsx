@@ -368,6 +368,9 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
           e.preventDefault();
           e.stopPropagation();
         }}
+        onKeyDown={(e) => e.stopPropagation()}
+        onKeyUp={(e) => e.stopPropagation()}
+        onKeyPress={(e) => e.stopPropagation()}
       >
         {renderHeader()}
         {renderContent()}

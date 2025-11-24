@@ -46,6 +46,7 @@ export function ConsoleCommand({ scene }: ConsoleCommandProps) {
     { name: 'win',        description: '전투 승리' },
     { name: 'lose',       description: '전투 패배' },
     { name: 'clear',      description: '콘솔 출력 지우기' },
+    { name: 'addgold',    description: '골드 추가: addgold <amount>' },
   ];
 
   // 스크롤을 맨 아래로
@@ -170,8 +171,35 @@ export function ConsoleCommand({ scene }: ConsoleCommandProps) {
         }
 
         case 'clear': {
-          setHistory([]);
           return { output: '', success: true };
+        }
+
+        case 'addgold': {
+          const amount = parseInt(args[0] || '100');
+          if (isNaN(amount)) {
+            return { output: 'Error: Invalid gold amount', success: false };
+          }
+          
+          if (scene) {
+            const gameState = scene.registry.get('gameState');
+            if (gameState && gameState.player) {
+              gameState.player.gold = (gameState.player.gold || 0) + amount;
+              
+              // ShopScene UI 업데이트
+              if (scene.scene.key === 'ShopScene') {
+                (scene as any).updateGoldDisplay(gameState.player.gold);
+              } else {
+                // 현재 씬이 ShopScene이 아니더라도, ShopScene이 활성화되어 있을 수 있음 (Overlay 등)
+                const shopScene = scene.game.scene.getScene('ShopScene');
+                if (shopScene && shopScene.scene.isActive()) {
+                  (shopScene as any).updateGoldDisplay(gameState.player.gold);
+                }
+              }
+              
+              return { output: `${amount} 골드를 추가했습니다. 현재 골드: ${gameState.player.gold}`, success: true };
+            }
+          }
+          return { output: 'Error: Game state not found', success: false };
         }
 
         default:

@@ -18,11 +18,12 @@ interface GameState {
   deck: any[];
   currentStage: number;
   stagesCleared: number[];
+  removalCost?: number;
   [key: string]: any;
 }
 
 export default class ShopScene extends Phaser.Scene {
-  private cardObjects: { card: Card; price: number; data: CardData }[] = [];
+  private cardObjects: { card: Card; price: number; data: CardData; priceContainer: Phaser.GameObjects.Container }[] = [];
   private shopCards: (CardData & { price: number })[] = [];
   private cardViewManager: CardViewManager | null = null;
 
@@ -32,6 +33,7 @@ export default class ShopScene extends Phaser.Scene {
 
   create(): void {
     EventBus.emit('current-scene-ready', this);
+    this.cardObjects = [];
 
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
@@ -44,8 +46,7 @@ export default class ShopScene extends Phaser.Scene {
     // 타이틀
     const langManager = LanguageManager.getInstance();
     this.add.text(
-      width / 2,
-      60,
+      width/2, 60,
       langManager.t('shop.title') || '상점',
       textStyle.getStyle('titles.section', { fontSize: '56px' })
     ).setOrigin(0.5);
@@ -58,23 +59,16 @@ export default class ShopScene extends Phaser.Scene {
       gameState.player.gold = 100;
     }
 
-    // 골드 표시
+    // 카드 삭제 비용 초기화
+    if (gameState.removalCost === undefined) {
+      gameState.removalCost = 50;
+    }
     this.createGoldDisplay(gameState.player.gold);
 
-    // 카드 삭제 버튼
-    this.createRemoveCardButton();
-
-    // My Deck 버튼
     this.cardViewManager = new CardViewManager(this);
     this.createMyDeckButton();
-
-    // 상점 카드 생성
     this.generateShopCards();
-
-    // 카드 표시
     this.displayShopCards();
-
-    // 나가기 버튼
     this.createExitButton();
   }
 
@@ -87,8 +81,7 @@ export default class ShopScene extends Phaser.Scene {
     goldBg.setStrokeStyle(3, 0xfbbf24);
 
     const goldText = this.add.text(
-      0,
-      0,
+      0, 0,
       `💰 ${gold}G`,
       textStyle.getStyle('titles.section', { fontSize: '32px', color: '#fbbf24' })
     ).setOrigin(0.5);
@@ -108,22 +101,36 @@ export default class ShopScene extends Phaser.Scene {
   private generateShopCards(): void {
     const gameDataManager = GameDataManager.getInstance();
     const allCards = gameDataManager.getCardData();
+    const langManager = LanguageManager.getInstance();
 
     // 모든 카드를 배열로 변환
     const cardArray = Object.entries(allCards).map(([id, data]) => ({
       id,
-      ...data as CardData
+      ...data as Omit<CardData, 'id'>
     }));
 
     // 랜덤하게 5개의 카드 선택
     const shuffled = Phaser.Utils.Array.Shuffle([...cardArray]);
     const selectedCards = shuffled.slice(0, 5);
 
-    // 가격 설정 (카드 데이터의 price 속성 사용, 없으면 기본값 계산)
     this.shopCards = selectedCards.map(card => ({
       ...card,
       price: (card as any).price || Math.max(30, card.cost * 15)
     }));
+
+    // 카드 삭제 카드 추가
+    const removeCardData: CardData & { price: number } = {
+      id: 'card-removal',
+      name: langManager.t('shop.removeCard') || '카드 삭제',
+      type: 'skill',
+      cost: 0,
+      price: (this.registry.get('gameState') as GameState).removalCost || 50,
+      image: '❌',
+      description: langManager.t('shop.removeCardDesc') || '덱에서 카드를 한 장 제거합니다.',
+      rarity: 'common'
+    };
+
+    this.shopCards.push(removeCardData);
   }
 
   private displayShopCards(): void {
@@ -164,7 +171,7 @@ export default class ShopScene extends Phaser.Scene {
       0,
       `💰 ${cardData.price}G`,
       textStyle.getStyle('character.name', { fontSize: '24px', color: '#fbbf24' })
-    ).setOrigin(0.5);
+    ).setOrigin(0.5).setName('priceText');
 
     priceContainer.add([priceBg, priceText]);
 
@@ -194,7 +201,11 @@ export default class ShopScene extends Phaser.Scene {
     });
 
     cardBg.on('pointerdown', () => {
-      this.purchaseCard(cardData, card, priceContainer);
+      if (cardData.id === 'card-removal') {
+        this.handleRemoveCard();
+      } else {
+        this.purchaseCard(cardData, card, priceContainer);
+      }
     });
 
     // 등장 애니메이션
@@ -211,7 +222,7 @@ export default class ShopScene extends Phaser.Scene {
       ease: 'Back.easeOut'
     });
 
-    this.cardObjects.push({ card, price: cardData.price, data: cardData });
+    this.cardObjects.push({ card, price: cardData.price, data: cardData, priceContainer });
   }
 
   private purchaseCard(cardData: CardData & { price: number }, card: Card, priceContainer: Phaser.GameObjects.Container): void {
@@ -343,55 +354,13 @@ export default class ShopScene extends Phaser.Scene {
     });
   }
 
-  private createRemoveCardButton(): void {
-    const width = this.cameras.main.width;
-    const langManager = LanguageManager.getInstance();
-
-    const removeContainer = this.add.container(width - 200, 140);
-
-    const removeBg = this.add.rectangle(0, 0, 180, 60, 0xef4444, 0.95);
-    removeBg.setStrokeStyle(3, 0xdc2626);
-
-    const removeText = this.add.text(
-      0,
-      0,
-      langManager.t('shop.removeCard'),
-      textStyle.getStyle('character.name', { fontSize: '18px' })
-    ).setOrigin(0.5);
-
-    removeContainer.add([removeBg, removeText]);
-
-    removeBg.setInteractive({ useHandCursor: true });
-
-    removeBg.on('pointerover', () => {
-      removeBg.setFillStyle(0xdc2626);
-      this.tweens.add({
-        targets: removeContainer,
-        scale: 1.05,
-        duration: 200
-      });
-    });
-
-    removeBg.on('pointerout', () => {
-      removeBg.setFillStyle(0xef4444);
-      this.tweens.add({
-        targets: removeContainer,
-        scale: 1,
-        duration: 200
-      });
-    });
-
-    removeBg.on('pointerdown', () => {
-      this.handleRemoveCard();
-    });
-  }
-
   private handleRemoveCard(): void {
     const gameState: GameState = this.registry.get('gameState');
     const langManager = LanguageManager.getInstance();
 
     // 골드가 충분한지 확인
-    if (gameState.player.gold < 50) {
+    const cost = gameState.removalCost || 50;
+    if (gameState.player.gold < cost) {
       this.showMessage(langManager.t('shop.notEnoughGold'), 0xef4444);
       return;
     }
@@ -446,7 +415,7 @@ export default class ShopScene extends Phaser.Scene {
     const costText = this.add.text(
       width / 2,
       height / 2 - 30,
-      langManager.t('shop.removeCost'),
+      `${langManager.t('shop.removeCost')}: ${(this.registry.get('gameState') as GameState).removalCost || 50}G`,
       textStyle.getStyle('ui.label', { fontSize: '20px', color: '#fbbf24' })
     ).setOrigin(0.5);
     costText.setDepth(2002);
@@ -523,14 +492,50 @@ export default class ShopScene extends Phaser.Scene {
     const langManager = LanguageManager.getInstance();
 
     // 골드 차감
-    gameState.player.gold -= 50;
+    const cost = gameState.removalCost || 50;
+    gameState.player.gold -= cost;
     this.updateGoldDisplay(gameState.player.gold);
+
+    // 삭제 비용 증가
+    gameState.removalCost = cost + 25;
+    console.log(`Card removal cost increased to: ${gameState.removalCost}`);
+
+    // 상점에 있는 삭제 카드의 가격 업데이트
+    this.updateRemovalCardPrice();
 
     // 덱에서 카드 제거 (첫 번째로 발견된 카드만 제거)
     const cardIndex = gameState.deck.findIndex(c => c.id === card.id);
     if (cardIndex !== -1) {
       gameState.deck.splice(cardIndex, 1);
       this.showMessage(langManager.t('shop.cardRemoved').replace('{cardName}', card.name), 0x22c55e);
+    }
+  }
+
+  private updateRemovalCardPrice(): void {
+    const gameState: GameState = this.registry.get('gameState');
+    const newPrice = gameState.removalCost || 50;
+
+    // shopCards 배열 업데이트
+    const removalCardData = this.shopCards.find(c => c.id === 'card-removal');
+    if (removalCardData) {
+      removalCardData.price = newPrice;
+    }
+
+    // cardObjects 배열 및 UI 업데이트
+    const removalCardObj = this.cardObjects.find(obj => obj.data.id === 'card-removal');
+    if (removalCardObj) {
+      removalCardObj.price = newPrice;
+      
+      // 가격 텍스트 업데이트
+      if (removalCardObj.priceContainer) {
+        const priceText = removalCardObj.priceContainer.getByName('priceText') as Phaser.GameObjects.Text;
+        if (priceText) {
+          console.log(`Updating removal card price display to: ${newPrice}`);
+          priceText.setText(`💰 ${newPrice}G`);
+        } else {
+          console.error('Price text object not found in container');
+        }
+      }
     }
   }
 
@@ -581,13 +586,6 @@ export default class ShopScene extends Phaser.Scene {
       if (selectedStage) {
         gameState.stagesCleared.push(selectedStage.id);
       }
-
-      // 골드 보상 추가 (상점 방문 시에도 100G 획득)
-      const goldReward = 100;
-      if (gameState.player.gold === undefined) {
-        gameState.player.gold = 0;
-      }
-      gameState.player.gold += goldReward;
 
       this.scene.start('StageSelectScene');
     });
