@@ -2,85 +2,163 @@
   "1": {
     "type": "normal",
     "enemies": ["goblin_warrior", "orc_shield", "mage"],
-    "nextStages": [2, 3],
+    "nextStages": [2],
     "name_ko": "고블린 소굴",
     "name_ja": "ゴブリンの巣",
     "description_ko": "초보자용 던전",
     "description_ja": "初心者用ダンジョン"
   },
   "2": {
+    "type": "shop",
+    "nextStages": [3, 5],
+    "name_ko": "떠돌이 상인",
+    "name_ja": "行商人",
+    "description_ko": "카드를 구매할 수 있습니다",
+    "description_ja": "カードを購入できます"
+  },
+  "3": {
     "type": "normal",
     "enemies": ["enhanced_goblin", "elite_orc", "archmage"],
-    "nextStages": [4, 5],
+    "nextStages": [4],
     "name_ko": "오크 요새",
     "name_ja": "オーク要塞",
     "description_ko": "오크들의 거점",
     "description_ja": "オークの拠点"
   },
-  "3": {
+  "4": {
+    "type": "normal",
+    "enemies": ["elite_orc", "enhanced_goblin", "mage"],
+    "nextStages": [7, 9],
+    "name_ko": "무너진 성벽",
+    "name_ja": "崩れた城壁",
+    "description_ko": "오크 요새의 외곽",
+    "description_ja": "オーク要塞の外郭"
+  },
+  "5": {
     "type": "normal",
     "enemies": ["mage", "magic_golem", "mage"],
-    "nextStages": [5, 6],
+    "nextStages": [6],
     "name_ko": "마법사의 탑",
     "name_ja": "魔法使いの塔",
     "description_ko": "신비로운 마법의 탑",
     "description_ja": "神秘的な魔法の塔"
   },
-  "4": {
+  "6": {
+    "type": "normal",
+    "enemies": ["archmage", "magic_golem", "mage"],
+    "nextStages": [9, 11],
+    "name_ko": "마법 서재",
+    "name_ja": "魔法書庫",
+    "description_ko": "고대 마법서가 보관된 곳",
+    "description_ja": "古代魔法書が保管された場所"
+  },
+  "7": {
     "type": "mid_boss",
     "enemies": ["dragon_rider"],
-    "nextStages": [7],
+    "nextStages": [8],
     "name_ko": "드래곤 라이더",
     "name_ja": "ドラゴンライダー",
     "description_ko": "강력한 드래곤 라이더",
     "description_ja": "強力なドラゴンライダー"
   },
-  "5": {
+  "8": {
+    "type": "shop",
+    "nextStages": [13],
+    "name_ko": "은밀한 상점",
+    "name_ja": "秘密の店",
+    "description_ko": "희귀한 카드를 판매합니다",
+    "description_ja": "レアカードを販売します"
+  },
+  "9": {
     "type": "normal",
     "enemies": ["dark_wolf", "shadow_mage", "dark_wolf"],
-    "nextStages": [7, 8],
+    "nextStages": [10],
     "name_ko": "어둠의 숲",
     "name_ja": "闇の森",
     "description_ko": "어둠이 깃든 숲",
     "description_ja": "闇に包まれた森"
   },
-  "6": {
+  "10": {
+    "type": "normal",
+    "enemies": ["shadow_mage", "dark_wolf", "shadow_mage"],
+    "nextStages": [13, 15],
+    "name_ko": "그림자 늪",
+    "name_ja": "影の沼",
+    "description_ko": "어둠의 기운이 가득한 늪",
+    "description_ja": "闇の気配が満ちた沼"
+  },
+  "11": {
     "type": "normal",
     "enemies": ["fire_spirit", "lava_golem", "fire_spirit"],
-    "nextStages": [8],
+    "nextStages": [12],
     "name_ko": "불의 동굴",
     "name_ja": "火の洞窟",
     "description_ko": "불꽃이 타오르는 동굴",
     "description_ja": "炎が燃え上がる洞窟"
   },
-  "7": {
+  "12": {
+    "type": "normal",
+    "enemies": ["lava_golem", "fire_spirit", "fire_spirit"],
+    "nextStages": [15],
+    "name_ko": "용암 지대",
+    "name_ja": "溶岩地帯",
+    "description_ko": "끓어오르는 용암의 땅",
+    "description_ja": "沸き上がる溶岩の地"
+  },
+  "13": {
     "type": "mid_boss",
     "enemies": ["shadow_lord"],
-    "nextStages": [9],
+    "nextStages": [14],
     "name_ko": "그림자 군주",
     "name_ja": "影の君主",
     "description_ko": "어둠의 힘을 다루는 군주",
     "description_ja": "闇の力を操る君主"
   },
-  "8": {
+  "14": {
+    "type": "shop",
+    "nextStages": [17],
+    "name_ko": "마법 상점",
+    "name_ja": "魔法の店",
+    "description_ko": "강력한 카드를 구매하세요",
+    "description_ja": "強力なカードを購入してください"
+  },
+  "15": {
     "type": "mid_boss",
     "enemies": ["fire_archmage"],
-    "nextStages": [9],
+    "nextStages": [16],
     "name_ko": "화염 대마법사",
     "name_ja": "火炎大魔法使い",
     "description_ko": "불꽃의 마법을 구사하는 대마법사",
     "description_ja": "炎の魔法を使う大魔法使い"
   },
-  "9": {
+  "16": {
+    "type": "normal",
+    "enemies": ["fire_spirit", "lava_golem", "fire_spirit"],
+    "nextStages": [17],
+    "name_ko": "화염 제단",
+    "name_ja": "火炎祭壇",
+    "description_ko": "불의 힘이 모이는 제단",
+    "description_ja": "火の力が集まる祭壇"
+  },
+  "17": {
     "type": "normal",
     "enemies": ["ancient_guardian", "magic_knight", "ancient_guardian"],
-    "nextStages": [10],
+    "nextStages": [18],
     "name_ko": "최종 던전",
     "name_ja": "最終ダンジョン",
     "description_ko": "최종 보스로 가는 길",
     "description_ja": "最終ボスへの道"
   },
-  "10": {
+  "18": {
+    "type": "normal",
+    "enemies": ["magic_knight", "ancient_guardian", "magic_knight"],
+    "nextStages": [19],
+    "name_ko": "마왕성 입구",
+    "name_ja": "魔王城入口",
+    "description_ko": "마왕의 성으로 들어가는 입구",
+    "description_ja": "魔王の城への入口"
+  },
+  "19": {
     "type": "boss",
     "enemies": ["demon_lord"],
     "nextStages": [],

@@ -40,6 +40,10 @@ interface SelectedStage {
 
 export default class StageSelectScene extends Phaser.Scene {
   private stageNodes: Map<number, Phaser.GameObjects.Container>;
+  private scrollContainer: Phaser.GameObjects.Container | null = null;
+  private isDragging: boolean = false;
+  private dragStartY: number = 0;
+  private scrollY: number = 0;
 
   constructor() {
     super({ key: 'StageSelectScene' });
@@ -53,23 +57,27 @@ export default class StageSelectScene extends Phaser.Scene {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
-    // 배경 그라데이션
+    // 배경 그라데이션 (스크롤되지 않는 고정 배경)
     const graphics = this.add.graphics();
     graphics.fillGradientStyle(0x0f172a, 0x0f172a, 0x1e293b, 0x1e293b, 1);
     graphics.fillRect(0, 0, width, height);
+    graphics.setScrollFactor(0);
 
-    // 타이틀
+    // 타이틀 (고정)
     const langManager = LanguageManager.getInstance();
     this.add.text(
       width / 2,
       60,
       langManager.t('stage.select'),
       textStyle.getStyle('titles.section', { fontSize: '56px' })
-    ).setOrigin(0.5);
+    ).setOrigin(0.5).setScrollFactor(0);
 
-    // 플레이어 상태 표시
+    // 플레이어 상태 표시 (고정)
     const gameState: GameState = this.registry.get('gameState');
     this.createPlayerStats(gameState.player);
+
+    // 스크롤 가능한 컨테이너 생성
+    this.scrollContainer = this.add.container(0, 0);
 
     // 스테이지 데이터 로드 (번역된 데이터 사용)
     const gameDataManager = GameDataManager.getInstance();
@@ -80,8 +88,14 @@ export default class StageSelectScene extends Phaser.Scene {
     // 스테이지 맵 렌더링 (트리 구조)
     this.createStageMapTree(stagesData, currentStage, clearedStages);
 
-    // 뒤로가기 버튼
+    // 뒤로가기 버튼 (고정)
     this.createBackButton();
+
+    // 스크롤 기능 설정
+    this.setupScrolling();
+
+    // 현재 플레이 가능한 스테이지로 스크롤
+    this.scrollToAvailableStage(clearedStages);
   }
 
   private createPlayerStats(player: Player): void {
@@ -126,6 +140,7 @@ export default class StageSelectScene extends Phaser.Scene {
     );
 
     statsContainer.add([bg, titleText, healthText, energyText, deckText]);
+    statsContainer.setScrollFactor(0); // 고정
   }
 
   private createStageMapTree(stagesData: StagesDataMap, currentStage: number, clearedStages: number[]): void {
@@ -338,6 +353,11 @@ export default class StageSelectScene extends Phaser.Scene {
       graphics.closePath();
       graphics.fillPath();
     }
+
+    // 스크롤 컨테이너에 추가
+    if (this.scrollContainer) {
+      this.scrollContainer.add(graphics);
+    }
   }
 
   private isStageAvailable(
@@ -401,12 +421,15 @@ export default class StageSelectScene extends Phaser.Scene {
       bgColor = 0x22c55e; // 초록 (완료)
       borderColor = 0x16a34a;
     } else if (isAvailable) {
-      if (stage.type === '보스') {
+      if (stage.type === '보스' || stage.type === 'ボス' || stage.type === 'boss') {
         bgColor = 0xef4444; // 빨강
         borderColor = 0xdc2626;
-      } else if (stage.type === '중보스') {
+      } else if (stage.type === '중보스' || stage.type === '中ボス' || stage.type === 'mid_boss') {
         bgColor = 0xf59e0b; // 주황
         borderColor = 0xd97706;
+      } else if (stage.type === '상점' || stage.type === 'ショップ' || stage.type === 'shop') {
+        bgColor = 0x10b981; // 청록 (상점)
+        borderColor = 0x059669;
       } else {
         bgColor = 0x8b5cf6; // 보라
         borderColor = 0x7c3aed;
@@ -464,6 +487,9 @@ export default class StageSelectScene extends Phaser.Scene {
         const selectedStage: SelectedStage = { id: stageId, data: stage };
         this.registry.set('selectedStage', selectedStage);
 
+        // 상점 스테이지인지 확인
+        const isShop = stage.type === '상점' || stage.type === 'ショップ' || stage.type === 'shop';
+
         // 클릭 효과
         this.tweens.add({
           targets: node,
@@ -471,13 +497,19 @@ export default class StageSelectScene extends Phaser.Scene {
           duration: 100,
           yoyo: true,
           onComplete: () => {
-            this.scene.start('BattleScene');
+            // 상점이면 ShopScene, 아니면 BattleScene
+            this.scene.start(isShop ? 'ShopScene' : 'BattleScene');
           }
         });
       });
 
       // 펄스 애니메이션 (현재 가능한 스테이지만)
       tweenConfig.apply(this, 'transitions.stageNodePulse', nodeBg);
+    }
+
+    // 스크롤 컨테이너에 추가
+    if (this.scrollContainer) {
+      this.scrollContainer.add(node);
     }
 
     this.stageNodes.set(stageId, node);
@@ -490,15 +522,18 @@ export default class StageSelectScene extends Phaser.Scene {
       '일반': '⚔️',
       '중보스': '👹',
       '보스': '👑',
+      '상점': '🏪',
       'ノーマル': '⚔️',
       'エリート': '👹',
       '中ボス': '👹',
       'ボス': '👑',
+      'ショップ': '🏪',
       // 원본 타입도 지원 (번역 실패 시 대비)
       'normal': '⚔️',
       'elite': '👹',
       'mid_boss': '👹',
-      'boss': '👑'
+      'boss': '👑',
+      'shop': '🏪'
     };
     return icons[type] || '❓';
   }
@@ -518,6 +553,7 @@ export default class StageSelectScene extends Phaser.Scene {
     ).setOrigin(0.5);
 
     backContainer.add([backBg, backText]);
+    backContainer.setScrollFactor(0); // 고정
 
     backBg.setInteractive({ useHandCursor: true });
 
@@ -542,5 +578,131 @@ export default class StageSelectScene extends Phaser.Scene {
     backBg.on('pointerdown', () => {
       this.scene.start('MenuScene');
     });
+  }
+
+  private setupScrolling(): void {
+    const height = this.cameras.main.height;
+
+    if (!this.scrollContainer) return;
+
+    // 스크롤 컨테이너의 총 높이 계산
+    const bounds = this.scrollContainer.getBounds();
+    const contentHeight = bounds.height;
+    const viewHeight = height - 200; // 타이틀과 여백 제외
+
+    // 컨텐츠가 화면보다 클 때만 스크롤 활성화
+    if (contentHeight > viewHeight) {
+      const maxScroll = contentHeight - viewHeight + 200;
+
+      // 마우스 휠 스크롤
+      this.input.on('wheel', (pointer: Phaser.Input.Pointer, gameObjects: any[], deltaX: number, deltaY: number) => {
+        if (this.scrollContainer) {
+          this.scrollY += deltaY * 0.5;
+          this.scrollY = Phaser.Math.Clamp(this.scrollY, -maxScroll, 0);
+          this.scrollContainer.y = this.scrollY;
+        }
+      });
+
+      // 터치/드래그 스크롤
+      this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        this.isDragging = true;
+        this.dragStartY = pointer.y;
+      });
+
+      this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+        if (this.isDragging && this.scrollContainer) {
+          const dragDelta = pointer.y - this.dragStartY;
+          this.scrollY += dragDelta;
+          this.scrollY = Phaser.Math.Clamp(this.scrollY, -maxScroll, 0);
+          this.scrollContainer.y = this.scrollY;
+          this.dragStartY = pointer.y;
+        }
+      });
+
+      this.input.on('pointerup', () => {
+        this.isDragging = false;
+      });
+
+      // 스크롤 인디케이터 추가
+      this.createScrollIndicator(maxScroll);
+    }
+  }
+
+  private createScrollIndicator(maxScroll: number): void {
+    const width = this.cameras.main.width;
+    const height = this.cameras.main.height;
+
+    // 스크롤바 배경
+    const scrollBarBg = this.add.rectangle(width - 20, height / 2, 10, height - 240, 0x1e293b, 0.5);
+    scrollBarBg.setScrollFactor(0);
+
+    // 스크롤바 핸들
+    const scrollBarHandle = this.add.rectangle(width - 20, 200, 10, 100, 0x8b5cf6, 0.8);
+    scrollBarHandle.setScrollFactor(0);
+
+    // 스크롤 위치 업데이트
+    this.events.on('update', () => {
+      if (this.scrollContainer) {
+        const scrollRatio = Math.abs(this.scrollY) / maxScroll;
+        const handleY = 200 + scrollRatio * (height - 340);
+        scrollBarHandle.y = handleY;
+      }
+    });
+  }
+
+  private scrollToAvailableStage(clearedStages: number[]): void {
+    if (!this.scrollContainer) return;
+
+    const height = this.cameras.main.height;
+    const bounds = this.scrollContainer.getBounds();
+    const contentHeight = bounds.height;
+    const viewHeight = height - 200;
+
+    // 스크롤이 필요 없으면 리턴
+    if (contentHeight <= viewHeight) return;
+
+    // 현재 플레이 가능한 스테이지 찾기
+    let targetStageId: number | null = null;
+
+    if (clearedStages.length === 0) {
+      // 클리어한 스테이지가 없으면 1번 스테이지
+      targetStageId = 1;
+    } else {
+      // 가장 최근에 클리어한 스테이지의 다음 스테이지들 중 첫 번째
+      const lastClearedId = clearedStages[clearedStages.length - 1];
+      const gameDataManager = GameDataManager.getInstance();
+      const stagesData = gameDataManager.getStageData();
+      const lastClearedStage = stagesData[lastClearedId];
+
+      if (lastClearedStage && lastClearedStage.nextStages && lastClearedStage.nextStages.length > 0) {
+        targetStageId = lastClearedStage.nextStages[0];
+      }
+    }
+
+    if (targetStageId === null) return;
+
+    // 해당 스테이지 노드 찾기
+    const targetNode = this.stageNodes.get(targetStageId);
+    if (!targetNode) return;
+
+    // 노드의 월드 좌표 가져오기
+    const nodeY = targetNode.y;
+
+    // 화면 중앙에 오도록 스크롤 계산
+    const targetScrollY = -(nodeY - height / 2);
+
+    // 스크롤 범위 제한
+    const maxScroll = contentHeight - viewHeight + 200;
+    this.scrollY = Phaser.Math.Clamp(targetScrollY, -maxScroll, 0);
+
+    // 부드러운 스크롤 애니메이션
+    if (this.scrollContainer) {
+      this.tweens.add({
+        targets: this.scrollContainer,
+        y: this.scrollY,
+        duration: 800,
+        ease: 'Cubic.easeInOut'
+      });
+    }
   }
 }

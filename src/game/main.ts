@@ -7,6 +7,7 @@ import StageSelectScene from './phaser/scenes/StageSelectScene';
 import BattleScene from './phaser/scenes/BattleScene';
 import RewardScene from './phaser/scenes/RewardScene';
 import GameOverScene from './phaser/scenes/GameOverScene';
+import ShopScene from './phaser/scenes/ShopScene';
 
 /**
  * Phaser 게임 설정 함수
@@ -41,7 +42,8 @@ export const StartGame = (containerId: string): Phaser.Game => {
       StageSelectScene,
       BattleScene,
       RewardScene,
-      GameOverScene
+      GameOverScene,
+      ShopScene
     ],
     physics: {
       default: 'arcade',

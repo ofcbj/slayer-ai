@@ -30,6 +30,7 @@ export interface CardData {
   selfDamage?: number;
   draw?: number;  // 카드 사용 시 드로우할 카드 수
   effect?: string;
+  effects?: any[];  // 카드 효과 배열
   description?: string;
   image?: string;
   sound?: string;  // 카드 사용 시 재생할 사운드

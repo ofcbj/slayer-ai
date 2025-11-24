@@ -44,7 +44,8 @@ export default class MenuScene extends Phaser.Scene {
             health: 100,
             energy: 3,
             maxEnergy: 3,
-            defense: 0
+            defense: 0,
+            gold: 100
           },
           deck: [],
           currentStage: 0,

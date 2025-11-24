@@ -41,10 +41,26 @@ export default class RewardScene extends Phaser.Scene {
     // 승리 파티클
     this.createVictoryParticles();
 
+    // 골드 보상 추가
+    const gameState = this.registry.get('gameState') as GameState;
+    const goldReward = Phaser.Math.Between(30, 60);
+    if (gameState.player.gold === undefined) {
+      gameState.player.gold = 0;
+    }
+    gameState.player.gold += goldReward;
+
+    // 골드 보상 표시
+    this.add.text(
+      width / 2,
+      160,
+      `💰 +${goldReward}G`,
+      textStyle.getStyle('titles.section', { fontSize: '36px', color: '#fbbf24' })
+    ).setOrigin(0.5);
+
     // 설명
     this.add.text(
       width / 2,
-      180,
+      210,
       langManager.t('reward.chooseCard'),
       textStyle.getStyle('buttons.secondary')
     ).setOrigin(0.5);

@@ -105,24 +105,26 @@ class GameDataManager {
     Object.keys(allCards).forEach((cardId) => {
       const card = allCards[cardId];
       result[cardId] = {
-        id        : cardId,
-        name      : card[`name${suffix}`],
-        type      : card.type,
-        cost      : card.cost ?? 0, // cost가 없을 때 기본값 0 사용
-        damage    : card.damage,
-        defense   : card.defense,
-        block     : card.block,
-        heal      : card.heal,
-        energy    : card.energy,
-        selfDamage: card.selfDamage,
-        draw      : card.draw,
-        effect    : card.effect,
-        image     : card.image,
-        sound     : card.sound,
-        rarity    : card.rarity,
-        allEnemies: card.allEnemies,
-        hits      : card.hits,
-        buff      : card.buff
+        id          : cardId,
+        name        : card[`name${suffix}`],
+        description : card[`description${suffix}`],
+        type        : card.type,
+        cost        : card.cost ?? 0, // cost가 없을 때 기본값 0 사용
+        damage      : card.damage,
+        defense     : card.defense,
+        block       : card.block,
+        heal        : card.heal,
+        energy      : card.energy,
+        selfDamage  : card.selfDamage,
+        draw        : card.draw,
+        effect      : card.effect,
+        effects     : card.effects,
+        image       : card.image,
+        sound       : card.sound,
+        rarity      : card.rarity,
+        allEnemies  : card.allEnemies,
+        hits        : card.hits,
+        buff        : card.buff
       };
     });
 
