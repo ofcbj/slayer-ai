@@ -119,10 +119,10 @@ export default class ShopScene extends Phaser.Scene {
     const shuffled = Phaser.Utils.Array.Shuffle([...cardArray]);
     const selectedCards = shuffled.slice(0, 5);
 
-    // 가격 설정 (카드 코스트 기반)
+    // 가격 설정 (카드 데이터의 price 속성 사용, 없으면 기본값 계산)
     this.shopCards = selectedCards.map(card => ({
       ...card,
-      price: Math.max(30, card.cost * 15)
+      price: (card as any).price || Math.max(30, card.cost * 15)
     }));
   }
 
@@ -581,6 +581,13 @@ export default class ShopScene extends Phaser.Scene {
       if (selectedStage) {
         gameState.stagesCleared.push(selectedStage.id);
       }
+
+      // 골드 보상 추가 (상점 방문 시에도 100G 획득)
+      const goldReward = 100;
+      if (gameState.player.gold === undefined) {
+        gameState.player.gold = 0;
+      }
+      gameState.player.gold += goldReward;
 
       this.scene.start('StageSelectScene');
     });

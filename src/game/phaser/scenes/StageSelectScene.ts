@@ -106,8 +106,8 @@ export default class StageSelectScene extends Phaser.Scene {
 
     const statsContainer = this.add.container(width - 280, 40);
 
-    // 배경
-    const bg = this.add.rectangle(0, 0, 250, 140, 0x1e293b, 0.95);
+    // 배경 (높이 증가)
+    const bg = this.add.rectangle(0, 0, 250, 170, 0x1e293b, 0.95);
     bg.setStrokeStyle(3, 0x8b5cf6);
     bg.setOrigin(0);
 
@@ -134,15 +134,22 @@ export default class StageSelectScene extends Phaser.Scene {
       textStyle.getStyle('ui.label', { fontSize: '20px', color: '#4ecdc4' })
     );
 
+    const goldText = this.add.text(
+      20,
+      110,
+      `💰 골드: ${player.gold}G`,
+      textStyle.getStyle('ui.label', { fontSize: '20px', color: '#fbbf24' })
+    );
+
     const gameState: GameState = this.registry.get('gameState');
     const deckText = this.add.text(
       20,
-      110,
+      140,
       `🎴 덱: ${gameState.deck.length}장`,
       textStyle.getStyle('character.name')
     );
 
-    statsContainer.add([bg, titleText, healthText, energyText, deckText]);
+    statsContainer.add([bg, titleText, healthText, energyText, goldText, deckText]);
     statsContainer.setScrollFactor(0); // 고정
   }
 

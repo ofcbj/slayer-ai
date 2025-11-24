@@ -43,7 +43,7 @@ export default class RewardScene extends Phaser.Scene {
 
     // 골드 보상 추가
     const gameState = this.registry.get('gameState') as GameState;
-    const goldReward = Phaser.Math.Between(30, 60);
+    const goldReward = 100;
     if (gameState.player.gold === undefined) {
       gameState.player.gold = 0;
     }

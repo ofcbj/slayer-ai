@@ -38,6 +38,7 @@ export interface CardData {
   allEnemies?: boolean;
   hits?: number;
   buff?: string;  // 적용할 디버프 ID (vulnerable, weak 등)
+  price?: number;  // 상점에서 판매 가격
 }
 
 /**

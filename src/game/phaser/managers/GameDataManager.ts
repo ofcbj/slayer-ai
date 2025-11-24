@@ -124,7 +124,8 @@ class GameDataManager {
         rarity      : card.rarity,
         allEnemies  : card.allEnemies,
         hits        : card.hits,
-        buff        : card.buff
+        buff        : card.buff,
+        price       : card.price
       };
     });
 

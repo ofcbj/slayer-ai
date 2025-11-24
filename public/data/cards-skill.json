@@ -3,6 +3,7 @@
     "type": "skill",
     "cost": 1,
     "block": 5,
+    "price": 45,
     "image": "🛡️",
     "name_ko": "방어",
     "name_ja": "防御"
@@ -11,6 +12,7 @@
     "type": "skill",
     "cost": 0,
     "energy": 1,
+    "price": 90,
     "image": "🧘",
     "sound": "focus",
     "name_ko": "집중",
@@ -20,6 +22,7 @@
     "type": "skill",
     "cost": 1,
     "heal": 8,
+    "price": 100,
     "image": "💚",
     "name_ko": "치유",
     "name_ja": "治癒"
@@ -29,6 +32,7 @@
     "cost": 1,
     "block": 8,
     "draw": 1,
+    "price": 110,
     "image": "🏰",
     "name_ko": "철벽",
     "name_ja": "鉄壁"
@@ -37,6 +41,7 @@
     "type": "skill",
     "cost": 1,
     "block": 12,
+    "price": 130,
     "image": "🔮",
     "name_ko": "마법 방패",
     "name_ja": "魔法の盾"
@@ -46,6 +51,7 @@
     "cost": 1,
     "heal": 6,
     "block": 6,
+    "price": 120,
     "image": "✨",
     "name_ko": "재생",
     "name_ja": "再生"
@@ -54,6 +60,7 @@
     "type": "skill",
     "cost": 2,
     "heal": 12,
+    "price": 140,
     "image": "💖",
     "name_ko": "치료술",
     "name_ja": "治療術"
@@ -62,6 +69,7 @@
     "type": "skill",
     "cost": 2,
     "block": 18,
+    "price": 160,
     "image": "🏛️",
     "name_ko": "완전 방어",
     "name_ja": "完全防御"
@@ -71,6 +79,7 @@
     "cost": 0,
     "draw": 1,
     "energy": 1,
+    "price": 100,
     "image": "💫",
     "name_ko": "에너지 파동",
     "name_ja": "エネルギー波動"
