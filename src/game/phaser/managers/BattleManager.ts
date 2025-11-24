@@ -189,12 +189,9 @@ export default class BattleManager {
       return;
     }
 
-    const index = this.enemies.indexOf(enemy);
-    if (index > -1) {
-      this.enemies.splice(index, 1);
-    } else {
-      return;
-    }
+    // 적을 배열에서 제거하지 않고 죽은 상태로 유지
+    // 이렇게 하면 원래 인덱스(enemyIndex)가 유지되어 단축키 매핑이 일관성 있게 작동함
+    // 이미 enemy.isDead()가 true이므로 다른 로직에서 자동으로 필터링됨
 
     if (this.callbacks.onEnemyDefeated) {
       this.callbacks.onEnemyDefeated(enemy);
@@ -254,7 +251,9 @@ export default class BattleManager {
   }
 
   public getAllEnemies(): Enemy[] {
-    return [...this.enemies];
+    // 원래 인덱스(enemyIndex) 순서로 정렬하여 반환
+    // 이렇게 하면 적이 죽어도 원래 위치 기준으로 단축키가 작동함
+    return [...this.enemies].sort((a, b) => a.enemyIndex - b.enemyIndex);
   }
 }
 

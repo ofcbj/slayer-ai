@@ -34,6 +34,55 @@ export default class CardHandManager {
     this.setEndTurnAllowed = setEndTurnAllowed;
 
     this.initializeHandContainer();
+    this.registerEventListeners();
+  }
+  
+  /**
+   * 이벤트 리스너를 등록합니다.
+   */
+  private registerEventListeners(): void {
+    this.scene.events.on('cardHoverOut', this.onCardHoverOut, this);
+  }
+  
+  /**
+   * 카드 호버 해제 이벤트 핸들러
+   */
+  private onCardHoverOut = (card: Card): void => {
+    // 호버 해제 시 컨테이너 내부 순서 재정렬
+    this.reorderContainerAfterHoverOut(card);
+  };
+  
+  /**
+   * 카드 호버 해제 후 컨테이너 내부 순서를 재정렬합니다.
+   */
+  private reorderContainerAfterHoverOut(hoveredCard: Card): void {
+    if (!this.handContainer) return;
+    
+    const targetIndex = (hoveredCard as any).originalDepth;
+    const currentIndex = this.handContainer.list.indexOf(hoveredCard);
+    
+    if (currentIndex === -1 || currentIndex === targetIndex) {
+      return;
+    }
+    
+    // 모든 카드를 제거하고 올바른 순서로 다시 추가
+    const cards = [...this.handContainer.list] as Card[];
+    const savedPositions = cards.map(card => ({ card, x: card.x, y: card.y }));
+    
+    // 모든 카드 제거
+    cards.forEach(card => this.handContainer.remove(card, false));
+    
+    // 올바른 순서로 다시 추가 (originalDepth 순서대로)
+    savedPositions.sort((a, b) => {
+      const aIndex = (a.card as any).originalDepth ?? 0;
+      const bIndex = (b.card as any).originalDepth ?? 0;
+      return aIndex - bIndex;
+    });
+    
+    savedPositions.forEach(({ card, x, y }) => {
+      this.handContainer.add(card);
+      card.setPosition(x, y);
+    });
   }
 
   public initializeHandContainer(): void {
@@ -310,6 +359,8 @@ export default class CardHandManager {
     // 이전에 선택된 카드 해제
     if (this.selectedCard && this.selectedCard !== card) {
       this.selectedCard.deselect();
+      // 선택 해제 후 컨테이너 내부 순서 재정렬
+      this.reorderContainerAfterDeselect(this.selectedCard);
     }
 
     // 카드 선택
@@ -321,10 +372,47 @@ export default class CardHandManager {
       this.soundManager.play('card-click', 0.5);
     }
   }
+  
+  /**
+   * 카드 선택 해제 후 컨테이너 내부 순서를 재정렬합니다.
+   * Phaser 컨테이너는 list 배열의 순서로 렌더링되므로, 올바른 순서로 재정렬해야 합니다.
+   */
+  private reorderContainerAfterDeselect(deselectedCard: Card): void {
+    if (!this.handContainer) return;
+    
+    const targetIndex = (deselectedCard as any).selectedOriginalDepth;
+    const currentIndex = this.handContainer.list.indexOf(deselectedCard);
+    
+    if (currentIndex === -1 || currentIndex === targetIndex) {
+      return;
+    }
+    
+    // 모든 카드를 제거하고 올바른 순서로 다시 추가
+    const cards = [...this.handContainer.list] as Card[];
+    const savedPositions = cards.map(card => ({ card, x: card.x, y: card.y }));
+    
+    // 모든 카드 제거
+    cards.forEach(card => this.handContainer.remove(card, false));
+    
+    // 올바른 순서로 다시 추가 (원래 인덱스 순서대로)
+    savedPositions.sort((a, b) => {
+      const aIndex = (a.card as any).selectedOriginalDepth ?? (a.card as any).originalDepth ?? 0;
+      const bIndex = (b.card as any).selectedOriginalDepth ?? (b.card as any).originalDepth ?? 0;
+      return aIndex - bIndex;
+    });
+    
+    savedPositions.forEach(({ card, x, y }) => {
+      this.handContainer.add(card);
+      card.setPosition(x, y);
+    });
+  }
 
   public deselectCard(): void {
     if (this.selectedCard) {
-      this.selectedCard.deselect();
+      const card = this.selectedCard;
+      card.deselect();
+      // 선택 해제 후 컨테이너 내부 순서 재정렬
+      this.reorderContainerAfterDeselect(card);
       this.selectedCard = null;
     }
   }

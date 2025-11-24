@@ -8,6 +8,7 @@ export default class Card extends Phaser.GameObjects.Container {
   private isSelected: boolean;
   private originalY: number;
   private originalDepth: number;
+  private selectedOriginalDepth: number = 0; // 선택 전의 depth를 저장 (선택 해제 시 복원용)
   private bg!: Phaser.GameObjects.Rectangle;
   private handContainer: Phaser.GameObjects.Container | null = null;
   private originalLocalX: number = 0;
@@ -60,7 +61,7 @@ export default class Card extends Phaser.GameObjects.Container {
 
     this.bg.on('pointerover', () => {
       if (!this.isSelected) {
-        this.bringToTop();
+        this.bringCardToTop();
         tweenConfig.apply(this.scene, 'interactive.cardHover', this);
       }
     });
@@ -71,8 +72,11 @@ export default class Card extends Phaser.GameObjects.Container {
         this.restoreToContainer();
         // 원래 depth로 복원
         this.setDepth(this.originalDepth);
+        // 호버 해제 시 컨테이너 내부 순서 재정렬을 위해 이벤트 emit
+        this.scene.events.emit('cardHoverOut', this);
         tweenConfig.apply(this.scene, 'interactive.cardHoverOut', this);
       }
+      // 선택된 카드에서는 마우스가 벗어나도 선택 해제하지 않음
     });
 
     this.bg.on('pointerdown', () => {
@@ -101,8 +105,12 @@ export default class Card extends Phaser.GameObjects.Container {
     this.isSelected = true;
     this.bg.setStrokeStyle(4, 0xffff00);
 
+    // 선택 전의 depth를 저장 (선택 해제 시 복원용)
+    // bringToTop()이 호출되기 전에 저장해야 함
+    this.selectedOriginalDepth = this.depth < 10000 ? this.depth : this.originalDepth;
+
     // 선택 시에도 맨 위로 올리기
-    this.bringToTop();
+    this.bringCardToTop();
 
     tweenConfig.apply(this.scene, 'cards.select', this);
   }
@@ -111,9 +119,13 @@ export default class Card extends Phaser.GameObjects.Container {
     this.isSelected = false;
     this.bg.setStrokeStyle(3, CardRenderer.getCardColor(this.cardData));
 
-    // 선택 해제 시 컨테이너에 다시 추가하고 원래 depth로 복원
+    // 선택 해제 시 컨테이너에 다시 추가하고 선택 전의 depth로 복원
     this.restoreToContainer();
-    this.setDepth(this.originalDepth);
+    
+    // selectedOriginalDepth로 복원 (선택 전의 depth)
+    this.setDepth(this.selectedOriginalDepth);
+    // originalDepth도 업데이트 (다음 선택을 위해)
+    this.originalDepth = this.selectedOriginalDepth;
 
     tweenConfig.apply(this.scene, 'cards.deselect', this, {
       y: this.originalY,
@@ -145,7 +157,7 @@ export default class Card extends Phaser.GameObjects.Container {
    * 카드를 맨 위로 올립니다.
    * 호버 시 컨테이너에서 제거하고 씬에 직접 추가하여 depth가 제대로 작동하도록 합니다.
    */
-  private bringToTop(): void {
+  private bringCardToTop(): void {
     if (!this.handContainer) {
       // 컨테이너가 없으면 일반 depth 설정만 사용
       this.originalDepth = this.depth;
@@ -153,11 +165,13 @@ export default class Card extends Phaser.GameObjects.Container {
       return;
     }
 
-    // 현재 depth 저장
-    this.originalDepth = this.depth;
-
     // 컨테이너의 자식인지 확인
     if (this.handContainer.list.includes(this)) {
+      // 컨테이너 내부에서의 현재 인덱스를 originalDepth로 저장
+      // (컨테이너는 list 배열 순서로 렌더링되므로 인덱스가 중요)
+      const currentIndex = this.handContainer.list.indexOf(this);
+      this.originalDepth = currentIndex;
+      
       // 로컬 좌표 저장 (복원 시 사용)
       this.originalLocalX = this.x;
       this.originalLocalY = this.y;
@@ -175,6 +189,9 @@ export default class Card extends Phaser.GameObjects.Container {
       
       // 월드 좌표로 설정 (remove가 월드 좌표를 유지하므로 이미 설정되어 있지만 명시적으로 설정)
       this.setPosition(worldX, worldY);
+    } else {
+      // 이미 씬에 직접 추가된 상태면 depth만 저장
+      this.originalDepth = this.depth;
     }
 
     // 최상위 depth로 설정
@@ -201,6 +218,15 @@ export default class Card extends Phaser.GameObjects.Container {
       // 저장된 로컬 좌표로 복원
       this.setPosition(this.originalLocalX, this.originalLocalY);
     }
+  }
+  
+  /**
+   * 컨테이너 내부에서의 올바른 위치로 카드를 이동시킵니다.
+   * Phaser 컨테이너는 list 배열의 순서로 렌더링되므로, 올바른 인덱스로 이동해야 합니다.
+   * 이 메서드는 CardHandManager에서 호출되어야 합니다.
+   */
+  public getTargetContainerIndex(): number {
+    return this.selectedOriginalDepth;
   }
 
 

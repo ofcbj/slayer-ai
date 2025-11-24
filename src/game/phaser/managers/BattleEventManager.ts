@@ -50,6 +50,7 @@ export default class BattleEventManager {
   public registerEventListeners(): void {
     this.unregisterEventListeners();
     this.scene.events.on('cardClicked', this.onCardClicked, this);
+    this.scene.events.on('cardDeselected', this.onCardDeselected, this);
     this.scene.events.on('enemyClicked', this.onEnemyClicked, this);
     this.scene.events.on('enemyDefeated', this.onEnemyDefeated, this);
   }
@@ -59,6 +60,7 @@ export default class BattleEventManager {
    */
   public unregisterEventListeners(): void {
     this.scene.events.off('cardClicked', this.onCardClicked, this);
+    this.scene.events.off('cardDeselected', this.onCardDeselected, this);
     this.scene.events.off('enemyClicked', this.onEnemyClicked, this);
     this.scene.events.off('enemyDefeated', this.onEnemyDefeated, this);
   }
@@ -118,6 +120,17 @@ export default class BattleEventManager {
   };
 
   /**
+   * 카드 선택 해제 이벤트 핸들러 (마우스가 선택된 카드 영역을 벗어날 때)
+   */
+  private onCardDeselected = (card: Card): void => {
+    // 선택된 카드가 맞는지 확인
+    const currentSelected = this.cardHandManager.getSelectedCard();
+    if (currentSelected === card) {
+      this.cardHandManager.deselectCard();
+    }
+  };
+
+  /**
    * 카드 단축키 처리 (숫자 키 1-5)
    */
   public handleCardShortcut(cardIndex: number): void {
@@ -152,10 +165,12 @@ export default class BattleEventManager {
    * 적 단축키 처리 (화살표 키)
    * keyIndex: 0 = 왼쪽 화살표, 1 = 아래 화살표, 2 = 오른쪽 화살표
    *
-   * 적의 수에 따른 키 매핑:
-   * - 1마리: 아래(1) → 0번째 적
-   * - 2마리: 왼쪽(0) → 0번째 적, 오른쪽(2) → 1번째 적
-   * - 3마리: 왼쪽(0) → 0번째 적, 아래(1) → 1번째 적, 오른쪽(2) → 2번째 적
+   * 최초 등장 시 위치를 기준으로 키 매핑:
+   * - 1마리: 아래(1) → 0번째 위치
+   * - 2마리: 왼쪽(0) → 0번째 위치, 오른쪽(2) → 1번째 위치
+   * - 3마리: 왼쪽(0) → 0번째 위치, 아래(1) → 1번째 위치, 오른쪽(2) → 2번째 위치
+   * 
+   * 적이 죽어도 원래 위치 기준으로 단축키가 작동함
    */
   public handleEnemyShortcut(keyIndex: number): void {
     if (this.battleManager.getTurn() !== 'player') return;
@@ -163,38 +178,45 @@ export default class BattleEventManager {
     const selectedCard = this.cardHandManager.getSelectedCard();
     if (!selectedCard) return;
 
-    // 모든 적 목록을 가져옴 (죽은 적 포함, 위치 고정)
+    // 모든 적을 원래 인덱스 순서로 가져옴 (죽은 적 포함)
     const allEnemies = this.battleManager.getAllEnemies();
-    const enemyCount = allEnemies.length;
+    
+    // 최초 등장 시 적의 수를 기준으로 키 매핑
+    // (죽은 적도 포함하여 원래 위치를 유지)
+    const originalEnemyCount = allEnemies.length;
+    
+    if (originalEnemyCount === 0) return;
 
-    // 적의 수에 따라 키를 적 인덱스로 매핑
-    let enemyIndex: number;
+    // 원래 적의 수에 따라 키를 원래 인덱스로 매핑
+    let originalEnemyIndex: number;
 
-    if (enemyCount === 1) {
+    if (originalEnemyCount === 1) {
       // 1마리: 아래 화살표만 유효
       if (keyIndex === 1) { // DOWN
-        enemyIndex = 0;
+        originalEnemyIndex = 0;
       } else {
         return; // 다른 키는 무시
       }
-    } else if (enemyCount === 2) {
+    } else if (originalEnemyCount === 2) {
       // 2마리: 왼쪽, 오른쪽 화살표만 유효
       if (keyIndex === 0) { // LEFT
-        enemyIndex = 0;
+        originalEnemyIndex = 0;
       } else if (keyIndex === 2) { // RIGHT
-        enemyIndex = 1;
+        originalEnemyIndex = 1;
       } else {
         return; // 아래 화살표는 무시
       }
     } else {
       // 3마리 이상: 모든 화살표 사용
-      enemyIndex = keyIndex;
+      originalEnemyIndex = keyIndex;
     }
 
-    if (enemyIndex < 0 || enemyIndex >= allEnemies.length) return;
+    if (originalEnemyIndex < 0 || originalEnemyIndex >= allEnemies.length) return;
 
-    const enemy = allEnemies[enemyIndex];
-    // 죽은 적은 선택 불가
+    // 원래 인덱스에 해당하는 적 찾기
+    const enemy = allEnemies.find(e => e.enemyIndex === originalEnemyIndex);
+    
+    // 적이 없거나 죽었으면 무시
     if (!enemy || enemy.isDead()) return;
 
     const cardData: CardData = (selectedCard as any).cardData;
