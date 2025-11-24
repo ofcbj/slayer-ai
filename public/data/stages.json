@@ -88,13 +88,12 @@
     "description_ja": "闇の気配が満ちた沼"
   },
   "11": {
-    "type": "normal",
-    "enemies": ["fire_spirit", "lava_golem", "fire_spirit"],
+    "type": "shop",
     "nextStages": [12],
-    "name_ko": "불의 동굴",
-    "name_ja": "火の洞窟",
-    "description_ko": "불꽃이 타오르는 동굴",
-    "description_ja": "炎が燃え上がる洞窟"
+    "name_ko": "떠돌이 상인",
+    "name_ja": "行商人",
+    "description_ko": "카드를 구매할 수 있습니다",
+    "description_ja": "カードを購入できます"
   },
   "12": {
     "type": "normal",
@@ -123,13 +122,13 @@
     "description_ja": "強力なカードを購入してください"
   },
   "15": {
-    "type": "mid_boss",
-    "enemies": ["fire_archmage"],
+    "type": "normal",
+    "enemies": ["fire_spirit", "lava_golem", "fire_spirit"],
     "nextStages": [16],
-    "name_ko": "화염 대마법사",
-    "name_ja": "火炎大魔法使い",
-    "description_ko": "불꽃의 마법을 구사하는 대마법사",
-    "description_ja": "炎の魔法を使う大魔法使い"
+    "name_ko": "불의 동굴",
+    "name_ja": "火の洞窟",
+    "description_ko": "불꽃이 타오르는 동굴",
+    "description_ja": "炎が燃え上がる洞窟"
   },
   "16": {
     "type": "normal",
@@ -141,13 +140,13 @@
     "description_ja": "火の力が集まる祭壇"
   },
   "17": {
-    "type": "normal",
-    "enemies": ["ancient_guardian", "magic_knight", "ancient_guardian"],
+    "type": "mid_boss",
+    "enemies": ["fire_archmage"],
     "nextStages": [18],
-    "name_ko": "최종 던전",
-    "name_ja": "最終ダンジョン",
-    "description_ko": "최종 보스로 가는 길",
-    "description_ja": "最終ボスへの道"
+    "name_ko": "화염 대마법사",
+    "name_ja": "火炎大魔法使い",
+    "description_ko": "불꽃의 마법을 구사하는 대마법사",
+    "description_ja": "炎の魔法を使う大魔法使い"
   },
   "18": {
     "type": "normal",
