@@ -155,6 +155,9 @@ export default class BattleScene extends Phaser.Scene {
       () => this.onDiscardPileClick()
     );
 
+    // My Deck 버튼 생성
+    this.createMyDeckButton();
+
     // 적 생성 (먼저 생성하여 BattleManager에 전달)
     const enemies = this.initializer.createEnemies();
     // BattleManager 초기화 (enemies를 받아서 생성)
@@ -380,5 +383,56 @@ export default class BattleScene extends Phaser.Scene {
     if (this.battleManager.getTurn() === 'player') {
       this.turnController.endPlayerTurn();
     }
+  }
+
+  /**
+   * My Deck 버튼 생성
+   */
+  private createMyDeckButton(): void {
+    const deckContainer = this.add.container(100, 60);
+
+    const deckBg = this.add.rectangle(0, 0, 160, 50, 0x8b5cf6, 0.9);
+    deckBg.setStrokeStyle(3, 0x7c3aed);
+
+    const deckText = this.add.text(
+      0,
+      0,
+      'My Deck',
+      { fontSize: '20px', fontFamily: 'Arial', color: '#ffffff', fontStyle: 'bold' }
+    ).setOrigin(0.5);
+
+    deckContainer.add([deckBg, deckText]);
+    deckContainer.setDepth(1000); // 최상단에 표시
+
+    deckBg.setInteractive({ useHandCursor: true });
+
+    deckBg.on('pointerover', () => {
+      deckBg.setFillStyle(0x7c3aed);
+      this.tweens.add({
+        targets: deckContainer,
+        scale: 1.05,
+        duration: 200
+      });
+    });
+
+    deckBg.on('pointerout', () => {
+      deckBg.setFillStyle(0x8b5cf6);
+      this.tweens.add({
+        targets: deckContainer,
+        scale: 1,
+        duration: 200
+      });
+    });
+
+    deckBg.on('pointerdown', () => {
+      const handCards = this.cardHandManager.getHand().map(card => (card as any).cardData);
+      const allCards = [
+        ...this.deckManager.getDeck(),
+        ...handCards,
+        ...this.deckManager.getDiscardPile()
+      ];
+      const langManager = LanguageManager.getInstance();
+      this.cardViewManager.showCardListView(langManager.t('battle.deck'), allCards);
+    });
   }
 }

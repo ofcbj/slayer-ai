@@ -20,7 +20,15 @@
     "title": "상점",
     "exit": "나가기",
     "notEnoughGold": "골드가 부족합니다!",
-    "purchased": "구매 완료!"
+    "purchased": "구매 완료!",
+    "removeCard": "🗑️ 카드 삭제 50G",
+    "selectCardToRemove": "삭제할 카드를 선택하세요",
+    "deckEmpty": "덱에 카드가 없습니다!",
+    "confirmRemove": "\"{cardName}\" 카드를 삭제하시겠습니까?",
+    "removeCost": "비용: 50G",
+    "confirm": "확인",
+    "cancel": "취소",
+    "cardRemoved": "\"{cardName}\" 카드가 삭제되었습니다!"
   },
   "battle": {
     "endTurn": "턴 종료",

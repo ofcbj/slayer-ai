@@ -20,7 +20,15 @@
     "title": "ショップ",
     "exit": "終了",
     "notEnoughGold": "ゴールドが不足しています！",
-    "purchased": "購入完了！"
+    "purchased": "購入完了！",
+    "removeCard": "🗑️ カード削除 50G",
+    "selectCardToRemove": "削除するカードを選択してください",
+    "deckEmpty": "デッキにカードがありません！",
+    "confirmRemove": "\"{cardName}\" カードを削除しますか？",
+    "removeCost": "費用: 50G",
+    "confirm": "確認",
+    "cancel": "キャンセル",
+    "cardRemoved": "\"{cardName}\" カードが削除されました！"
   },
   "battle": {
     "endTurn": "ターン終了",

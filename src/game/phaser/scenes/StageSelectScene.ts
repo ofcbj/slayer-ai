@@ -4,6 +4,7 @@ import LanguageManager from '../../../i18n/LanguageManager';
 import GameDataManager from '../managers/GameDataManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
+import CardViewManager from '../managers/CardViewManager';
 
 interface StageData {
   id: number;
@@ -44,6 +45,7 @@ export default class StageSelectScene extends Phaser.Scene {
   private isDragging: boolean = false;
   private dragStartY: number = 0;
   private scrollY: number = 0;
+  private cardViewManager: CardViewManager | null = null;
 
   constructor() {
     super({ key: 'StageSelectScene' });
@@ -88,8 +90,9 @@ export default class StageSelectScene extends Phaser.Scene {
     // 스테이지 맵 렌더링 (트리 구조)
     this.createStageMapTree(stagesData, currentStage, clearedStages);
 
-    // 뒤로가기 버튼 (고정)
-    this.createBackButton();
+    // My Deck 버튼 (고정)
+    this.cardViewManager = new CardViewManager(this);
+    this.createMyDeckButton();
 
     // 스크롤 기능 설정
     this.setupScrolling();
@@ -538,45 +541,48 @@ export default class StageSelectScene extends Phaser.Scene {
     return icons[type] || '❓';
   }
 
-  private createBackButton(): void {
-    const langManager = LanguageManager.getInstance();
-    const backContainer = this.add.container(80, 60);
+  private createMyDeckButton(): void {
+    const deckContainer = this.add.container(100, 60);
 
-    const backBg = this.add.rectangle(0, 0, 120, 50, 0x1e293b, 0.9);
-    backBg.setStrokeStyle(2, 0x475569);
+    const deckBg = this.add.rectangle(0, 0, 160, 50, 0x8b5cf6, 0.9);
+    deckBg.setStrokeStyle(3, 0x7c3aed);
 
-    const backText = this.add.text(
+    const deckText = this.add.text(
       0,
       0,
-      langManager.t('stage.back'),
-      textStyle.getStyle('character.name')
+      'My Deck',
+      textStyle.getStyle('character.name', { fontSize: '20px' })
     ).setOrigin(0.5);
 
-    backContainer.add([backBg, backText]);
-    backContainer.setScrollFactor(0); // 고정
+    deckContainer.add([deckBg, deckText]);
+    deckContainer.setScrollFactor(0); // 고정
 
-    backBg.setInteractive({ useHandCursor: true });
+    deckBg.setInteractive({ useHandCursor: true });
 
-    backBg.on('pointerover', () => {
-      backBg.setFillStyle(0x8b5cf6);
+    deckBg.on('pointerover', () => {
+      deckBg.setFillStyle(0x7c3aed);
       this.tweens.add({
-        targets: backContainer,
+        targets: deckContainer,
         scale: 1.05,
         duration: 200
       });
     });
 
-    backBg.on('pointerout', () => {
-      backBg.setFillStyle(0x1e293b);
+    deckBg.on('pointerout', () => {
+      deckBg.setFillStyle(0x8b5cf6);
       this.tweens.add({
-        targets: backContainer,
+        targets: deckContainer,
         scale: 1,
         duration: 200
       });
     });
 
-    backBg.on('pointerdown', () => {
-      this.scene.start('MenuScene');
+    deckBg.on('pointerdown', () => {
+      if (this.cardViewManager) {
+        const gameState: GameState = this.registry.get('gameState');
+        const langManager = LanguageManager.getInstance();
+        this.cardViewManager.showCardListView(langManager.t('battle.deck'), gameState.deck);
+      }
     });
   }
 

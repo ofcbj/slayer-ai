@@ -5,6 +5,7 @@ import GameDataManager from '../managers/GameDataManager';
 import { textStyle } from '../managers/TextStyleManager';
 import Card from '../objects/Card';
 import { CardData } from '../../../types';
+import CardViewManager from '../managers/CardViewManager';
 
 interface GameState {
   player: {
@@ -23,6 +24,7 @@ interface GameState {
 export default class ShopScene extends Phaser.Scene {
   private cardObjects: { card: Card; price: number; data: CardData }[] = [];
   private shopCards: (CardData & { price: number })[] = [];
+  private cardViewManager: CardViewManager | null = null;
 
   constructor() {
     super({ key: 'ShopScene' });
@@ -58,6 +60,13 @@ export default class ShopScene extends Phaser.Scene {
 
     // 골드 표시
     this.createGoldDisplay(gameState.player.gold);
+
+    // 카드 삭제 버튼
+    this.createRemoveCardButton();
+
+    // My Deck 버튼
+    this.cardViewManager = new CardViewManager(this);
+    this.createMyDeckButton();
 
     // 상점 카드 생성
     this.generateShopCards();
@@ -288,6 +297,241 @@ export default class ShopScene extends Phaser.Scene {
         });
       }
     });
+  }
+
+  private createMyDeckButton(): void {
+    const deckContainer = this.add.container(100, 60);
+
+    const deckBg = this.add.rectangle(0, 0, 160, 50, 0x8b5cf6, 0.9);
+    deckBg.setStrokeStyle(3, 0x7c3aed);
+
+    const deckText = this.add.text(
+      0,
+      0,
+      'My Deck',
+      textStyle.getStyle('character.name', { fontSize: '20px' })
+    ).setOrigin(0.5);
+
+    deckContainer.add([deckBg, deckText]);
+
+    deckBg.setInteractive({ useHandCursor: true });
+
+    deckBg.on('pointerover', () => {
+      deckBg.setFillStyle(0x7c3aed);
+      this.tweens.add({
+        targets: deckContainer,
+        scale: 1.05,
+        duration: 200
+      });
+    });
+
+    deckBg.on('pointerout', () => {
+      deckBg.setFillStyle(0x8b5cf6);
+      this.tweens.add({
+        targets: deckContainer,
+        scale: 1,
+        duration: 200
+      });
+    });
+
+    deckBg.on('pointerdown', () => {
+      if (this.cardViewManager) {
+        const gameState: GameState = this.registry.get('gameState');
+        const langManager = LanguageManager.getInstance();
+        this.cardViewManager.showCardListView(langManager.t('battle.deck'), gameState.deck);
+      }
+    });
+  }
+
+  private createRemoveCardButton(): void {
+    const width = this.cameras.main.width;
+    const langManager = LanguageManager.getInstance();
+
+    const removeContainer = this.add.container(width - 200, 140);
+
+    const removeBg = this.add.rectangle(0, 0, 180, 60, 0xef4444, 0.95);
+    removeBg.setStrokeStyle(3, 0xdc2626);
+
+    const removeText = this.add.text(
+      0,
+      0,
+      langManager.t('shop.removeCard'),
+      textStyle.getStyle('character.name', { fontSize: '18px' })
+    ).setOrigin(0.5);
+
+    removeContainer.add([removeBg, removeText]);
+
+    removeBg.setInteractive({ useHandCursor: true });
+
+    removeBg.on('pointerover', () => {
+      removeBg.setFillStyle(0xdc2626);
+      this.tweens.add({
+        targets: removeContainer,
+        scale: 1.05,
+        duration: 200
+      });
+    });
+
+    removeBg.on('pointerout', () => {
+      removeBg.setFillStyle(0xef4444);
+      this.tweens.add({
+        targets: removeContainer,
+        scale: 1,
+        duration: 200
+      });
+    });
+
+    removeBg.on('pointerdown', () => {
+      this.handleRemoveCard();
+    });
+  }
+
+  private handleRemoveCard(): void {
+    const gameState: GameState = this.registry.get('gameState');
+    const langManager = LanguageManager.getInstance();
+
+    // 골드가 충분한지 확인
+    if (gameState.player.gold < 50) {
+      this.showMessage(langManager.t('shop.notEnoughGold'), 0xef4444);
+      return;
+    }
+
+    // 덱이 비어있는지 확인
+    if (gameState.deck.length === 0) {
+      this.showMessage(langManager.t('shop.deckEmpty'), 0xef4444);
+      return;
+    }
+
+    // 카드 선택 모드로 CardViewManager 열기
+    if (this.cardViewManager) {
+      this.cardViewManager.showCardListView(
+        langManager.t('shop.selectCardToRemove'),
+        gameState.deck,
+        {
+          selectable: true,
+          onSelect: (selectedCard: CardData, closeCardView: () => void) => {
+            // 확인 다이얼로그 표시 (closeCardView를 전달)
+            this.showConfirmDialog(selectedCard, closeCardView);
+          }
+        }
+      );
+    }
+  }
+
+  private showConfirmDialog(card: CardData, closeCardView: () => void): void {
+    const width = this.cameras.main.width;
+    const height = this.cameras.main.height;
+    const langManager = LanguageManager.getInstance();
+
+    // 오버레이
+    const overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.8);
+    overlay.setOrigin(0);
+    overlay.setDepth(2000);
+    overlay.setInteractive();
+
+    // 다이얼로그 배경
+    const dialogBg = this.add.rectangle(width / 2, height / 2, 500, 300, 0x1e293b);
+    dialogBg.setStrokeStyle(4, 0xef4444);
+    dialogBg.setDepth(2001);
+
+    // 메시지
+    const messageText = this.add.text(
+      width / 2,
+      height / 2 - 80,
+      langManager.t('shop.confirmRemove').replace('{cardName}', card.name),
+      textStyle.getStyle('character.name', { fontSize: '24px' })
+    ).setOrigin(0.5);
+    messageText.setDepth(2002);
+
+    const costText = this.add.text(
+      width / 2,
+      height / 2 - 30,
+      langManager.t('shop.removeCost'),
+      textStyle.getStyle('ui.label', { fontSize: '20px', color: '#fbbf24' })
+    ).setOrigin(0.5);
+    costText.setDepth(2002);
+
+    // 확인 버튼
+    const confirmContainer = this.add.container(width / 2 - 80, height / 2 + 60);
+    confirmContainer.setDepth(2002);
+
+    const confirmBg = this.add.rectangle(0, 0, 120, 50, 0xef4444);
+    confirmBg.setStrokeStyle(3, 0xdc2626);
+
+    const confirmText = this.add.text(0, 0, langManager.t('shop.confirm'), textStyle.getStyle('character.name')).setOrigin(0.5);
+
+    confirmContainer.add([confirmBg, confirmText]);
+    confirmBg.setInteractive({ useHandCursor: true });
+
+    confirmBg.on('pointerover', () => {
+      confirmBg.setFillStyle(0xdc2626);
+    });
+
+    confirmBg.on('pointerout', () => {
+      confirmBg.setFillStyle(0xef4444);
+    });
+
+    confirmBg.on('pointerdown', () => {
+      // 카드 삭제 실행
+      this.executeRemoveCard(card);
+
+      // CardViewManager 닫기
+      closeCardView();
+
+      // 다이얼로그 닫기
+      overlay.destroy();
+      dialogBg.destroy();
+      messageText.destroy();
+      costText.destroy();
+      confirmContainer.destroy();
+      cancelContainer.destroy();
+    });
+
+    // 취소 버튼
+    const cancelContainer = this.add.container(width / 2 + 80, height / 2 + 60);
+    cancelContainer.setDepth(2002);
+
+    const cancelBg = this.add.rectangle(0, 0, 120, 50, 0x64748b);
+    cancelBg.setStrokeStyle(3, 0x475569);
+
+    const cancelText = this.add.text(0, 0, langManager.t('shop.cancel'), textStyle.getStyle('character.name')).setOrigin(0.5);
+
+    cancelContainer.add([cancelBg, cancelText]);
+    cancelBg.setInteractive({ useHandCursor: true });
+
+    cancelBg.on('pointerover', () => {
+      cancelBg.setFillStyle(0x475569);
+    });
+
+    cancelBg.on('pointerout', () => {
+      cancelBg.setFillStyle(0x64748b);
+    });
+
+    cancelBg.on('pointerdown', () => {
+      // 다이얼로그만 닫기 (CardViewManager는 열린 상태 유지)
+      overlay.destroy();
+      dialogBg.destroy();
+      messageText.destroy();
+      costText.destroy();
+      confirmContainer.destroy();
+      cancelContainer.destroy();
+    });
+  }
+
+  private executeRemoveCard(card: CardData): void {
+    const gameState: GameState = this.registry.get('gameState');
+    const langManager = LanguageManager.getInstance();
+
+    // 골드 차감
+    gameState.player.gold -= 50;
+    this.updateGoldDisplay(gameState.player.gold);
+
+    // 덱에서 카드 제거 (첫 번째로 발견된 카드만 제거)
+    const cardIndex = gameState.deck.findIndex(c => c.id === card.id);
+    if (cardIndex !== -1) {
+      gameState.deck.splice(cardIndex, 1);
+      this.showMessage(langManager.t('shop.cardRemoved').replace('{cardName}', card.name), 0x22c55e);
+    }
   }
 
   private createExitButton(): void {

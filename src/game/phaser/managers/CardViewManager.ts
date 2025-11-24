@@ -39,7 +39,7 @@ export default class CardViewManager {
     this.showCardListView(langManager.t('battle.discard'), [...discardPile]);
   }
 
-  private showCardListView(title: string, cards: CardData[]): void {
+  public showCardListView(title: string, cards: CardData[], options?: { selectable?: boolean; onSelect?: (card: CardData, closePopup: () => void) => void }): void {
     const width   = this.scene.cameras.main.width;
     const height  = this.scene.cameras.main.height;
 
@@ -49,8 +49,8 @@ export default class CardViewManager {
     overlay.setDepth(1000);
     overlay.setInteractive();
 
-    // 팝업 배경
-    const popupWidth  = Math.min(1400, width - 100);
+    // 팝업 배경 - 7장을 한 줄에 표시하기 위해 너비 증가
+    const popupWidth  = Math.min(1600, width - 80);
     const popupHeight = Math.min(900, height - 100);
     const popupBg     = this.scene.add.rectangle(width/2, height/2, popupWidth, popupHeight, 0x1a1a2e);
     popupBg.setStrokeStyle(4, 0x8b5cf6);
@@ -76,20 +76,29 @@ export default class CardViewManager {
     const cardListContainer = this.scene.add.container(0, 0);
     cardListContainer.setDepth(1002);
 
-    // 카드 목록 표시 (그리드 형식)
-    const cardWidth   = 140;
-    const cardHeight  = 200;
+    // 닫기 동작 - 먼저 선언
+    const closePopup = () => {
+      overlay.destroy();
+      popupBg.destroy();
+      titleText.destroy();
+      countText.destroy();
+      cardListContainer.destroy();
+    };
+
+    // 카드 목록 표시 (그리드 형식) - 핸드와 동일한 크기, 한 줄에 7장
+    const cardWidth   = 168;
+    const cardHeight  = 240;
     const cardSpacing = 20;
-    const cardsPerRow = Math.floor((popupWidth - 100) / (cardWidth + cardSpacing));
-    const startX      = width / 2 - (cardsPerRow * (cardWidth+cardSpacing) - cardSpacing)/2 + 20;
-    const startY      = height / 2 - popupHeight / 2 + 220;
+    const cardsPerRow = 8; // 한 줄에 8장 고정
+    const startX      = width/2 - (cardsPerRow*(cardWidth+cardSpacing)-cardSpacing)/2 + 80;
+    const startY      = height/2 - popupHeight / 2 + 230;
 
     // 모든 카드를 개별적으로 표시
     cards.forEach((card, index) => {
-      const row = Math.floor(index / cardsPerRow);
+      const row = Math.floor(index/cardsPerRow);
       const col = index % cardsPerRow;
-      const x   = startX + col * (cardWidth + cardSpacing);
-      const y   = startY + row * (cardHeight + cardSpacing);
+      const x   = startX + col*(cardWidth+cardSpacing);
+      const y   = startY + row*(cardHeight+cardSpacing);
 
       // CardRenderer를 사용하여 카드 생성 (핸드와 동일한 모양)
       const miniCard = CardRenderer.createCardContainer(this.scene, x, y, card, {
@@ -97,43 +106,40 @@ export default class CardViewManager {
         height: cardHeight,
         showInteraction: false
       });
+
+      // 선택 가능 모드인 경우 인터랙션 추가
+      if (options?.selectable && options.onSelect) {
+        const cardBg = miniCard.getAt(0) as Phaser.GameObjects.Rectangle;
+        cardBg.setInteractive({ useHandCursor: true });
+
+        cardBg.on('pointerover', () => {
+          this.scene.tweens.add({
+            targets: miniCard,
+            scaleX: 1.1,
+            scaleY: 1.1,
+            duration: 150
+          });
+        });
+
+        cardBg.on('pointerout', () => {
+          this.scene.tweens.add({
+            targets: miniCard,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 150
+          });
+        });
+
+        cardBg.on('pointerdown', () => {
+          if (options.onSelect) {
+            options.onSelect(card, closePopup);
+          }
+        });
+      }
+
       cardListContainer.add(miniCard);
     });
 
-    // 닫기 버튼
-    const closeButton = this.scene.add.rectangle(width / 2, height / 2 + popupHeight / 2 - 50, 150, 50, 0xff6b6b);
-    closeButton.setStrokeStyle(3, 0xffffff);
-    closeButton.setDepth(1002);
-    closeButton.setInteractive({ useHandCursor: true });
-
-    const langManager = LanguageManager.getInstance();
-    const closeText = this.scene.add.text(width/2, height/2+popupHeight/2-50,
-      langManager.t('battle.close'),
-      textStyle.getStyle('buttons.secondary')
-    );
-    closeText.setOrigin(0.5);
-    closeText.setDepth(1003);
-
-    closeButton.on('pointerover', () => {
-      closeButton.setFillStyle(0xff8888);
-    });
-
-    closeButton.on('pointerout', () => {
-      closeButton.setFillStyle(0xff6b6b);
-    });
-
-    // 닫기 동작
-    const closePopup = () => {
-      overlay.destroy();
-      popupBg.destroy();
-      titleText.destroy();
-      countText.destroy();
-      cardListContainer.destroy();
-      closeButton.destroy();
-      closeText.destroy();
-    };
-
-    closeButton.on('pointerdown', closePopup);
     overlay.on('pointerdown', closePopup);
 
     // 등장 애니메이션
@@ -142,11 +148,9 @@ export default class CardViewManager {
     titleText.setAlpha(0);
     countText.setAlpha(0);
     cardListContainer.setAlpha(0);
-    closeButton.setAlpha(0);
-    closeText.setAlpha(0);
 
     this.scene.tweens.add({
-      targets : [popupBg, titleText, countText, cardListContainer, closeButton, closeText],
+      targets : [popupBg, titleText, countText, cardListContainer],
       alpha   : 1,
       duration: 200
     });
