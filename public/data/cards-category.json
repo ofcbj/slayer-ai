@@ -23,10 +23,8 @@
   ],
   "start_deck": {
     "anger": 1,
-    "focused_strike": 1,
-    "ice_lance": 1,
-    "strike": 3,
-    "defend": 3,
-    "focus": 1
+    "focus": 1,    
+    "strike": 5,
+    "defend": 4
   }  
 }
