@@ -4,6 +4,7 @@ import Enemy            from '../objects/Enemy';
 import Player           from '../objects/Player';
 import DeckManager      from '../managers/DeckManager';
 import BattleUIManager  from '../managers/BattleUIManager';
+import UIConfigManager  from '../managers/UIConfigManager';
 import { GameState, StageData } from '../managers/BattleManager';
 import GameDataManager  from '../managers/GameDataManager';
 
@@ -24,13 +25,13 @@ export default class BattleSceneInitializer {
    * 플레이어 캐릭터 생성
    */
   createPlayer(): Player {
-    const width   = this.scene.cameras.main.width;
-    const height  = this.scene.cameras.main.height;
+    const uiConfig = UIConfigManager.getInstance();
+    const pos = uiConfig.getPlayerPosition(this.scene.cameras.main);
 
     // 플레이어 캐릭터를 중앙 하단에 배치 (적과 카드 사이)
     const player = new Player(
       this.scene,
-      width/2, height/2+100,
+      pos.x, pos.y,
       this.gameState.player
     );
     player.idle();
@@ -65,10 +66,11 @@ export default class BattleSceneInitializer {
     const width = this.scene.cameras.main.width;
     const gameDataManager = GameDataManager.getInstance();
     const stageEnemies: string[] = this.selectedStage.data.enemies;
+    const uiConfig = UIConfigManager.getInstance();
 
     console.log(`[BattleSceneInitializer] createEnemies - Stage: ${this.selectedStage.id}, Expected enemies:`, stageEnemies);
 
-    const spacing = Math.min(300, width / (stageEnemies.length + 1));
+    const spacing = uiConfig.getEnemySpacing(width, stageEnemies.length);
     const startX = (width - (spacing * (stageEnemies.length - 1))) / 2;
 
     const createdEnemies: Enemy[] = [];
@@ -76,7 +78,7 @@ export default class BattleSceneInitializer {
       const enemyData = gameDataManager.getEnemyData()[enemyName];
       if (enemyData) {
         const x = startX + (index * spacing);
-        const y = 220; // 적들을 상단에 배치
+        const y = uiConfig.getEnemyY(); // 적들을 상단에 배치
 
         const enemy = new Enemy(this.scene, x, y, enemyData, index);
         createdEnemies.push(enemy);

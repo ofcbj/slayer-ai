@@ -18,6 +18,7 @@ import BattleTurnController         from '../controllers/BattleTurnController';
 import BattleStateSynchronizer      from '../controllers/BattleStateSynchronizer';
 import BattleResultHandler          from '../controllers/BattleResultHandler';
 import BattleConsoleCommandHandler  from '../controllers/BattleConsoleCommandHandler';
+import UIConfigManager              from '../managers/UIConfigManager';
 import { Logger }                   from '../../utils/Logger';
 
 /**
@@ -340,9 +341,11 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   private createMyDeckButton(): void {
-    const deckContainer = this.add.container(100, 60);
+    const uiConfig = UIConfigManager.getInstance();
+    const buttonConfig = uiConfig.getMyDeckButton();
+    const deckContainer = this.add.container(buttonConfig.x, buttonConfig.y);
 
-    const deckBg = this.add.rectangle(0, 0, 160, 50, 0x8b5cf6, 0.9);
+    const deckBg = this.add.rectangle(0, 0, buttonConfig.width, buttonConfig.height, 0x8b5cf6, 0.9);
     deckBg.setStrokeStyle(3, 0x7c3aed);
 
     const deckText = this.add.text(

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CardData } from '../../../types';
 import CardRenderer from '../utils/CardRenderer';
+import UIConfigManager from '../managers/UIConfigManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 
 export default class Card extends Phaser.GameObjects.Container {
@@ -30,11 +31,13 @@ export default class Card extends Phaser.GameObjects.Container {
 
   private createCard(): void {
     // CardRenderer를 사용하여 카드 컨텐츠 생성
+    const uiConfig = UIConfigManager.getInstance();
+    const cardConfig = uiConfig.getHandCardConfig();
     const cardContainer = CardRenderer.createCardContainer(
       this.scene,
       0, 0,
       this.cardData,
-      { width: 168, height: 240, showInteraction: true }
+      { width: cardConfig.width, height: cardConfig.height, showInteraction: true }
     );
 
     // CardRenderer가 생성한 모든 자식 요소를 이 컨테이너에 추가
@@ -47,7 +50,7 @@ export default class Card extends Phaser.GameObjects.Container {
     // bg 참조 저장 (인터랙션용)
     this.bg = (cardContainer as any).bg;
     // 컨테이너 크기 설정
-    this.setSize(168, 240);
+    this.setSize(cardConfig.width, cardConfig.height);
     // cardContainer 제거 (자식들은 이미 this로 이동됨)
     cardContainer.destroy();
   }
@@ -99,7 +102,8 @@ export default class Card extends Phaser.GameObjects.Container {
 
   public select(): void {
     this.isSelected = true;
-    this.bg.setStrokeStyle(4, 0xffff00);
+    const uiConfig = UIConfigManager.getInstance();
+    this.bg.setStrokeStyle(4, uiConfig.getColor('CARD_SELECTED_STROKE'));
 
     // 선택 전의 depth를 저장 (선택 해제 시 복원용)
     // bringToTop()이 호출되기 전에 저장해야 함
@@ -238,12 +242,14 @@ export default class Card extends Phaser.GameObjects.Container {
     worldX: number, worldY: number, 
     targetX?: number, targetY?: number): void {
     const color: number = CardRenderer.getCardColor(this.cardData);
-    const particleCount: number = 20;
+    const uiConfig = UIConfigManager.getInstance();
+    const particleConfig = uiConfig.getCardParticleConfig();
+    const particleCount: number = particleConfig.count;
 
     for (let i: number = 0; i < particleCount; i++) {
       const particle: Phaser.GameObjects.Arc = this.scene.add.circle(
         worldX, worldY,
-        Phaser.Math.Between(3, 8),
+        Phaser.Math.Between(particleConfig.minSize, particleConfig.maxSize),
         color
       );
 

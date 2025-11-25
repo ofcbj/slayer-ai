@@ -1,0 +1,182 @@
+{
+  "battle": {
+    "player": {
+      "x": "center",
+      "yOffset": 100
+    },
+    "enemy": {
+      "y": 220,
+      "minSpacing": 300
+    },
+    "myDeckButton": {
+      "x": 100,
+      "y": 60,
+      "width": 160,
+      "height": 50
+    },
+    "handContainer": {
+      "x": "center",
+      "yOffset": -150
+    }
+  },
+  "ui": {
+    "energyUI": {
+      "xOffset": -300,
+      "y": 580,
+      "orbSpacing": 50,
+      "orbRadius": 20,
+      "orbGlowRadius": 24
+    },
+    "endTurnButton": {
+      "xOffset": -200,
+      "y": 50,
+      "width": 150,
+      "height": 60
+    },
+    "deckPile": {
+      "xOffset": -200,
+      "yOffset": -250,
+      "width": 120,
+      "height": 160,
+      "clickAreaWidth": 150,
+      "clickAreaHeight": 200
+    },
+    "discardPile": {
+      "x": 200,
+      "yOffset": -250,
+      "width": 120,
+      "height": 160,
+      "clickAreaWidth": 150,
+      "clickAreaHeight": 200
+    },
+    "deckInfoText": {
+      "x": 50,
+      "yOffset": -50
+    }
+  },
+  "card": {
+    "hand": {
+      "width": 168,
+      "height": 240,
+      "spacing": 150
+    },
+    "view": {
+      "width": 140,
+      "height": 200
+    },
+    "renderer": {
+      "defaultWidth": 140,
+      "defaultHeight": 200,
+      "headerHeight": 36,
+      "headerYOffset": 18,
+      "costCircle": {
+        "xOffset": 20,
+        "yOffset": 18,
+        "radius": 15
+      },
+      "image": {
+        "yOffset": -25
+      },
+      "value": {
+        "yOffset": 25
+      },
+      "description": {
+        "yOffset": 78
+      }
+    },
+    "particle": {
+      "minSize": 3,
+      "maxSize": 8,
+      "count": 20
+    },
+    "reshuffle": {
+      "tempCardWidth": 100,
+      "tempCardHeight": 140,
+      "maxCardsToShow": 10
+    }
+  },
+  "reward": {
+    "title": {
+      "x": "center",
+      "y": 100
+    },
+    "goldDisplay": {
+      "x": "center",
+      "y": 160,
+      "amount": 100
+    },
+    "description": {
+      "x": "center",
+      "y": 210
+    },
+    "cards": {
+      "spacing": 200,
+      "y": "center"
+    },
+    "continueButton": {
+      "x": "center",
+      "yOffset": -100,
+      "width": 250,
+      "height": 70
+    },
+    "messageOffset": 150
+  },
+  "colors": {
+    "CARD_TYPE_ATTACK": "0xff6b6b",
+    "CARD_TYPE_DEFEND": "0x4ecdc4",
+    "CARD_TYPE_HEAL": "0x2ecc71",
+    "CARD_TYPE_ENERGY": "0xf39c12",
+    "CARD_TYPE_SKILL": "0x9b59b6",
+    "CARD_BACKGROUND": "0x2a2a4e",
+    "CARD_SELECTED_STROKE": "0xffff00",
+    "BACKGROUND_BATTLE": "0x0f0f1e",
+    "BACKGROUND_REWARD": "0x1a1a2e",
+    "BACKGROUND_POPUP": "0x1a1a2e",
+    "BACKGROUND_OVERLAY": "0x000000",
+    "ENERGY_ORB": "0xf39c12",
+    "ENERGY_ORB_GLOW": "0xffcc00",
+    "ENERGY_ORB_BONUS": "0xffcc00",
+    "ENERGY_ORB_INACTIVE": "0x666666",
+    "END_TURN_BUTTON": "0xff6b6b",
+    "END_TURN_BUTTON_HOVER": "0xff8888",
+    "END_TURN_BUTTON_DISABLED": "0x666666",
+    "DECK_PILE_BG": "0x2c3e50",
+    "DECK_PILE_STROKE": "0x34495e",
+    "DISCARD_PILE_BG": "0x34495e",
+    "DISCARD_PILE_STROKE": "0x7f8c8d",
+    "PLAYER_BG": "0x2a2a4e",
+    "PLAYER_STROKE": "0x4ecdc4",
+    "PLAYER_SHIELD": "0x4ecdc4",
+    "PLAYER_HEAL": "0x2ecc71",
+    "ENEMY_BG": "0x3a1a1a",
+    "ENEMY_STROKE": "0xff6b6b",
+    "ENEMY_SELECTED_STROKE": "0xffff00",
+    "ENEMY_DAMAGE_PARTICLE": "0xff6b6b",
+    "ENEMY_INTENT_ICON_BG": "0x000000",
+    "ENEMY_INTENT_ICON_STROKE": "0xffaa00",
+    "ENEMY_BUFF_BG": "0x222222",
+    "ENEMY_BUFF_STROKE": "0xffaa00",
+    "RESHUFFLE_TEMP_CARD": "0x6366f1",
+    "STROKE_WHITE": "0xffffff",
+    "STROKE_BLACK": "0x000000",
+    "TEXT_WHITE": "#ffffff",
+    "TEXT_BLACK": "#000000",
+    "TEXT_GRAY": "#cccccc",
+    "TEXT_LIGHT_GRAY": "#95a5a6",
+    "TEXT_VICTORY": "#2ecc71",
+    "TEXT_GOLD": "#fbbf24",
+    "TEXT_ATTACK": "#ff6b6b",
+    "TEXT_DEFEND": "#4ecdc4",
+    "TEXT_HEAL": "#2ecc71",
+    "TEXT_ENERGY": "#f39c12",
+    "TEXT_YELLOW": "#ffff00",
+    "TEXT_RESHUFFLE": "#4ecdc4",
+    "BUTTON_PRIMARY": "0x8b5cf6",
+    "BUTTON_PRIMARY_HOVER": "0x7c3aed",
+    "BUTTON_SECONDARY": "0x4ecdc4",
+    "BUTTON_SECONDARY_HOVER": "0x5fddd5",
+    "POPUP_STROKE": "0x8b5cf6",
+    "MY_DECK_BUTTON_BG": "0x8b5cf6",
+    "MY_DECK_BUTTON_HOVER": "0x7c3aed"
+  }
+}

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { PlayerState } from '../../../types';
 import LanguageManager from '../../../i18n/LanguageManager';
+import UIConfigManager from './UIConfigManager';
 import { tweenConfig } from './TweenConfigManager';
 import { textStyle } from './TextStyleManager';
 
@@ -39,20 +40,21 @@ export default class BattleUIManager {
    * 에너지 UI를 생성합니다.
    */
   public createEnergyUI(playerState: PlayerState): void {
-    const width = this.scene.cameras.main.width;
-    const x = width - 300;
-    const y = 580;
+    const uiConfig = UIConfigManager.getInstance();
+    const pos = uiConfig.getEnergyUIPosition(this.scene.cameras.main);
+    const config = uiConfig.getEnergyUIConfig();
+    
     // Energy 컨테이너
-    const energyContainer = this.scene.add.container(x, y);
+    const energyContainer = this.scene.add.container(pos.x, pos.y);
     // Energy 아이콘들 (구슬)
     this.energyOrbs = [];
-    const orbSpacing = 50;
+    const orbSpacing = config.orbSpacing;
 
     for (let i = 0; i < playerState.maxEnergy; i++) {
-      const orb = this.scene.add.circle(i * orbSpacing, 0, 20, 0xf39c12);
-      orb.setStrokeStyle(3, 0xffffff);
+      const orb = this.scene.add.circle(i * orbSpacing, 0, config.orbRadius, uiConfig.getColor('ENERGY_ORB'));
+      orb.setStrokeStyle(3, uiConfig.getColor('STROKE_WHITE'));
       // 빛나는 효과
-      const glow = this.scene.add.circle(i * orbSpacing, 0, 24, 0xffcc00, 0.3);
+      const glow = this.scene.add.circle(i * orbSpacing, 0, config.orbGlowRadius, uiConfig.getColor('ENERGY_ORB_GLOW'), 0.3);
 
       this.energyOrbs.push({ orb, glow, active: true });
       energyContainer.add([glow, orb]);
@@ -66,13 +68,15 @@ export default class BattleUIManager {
   }
 
   public createEndTurnButton(onClick: () => void): void {
-    const width = this.scene.cameras.main.width;
+    const uiConfig = UIConfigManager.getInstance();
+    const pos = uiConfig.getEndTurnButtonPosition(this.scene.cameras.main);
+    const size = uiConfig.getEndTurnButtonSize();
     this.onEndTurnClick = onClick;
 
-    const button = this.scene.add.container(width - 200, 50);
+    const button = this.scene.add.container(pos.x, pos.y);
 
-    const bg = this.scene.add.rectangle(0, 0, 150, 60, 0xff6b6b);
-    bg.setStrokeStyle(3, 0xffffff);
+    const bg = this.scene.add.rectangle(0, 0, size.width, size.height, uiConfig.getColor('END_TURN_BUTTON'));
+    bg.setStrokeStyle(3, uiConfig.getColor('STROKE_WHITE'));
 
     const text = this.scene.add.text(0, 0, 'End Turn',
       textStyle.getStyle('buttons.secondary')
@@ -80,21 +84,21 @@ export default class BattleUIManager {
     text.setOrigin(0.5);
 
     button.add([bg, text]);
-    button.setSize(150, 60);
+    button.setSize(size.width, size.height);
     button.setInteractive({ useHandCursor: true });
 
     button.on('pointerover', () => {
       if (!this.isEndTurnButtonEnabled) return;
 
       tweenConfig.apply(this.scene, 'interactive.buttonHover', button);
-      bg.setFillStyle(0xff8888);
+      bg.setFillStyle(uiConfig.getColor('END_TURN_BUTTON_HOVER'));
     });
 
     button.on('pointerout', () => {
       if (!this.isEndTurnButtonEnabled) return;
 
       tweenConfig.apply(this.scene, 'interactive.buttonHoverOut', button);
-      bg.setFillStyle(0xff6b6b);
+      bg.setFillStyle(uiConfig.getColor('END_TURN_BUTTON'));
     });
 
     button.on('pointerdown', () => {
@@ -113,15 +117,16 @@ export default class BattleUIManager {
 
   public setEndTurnButtonEnabled(enabled: boolean): void {
     this.isEndTurnButtonEnabled = enabled;
+    const uiConfig = UIConfigManager.getInstance();
 
     if (enabled) {
       // 활성화
-      this.endTurnButtonBg.setFillStyle(0xff6b6b);
+      this.endTurnButtonBg.setFillStyle(uiConfig.getColor('END_TURN_BUTTON'));
       this.endTurnButtonText.setAlpha(1);
       this.endTurnButton.setAlpha(1);
     } else {
       // 비활성화
-      this.endTurnButtonBg.setFillStyle(0x666666);
+      this.endTurnButtonBg.setFillStyle(uiConfig.getColor('END_TURN_BUTTON_DISABLED'));
       this.endTurnButtonText.setAlpha(0.5);
       this.endTurnButton.setAlpha(0.7);
     }
@@ -136,6 +141,7 @@ export default class BattleUIManager {
     offsetDirection: number,
     onClick: () => void
   ): { container: Phaser.GameObjects.Container; countText: Phaser.GameObjects.Text } {
+    const uiConfig = UIConfigManager.getInstance();
     const container = this.scene.add.container(x, y);
 
     // 카드 더미 시각화 (여러 장 겹쳐진 효과)
@@ -170,7 +176,7 @@ export default class BattleUIManager {
     container.add(labelText);
 
     // 클릭 가능한 영역
-    const clickArea = this.scene.add.rectangle(0, 0, 150, 200, 0x000000, 0);
+    const clickArea = this.scene.add.rectangle(0, 0, 150, 200, uiConfig.getColor('BACKGROUND_OVERLAY'), 0);
     clickArea.setInteractive({ useHandCursor: true });
     container.add(clickArea);
 
@@ -191,16 +197,16 @@ export default class BattleUIManager {
   }
 
   public createDeckPile(onClick: () => void): void {
-    const width = this.scene.cameras.main.width;
-    const height = this.scene.cameras.main.height;
+    const uiConfig = UIConfigManager.getInstance();
+    const pos = uiConfig.getDeckPilePosition(this.scene.cameras.main);
     this.onDeckPileClick = onClick;
 
     const langManager = LanguageManager.getInstance();
     const result = this.createCardPile(
-      width-200, height-250,
+      pos.x, pos.y,
       '🎴',
       langManager.t('battle.deck'),
-      0x2c3e50, 0x34495e,
+      uiConfig.getColor('DECK_PILE_BG'), uiConfig.getColor('DECK_PILE_STROKE'),
       -1, // 왼쪽으로 오프셋
       () => {
         if (this.onDeckPileClick) {
@@ -214,15 +220,16 @@ export default class BattleUIManager {
   }
 
   public createDiscardPile(onClick: () => void): void {
-    const height = this.scene.cameras.main.height;
+    const uiConfig = UIConfigManager.getInstance();
+    const pos = uiConfig.getDiscardPilePosition(this.scene.cameras.main);
     this.onDiscardPileClick = onClick;
 
     const langManager = LanguageManager.getInstance();
     const result = this.createCardPile(
-      200, height-250,
+      pos.x, pos.y,
       '🗑️',
       langManager.t('battle.discard'),
-      0x34495e, 0x7f8c8d,
+      uiConfig.getColor('DISCARD_PILE_BG'), uiConfig.getColor('DISCARD_PILE_STROKE'),
       1, // 오른쪽으로 오프셋
       () => {
         if (this.onDiscardPileClick) {
@@ -236,9 +243,10 @@ export default class BattleUIManager {
   }
 
   public createDeckInfoText(): void {
-    const height = this.scene.cameras.main.height;
+    const uiConfig = UIConfigManager.getInstance();
+    const pos = uiConfig.getDeckInfoTextPosition(this.scene.cameras.main);
 
-    this.deckText = this.scene.add.text(50, height - 50, '',
+    this.deckText = this.scene.add.text(pos.x, pos.y, '',
       textStyle.getStyle('ui.label', { fontFamily: 'monospace' })
     );
   }
@@ -248,16 +256,20 @@ export default class BattleUIManager {
     const maxEnergy       = playerState.maxEnergy;
     const requiredOrbs    = Math.max(currentEnergy, maxEnergy);
     const currentOrbCount = this.energyOrbs.length;
+    const uiConfig = UIConfigManager.getInstance();
 
     // 필요하면 구슬 추가 (에너지가 maxEnergy를 초과한 경우)
     if (requiredOrbs > currentOrbCount) {
-      const orbSpacing = 50;
+      const uiConfig = UIConfigManager.getInstance();
+      const config = uiConfig.getEnergyUIConfig();
+      const orbSpacing = config.orbSpacing;
+      
       for (let i = currentOrbCount; i < requiredOrbs; i++) {
-        const orb = this.scene.add.circle(i * orbSpacing, 0, 20, 0xf39c12);
-        orb.setStrokeStyle(3, 0xffffff);
+        const orb = this.scene.add.circle(i * orbSpacing, 0, config.orbRadius, uiConfig.getColor('ENERGY_ORB'));
+        orb.setStrokeStyle(3, uiConfig.getColor('STROKE_WHITE'));
 
         // 빛나는 효과
-        const glow = this.scene.add.circle(i * orbSpacing, 0, 24, 0xffcc00, 0.3);
+        const glow = this.scene.add.circle(i * orbSpacing, 0, config.orbGlowRadius, uiConfig.getColor('ENERGY_ORB_GLOW'), 0.3);
 
         this.energyOrbs.push({ orb, glow, active: true });
         this.energyContainer.add([glow, orb]);
@@ -284,13 +296,13 @@ export default class BattleUIManager {
         if (index < currentEnergy) {
           // 활성 에너지
           const isBonus = index >= maxEnergy;
-          orbData.orb.setFillStyle(isBonus ? 0xffcc00 : 0xf39c12); // 보너스 에너지는 더 밝은 색
+          orbData.orb.setFillStyle(isBonus ? uiConfig.getColor('ENERGY_ORB_BONUS') : uiConfig.getColor('ENERGY_ORB')); // 보너스 에너지는 더 밝은 색
           orbData.orb.setAlpha(1);
           orbData.glow.setAlpha(isBonus ? 0.5 : 0.3);
           orbData.active = true;
         } else {
           // 비활성 에너지
-          orbData.orb.setFillStyle(0x666666);
+          orbData.orb.setFillStyle(uiConfig.getColor('ENERGY_ORB_INACTIVE'));
           orbData.orb.setAlpha(0.5);
           orbData.glow.setAlpha(0);
           orbData.active = false;
@@ -299,7 +311,7 @@ export default class BattleUIManager {
         // maxEnergy를 초과하는 보너스 에너지 (일시적으로 표시)
         orbData.orb.setVisible(true);
         orbData.glow.setVisible(true);
-        orbData.orb.setFillStyle(0xffcc00);
+        orbData.orb.setFillStyle(uiConfig.getColor('ENERGY_ORB_BONUS'));
         orbData.orb.setAlpha(1);
         orbData.glow.setAlpha(0.5);
         orbData.active = true;

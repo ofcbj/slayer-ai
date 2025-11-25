@@ -4,6 +4,7 @@ import Card             from '../objects/Card';
 import DeckManager      from './DeckManager';
 import BattleUIManager  from './BattleUIManager';
 import SoundManager     from './SoundManager';
+import UIConfigManager  from './UIConfigManager';
 import { tweenConfig }  from './TweenConfigManager';
 import { CardData }     from '../../../types';
 
@@ -87,11 +88,11 @@ export default class CardHandManager {
   }
 
   public initializeHandContainer(): void {
-    const width  = this.scene.cameras.main.width;
-    const height = this.scene.cameras.main.height;
+    const uiConfig = UIConfigManager.getInstance();
+    const pos = uiConfig.getHandContainerPosition(this.scene.cameras.main);
 
     // 핸드 영역 (20px 위로 올림)
-    this.handContainer = this.scene.add.container(width / 2, height - 150);
+    this.handContainer = this.scene.add.container(pos.x, pos.y);
   }
 
   public drawCards(count: number, onComplete?: () => void): void {
@@ -207,10 +208,12 @@ export default class CardHandManager {
     for (let i = 0; i < cardsToShow; i++) {
       this.scene.time.delayedCall(i * 50, () => {
         // 임시 카드 이미지 생성 (연출용)
+        const uiConfig = UIConfigManager.getInstance();
+        const reshuffleConfig = uiConfig.getCardReshuffleConfig();
         const tempCard = this.scene.add.rectangle(
           discardWorldPos.tx, discardWorldPos.ty,
-          100, 140,
-          0x6366f1, 0.8
+          reshuffleConfig.tempCardWidth, reshuffleConfig.tempCardHeight,
+          uiConfig.getColor('RESHUFFLE_TEMP_CARD'), 0.8
         );
         tempCard.setDepth(1000 + i);
 
@@ -265,7 +268,8 @@ export default class CardHandManager {
     this.uiManager.animateDeckPile();
 
     // 최종 위치 계산 (모든 카드가 드로우된 후의 핸드 배치 기준)
-    const spacing = 150;
+    const uiConfig = UIConfigManager.getInstance();
+    const spacing = uiConfig.getHandCardConfig().spacing;
     const totalWidth = (finalHandSize - 1) * spacing;
     const startHandX = -totalWidth / 2;
 
@@ -305,7 +309,8 @@ export default class CardHandManager {
    * 기존 카드들을 새로운 finalHandSize 기준으로 재배치합니다.
    */
   private rearrangeExistingCards(finalHandSize: number): void {
-    const spacing = 150;
+    const uiConfig = UIConfigManager.getInstance();
+    const spacing = uiConfig.getHandCardConfig().spacing;
     const totalWidth = (finalHandSize - 1) * spacing;
     const startX = -totalWidth / 2;
 
@@ -328,7 +333,8 @@ export default class CardHandManager {
 
   public arrangeHand(): void {
     const cardCount = this.hand.length;
-    const spacing = 150;
+    const uiConfig = UIConfigManager.getInstance();
+    const spacing = uiConfig.getHandCardConfig().spacing;
     const totalWidth = (cardCount - 1) * spacing;
     const startX = -totalWidth / 2;
 

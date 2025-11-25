@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { CardData } from '../../../types';
+import UIConfigManager from '../managers/UIConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 import LanguageManager from '../../../i18n/LanguageManager';
 
@@ -29,36 +30,46 @@ export default class CardRenderer {
   ): Phaser.GameObjects.Container {
     const container = scene.add.container(x, y);
 
-    const width = options.width || 140;
-    const height = options.height || 200;
+    const uiConfig = UIConfigManager.getInstance();
+    const config = uiConfig.getCardRendererConfig();
+    
+    const width = options.width || config.defaultWidth;
+    const height = options.height || config.defaultHeight;
 
     // 카드 배경
-    const bg = scene.add.rectangle(0, 0, width, height, 0x2a2a4e);
+    const bg = scene.add.rectangle(0, 0, width, height, uiConfig.getColor('CARD_BACKGROUND'));
     const borderColor = this.getCardColor(cardData);
     bg.setStrokeStyle(3, borderColor);
 
     // 카드 타입에 따른 상단 배경
-    const headerBg = scene.add.rectangle(0, -height / 2 + 18, width, 36, borderColor);
+    const headerBg = scene.add.rectangle(0, -height / 2 + config.headerYOffset, width, config.headerHeight, borderColor);
 
     // 카드 이름
-    const nameText = scene.add.text(0, -height/2+18, cardData.name,
+    const nameText = scene.add.text(0, -height/2+config.headerYOffset, cardData.name,
       textStyle.getStyle('cards.name', { wordWrap: { width: width - 10 } })
     );
     nameText.setOrigin(0.5);
 
     // 코스트 (카드 색상과 동일하게)
-    const costCircle = scene.add.circle(-width/2+20, -height/2+18, 15, borderColor);
-    costCircle.setStrokeStyle(2, 0xffffff);
+    const costCircle = scene.add.circle(
+      -width/2+config.costCircle.xOffset, 
+      -height/2+config.costCircle.yOffset, 
+      config.costCircle.radius, 
+      borderColor
+    );
+    costCircle.setStrokeStyle(2, uiConfig.getColor('STROKE_WHITE'));
 
     const costValue = cardData.cost ?? 0; // cost가 undefined일 때 기본값 0 사용
-    const costText = scene.add.text(-width/2+20, -height/2+18,
+    const costText = scene.add.text(
+      -width/2+config.costCircle.xOffset, 
+      -height/2+config.costCircle.yOffset,
       costValue.toString(),
       textStyle.getStyle('cards.cost')
     );
     costText.setOrigin(0.5);
 
     // 카드 이미지 - 중앙에 크게 표시 (PNG 또는 이모지)
-    const text = scene.add.text(0, -25, this.getCardImage(cardData),
+    const text = scene.add.text(0, config.image.yOffset, this.getCardImage(cardData),
       textStyle.getStyle('cards.emoji')
     );
     text.setOrigin(0.5);
@@ -67,14 +78,14 @@ export default class CardRenderer {
     cardImage = text;
 
     // 카드 값 (데미지, 방어도 등) - 이미지 아래
-    const valueText = scene.add.text(0, 25, this.getValueDisplay(cardData),
-      textStyle.getStyle('cards.value', { color: this.getValueColor(cardData), stroke: '#000000', strokeThickness: 4 })
+    const valueText = scene.add.text(0, config.value.yOffset, this.getValueDisplay(cardData),
+      textStyle.getStyle('cards.value', { color: this.getValueColor(cardData), stroke: uiConfig.getColorString('TEXT_BLACK'), strokeThickness: 4 })
     );
     valueText.setOrigin(0.5);
 
     // 카드 효과 설명 - 하단
-    const descText = scene.add.text(0, 78, this.getEffectDescription(cardData),
-      textStyle.getStyle('cards.emojiSmall', { color: '#cccccc', wordWrap: { width: width - 30 }, lineSpacing: 2 })
+    const descText = scene.add.text(0, config.description.yOffset, this.getEffectDescription(cardData),
+      textStyle.getStyle('cards.emojiSmall', { color: uiConfig.getColorString('TEXT_GRAY'), wordWrap: { width: width - 30 }, lineSpacing: 2 })
     );
     descText.setOrigin(0.5, 0.5);
 
@@ -125,21 +136,23 @@ export default class CardRenderer {
   }
 
   static getCardColor(cardData: CardData): number {
+    const uiConfig = UIConfigManager.getInstance();
     const type = this.getCardType(cardData);
-    if (type === 'attack') return 0xff6b6b;
-    if (type === 'defend') return 0x4ecdc4;
-    if (type === 'heal')   return 0x2ecc71;
-    if (type === 'energy') return 0xf39c12;
-    return 0x9b59b6;
+    if (type === 'attack') return uiConfig.getColor('CARD_TYPE_ATTACK');
+    if (type === 'defend') return uiConfig.getColor('CARD_TYPE_DEFEND');
+    if (type === 'heal')   return uiConfig.getColor('CARD_TYPE_HEAL');
+    if (type === 'energy') return uiConfig.getColor('CARD_TYPE_ENERGY');
+    return uiConfig.getColor('CARD_TYPE_SKILL');
   }
 
   static getValueColor(cardData: CardData): string {
+    const uiConfig = UIConfigManager.getInstance();
     const type = this.getCardType(cardData);
-    if (type === 'attack') return '#ff6b6b';
-    if (type === 'defend') return '#4ecdc4';
-    if (type === 'heal')   return '#2ecc71';
-    if (type === 'energy') return '#f39c12';
-    return '#ffffff';
+    if (type === 'attack') return uiConfig.getColorString('TEXT_ATTACK');
+    if (type === 'defend') return uiConfig.getColorString('TEXT_DEFEND');
+    if (type === 'heal')   return uiConfig.getColorString('TEXT_HEAL');
+    if (type === 'energy') return uiConfig.getColorString('TEXT_ENERGY');
+    return uiConfig.getColorString('TEXT_WHITE');
   }
 
   static getValueDisplay(cardData: CardData): string {

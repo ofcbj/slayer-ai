@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import GameDataManager from '../managers/GameDataManager';
+import UIConfigManager from '../managers/UIConfigManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 import { GameState } from '../../../types';
@@ -14,6 +15,8 @@ export default class PreloadScene extends Phaser.Scene {
     // 보스 패턴 데이터 로드 (기존 파일 유지)
     const basePath: string = import.meta.env.BASE_URL;
     this.load.json('bossPatterns', `${basePath}data/boss-patterns.json`);
+    // UI 설정 데이터 로드
+    this.load.json('uiConfig', `${basePath}data/ui.json`);
   }
 
   async create(): Promise<void> {
@@ -29,6 +32,9 @@ export default class PreloadScene extends Phaser.Scene {
       await tweenConfig.load();
       // 텍스트 스타일 설정 로드
       await textStyle.load();
+      // UI 설정 로드
+      const uiConfigManager = UIConfigManager.getInstance();
+      uiConfigManager.loadConfig(this.cache.json.get('uiConfig'));
       console.log('게임 데이터 로드 완료');
     } catch (error) {
       console.error('Failed to load game data:', error);

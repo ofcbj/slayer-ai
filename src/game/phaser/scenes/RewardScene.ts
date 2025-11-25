@@ -3,14 +3,11 @@ import EventBus from '../../EventBus';
 import Card from '../objects/Card';
 import { CardData, GameState } from '../../../types';
 import LanguageManager from '../../../i18n/LanguageManager';
+import UIConfigManager from '../managers/UIConfigManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 import GameDataManager from '../managers/GameDataManager';
 
-interface CardsDataRegistry {
-  rewards: CardData[];
-  [key: string]: unknown;
-}
 
 export default class RewardScene extends Phaser.Scene {
   private continueButton!: Phaser.GameObjects.Container;
@@ -25,15 +22,17 @@ export default class RewardScene extends Phaser.Scene {
 
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+    const uiConfig = UIConfigManager.getInstance();
 
     // 배경
     this.add.rectangle(0, 0, width, height, 0x1a1a2e).setOrigin(0);
 
     // 타이틀
     const langManager = LanguageManager.getInstance();
+    const titlePos = uiConfig.getRewardTitlePosition(this.cameras.main);
     this.add.text(
-      width / 2,
-      100,
+      titlePos.x,
+      titlePos.y,
       langManager.t('reward.victory'),
       textStyle.getStyle('titles.section', { fontSize: '64px', color: '#2ecc71', stroke: '#ffffff', strokeThickness: 4 })
     ).setOrigin(0.5);
@@ -43,24 +42,26 @@ export default class RewardScene extends Phaser.Scene {
 
     // 골드 보상 추가
     const gameState = this.registry.get('gameState') as GameState;
-    const goldReward = 100;
+    const goldReward = uiConfig.getRewardGoldAmount();
     if (gameState.player.gold === undefined) {
       gameState.player.gold = 0;
     }
     gameState.player.gold += goldReward;
 
     // 골드 보상 표시
+    const goldPos = uiConfig.getRewardGoldDisplayPosition(this.cameras.main);
     this.add.text(
-      width / 2,
-      160,
+      goldPos.x,
+      goldPos.y,
       `💰 +${goldReward}G`,
       textStyle.getStyle('titles.section', { fontSize: '36px', color: '#fbbf24' })
     ).setOrigin(0.5);
 
     // 설명
+    const descPos = uiConfig.getRewardDescriptionPosition(this.cameras.main);
     this.add.text(
-      width / 2,
-      210,
+      descPos.x,
+      descPos.y,
       langManager.t('reward.chooseCard'),
       textStyle.getStyle('buttons.secondary')
     ).setOrigin(0.5);
@@ -74,8 +75,8 @@ export default class RewardScene extends Phaser.Scene {
 
   private createRewardCards(): void {
     const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
     const gameDataManager = GameDataManager.getInstance();
+    const uiConfig = UIConfigManager.getInstance();
     
     // 보상 카드 목록 가져오기
     const rewardCardsPool = gameDataManager.getRewardCards();
@@ -83,12 +84,12 @@ export default class RewardScene extends Phaser.Scene {
     // 랜덤 보상 카드 3장 선택
     const rewardCards: CardData[] = Phaser.Utils.Array.Shuffle([...rewardCardsPool]).slice(0, 3);
 
-    const spacing = 200;
+    const spacing = uiConfig.getRewardCardSpacing();
     const startX = width / 2 - spacing;
 
     rewardCards.forEach((cardData: CardData, index: number) => {
       const x = startX + (index * spacing);
-      const y = height / 2;
+      const y = uiConfig.getRewardCardY(this.cameras.main);
 
       const card = new Card(this, x, y, cardData);
 
@@ -138,9 +139,10 @@ export default class RewardScene extends Phaser.Scene {
     });
 
     // 메시지 표시
+    const uiConfig = UIConfigManager.getInstance();
     const message = this.add.text(
       this.cameras.main.width / 2,
-      this.cameras.main.height / 2 + 150,
+      this.cameras.main.height / 2 + uiConfig.getRewardMessageOffset(),
       `${cardData.name} added to deck!`,
       textStyle.getStyle('buttons.primary', { color: '#2ecc71', stroke: '#000000', strokeThickness: 4 })
     );
@@ -158,12 +160,13 @@ export default class RewardScene extends Phaser.Scene {
   }
 
   private createContinueButton(): void {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+    const uiConfig = UIConfigManager.getInstance();
+    const buttonPos = uiConfig.getRewardContinueButtonPosition(this.cameras.main);
+    const buttonSize = uiConfig.getRewardContinueButtonSize();
 
-    const button = this.add.container(width / 2, height - 100);
+    const button = this.add.container(buttonPos.x, buttonPos.y);
 
-    const bg = this.add.rectangle(0, 0, 250, 70, 0x4ecdc4);
+    const bg = this.add.rectangle(0, 0, buttonSize.width, buttonSize.height, 0x4ecdc4);
     bg.setStrokeStyle(3, 0xffffff);
 
     const text = this.add.text(
@@ -175,7 +178,7 @@ export default class RewardScene extends Phaser.Scene {
     text.setOrigin(0.5);
 
     button.add([bg, text]);
-    button.setSize(250, 70);
+    button.setSize(buttonSize.width, buttonSize.height);
     button.setInteractive({ useHandCursor: true });
     button.setVisible(false); // 처음에는 숨김
 
