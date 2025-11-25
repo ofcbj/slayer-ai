@@ -4,23 +4,8 @@ import LanguageManager from '../../../i18n/LanguageManager';
 import GameDataManager from '../managers/GameDataManager';
 import { textStyle } from '../managers/TextStyleManager';
 import Card from '../objects/Card';
-import { CardData } from '../../../types';
+import { CardData, GameState } from '../../../types';
 import CardViewManager from '../managers/CardViewManager';
-
-interface GameState {
-  player: {
-    health: number;
-    maxHealth: number;
-    maxEnergy: number;
-    gold: number;
-    [key: string]: any;
-  };
-  deck: any[];
-  currentStage: number;
-  stagesCleared: number[];
-  removalCost?: number;
-  [key: string]: any;
-}
 
 export default class ShopScene extends Phaser.Scene {
   private cardObjects: { card: Card; price: number; data: CardData; priceContainer: Phaser.GameObjects.Container }[] = [];

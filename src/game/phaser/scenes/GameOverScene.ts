@@ -2,22 +2,10 @@ import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
+import { GameState } from '../../../types';
 
 interface InitData {
   victory?: boolean;
-}
-
-interface GameState {
-  player: {
-    maxHealth : number;
-    health    : number;
-    energy    : number;
-    maxEnergy : number;
-    defense   : number;
-  };
-  deck          : any[];
-  currentStage  : number;
-  stagesCleared : any[];
 }
 
 export default class GameOverScene extends Phaser.Scene {

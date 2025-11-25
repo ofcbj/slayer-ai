@@ -5,33 +5,10 @@ import GameDataManager from '../managers/GameDataManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 import CardViewManager from '../managers/CardViewManager';
-
-interface StageData {
-  id: number;
-  name: string;
-  type: string;
-  description?: string;
-  nextStages?: number[];
-  [key: string]: any;
-}
+import { StageData, GameState } from '../../../types';
 
 interface StagesDataMap {
   [key: number]: StageData;
-}
-
-interface Player {
-  health: number;
-  maxHealth: number;
-  maxEnergy: number;
-  [key: string]: any;
-}
-
-interface GameState {
-  player: Player;
-  currentStage: number;
-  stagesCleared: number[];
-  deck: any[];
-  [key: string]: any;
 }
 
 interface SelectedStage {
@@ -101,7 +78,7 @@ export default class StageSelectScene extends Phaser.Scene {
     this.scrollToAvailableStage(clearedStages);
   }
 
-  private createPlayerStats(player: Player): void {
+  private createPlayerStats(player: GameState['player']): void {
     const width = this.cameras.main.width;
 
     const statsContainer = this.add.container(width - 280, 40);

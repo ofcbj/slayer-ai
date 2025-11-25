@@ -3,19 +3,7 @@ import EventBus from '../../EventBus';
 import GameDataManager from '../managers/GameDataManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
-
-interface GameState {
-  player: {
-    maxHealth : number;
-    health    : number;
-    energy    : number;
-    maxEnergy : number;
-    defense   : number;
-  };
-  deck: unknown[];
-  currentStage  : number;
-  stagesCleared : unknown[];
-}
+import { GameState } from '../../../types';
 
 export default class PreloadScene extends Phaser.Scene {
   constructor() {

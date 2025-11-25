@@ -85,20 +85,23 @@ export interface EnemyExtended {
  * 스테이지 데이터
  */
 export interface StageData {
-  id            : string;
-  data          : {
-    enemies     : string[];
-    type        : string;
-    nextStages? : string[];
-  };
+  id            : number;
+  name          : string;
+  type          : string;
+  description?  : string;
+  enemies?      : string[];
+  nextStages?   : number[];
+  [key: string] : any;
 }
 
 /**
  * 게임 상태
  */
 export interface GameState {
-  player        : PlayerState;
+  player        : PlayerState & { gold?: number };
   deck          : CardData[];
-  stagesCleared : string[];
-  currentStage  : string;
+  stagesCleared : number[];
+  currentStage  : number;
+  removalCost?  : number;  // 카드 삭제 비용
+  [key: string] : any;     // 추가 속성 허용
 }
