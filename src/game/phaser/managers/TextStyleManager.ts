@@ -42,13 +42,13 @@ export class TextStyleManager {
   public async load(): Promise<void> {
     try {
       // Use import.meta.env.BASE_URL to handle GitHub Pages base path
-      const basePath = import.meta.env.BASE_URL || '/';
-      const url = `${basePath}data/textStyles.json`.replace('//', '/');
-      const response = await fetch(url);
+      const basePath  = import.meta.env.BASE_URL || '/';
+      const url       = `${basePath}data/textStyles.json`.replace('//', '/');
+      const response  = await fetch(url);
       if (!response.ok) {
         throw new Error(`Failed to load textStyles.json: ${response.statusText}`);
       }
-      this.config = await response.json();
+      this.config    = await response.json();
       console.log('Text styles loaded successfully');
     } catch (error) {
       console.error('Error loading text styles:', error);

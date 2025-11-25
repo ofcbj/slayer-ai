@@ -15,24 +15,24 @@ import { CardData } from '../../../types';
  * 카드 클릭, 적 클릭, 카드 사용 등을 처리합니다.
  */
 export default class BattleEventManager {
-  private scene           : Phaser.Scene;
-  private battleManager   : BattleManager;
-  private cardHandManager : CardHandManager;
-  private deckManager     : DeckManager;
-  private uiManager       : BattleUIManager;
-  private playerCharacter : Player;
-  private soundManager?   : SoundManager;
-  private onDeckInfoUpdate?: () => void;
+  private scene             : Phaser.Scene;
+  private battleManager     : BattleManager;
+  private cardHandManager   : CardHandManager;
+  private deckManager       : DeckManager;
+  private uiManager         : BattleUIManager;
+  private playerCharacter   : Player;
+  private soundManager?     : SoundManager;
+  private onDeckInfoUpdate? : () => void;
 
   constructor(
-    scene           : Phaser.Scene,
-    battleManager   : BattleManager,
-    cardHandManager : CardHandManager,
-    deckManager     : DeckManager,
-    uiManager       : BattleUIManager,
-    playerCharacter : Player,
-    onDeckInfoUpdate?: () => void,
-    soundManager?   : SoundManager
+    scene             : Phaser.Scene,
+    battleManager     : BattleManager,
+    cardHandManager   : CardHandManager,
+    deckManager       : DeckManager,
+    uiManager         : BattleUIManager,
+    playerCharacter   : Player,
+    soundManager?     : SoundManager,
+    onDeckInfoUpdate? : () => void    
   ) {
     this.scene            = scene;
     this.battleManager    = battleManager;

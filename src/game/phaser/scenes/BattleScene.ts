@@ -9,7 +9,7 @@ import BattleUIManager    from '../managers/BattleUIManager';
 import CardHandManager    from '../managers/CardHandManager';
 import CardViewManager    from '../managers/CardViewManager';
 import BattleEventManager from '../managers/BattleEventManager';
-import BattleManager, { BattleCallbacks, EnemyData, GameState } from '../managers/BattleManager';
+import BattleManager, { BattleCallbacks, GameState } from '../managers/BattleManager';
 import SoundManager       from '../managers/SoundManager';
 import LanguageManager    from '../../../i18n/LanguageManager';
 
@@ -45,9 +45,9 @@ export default class BattleScene extends Phaser.Scene {
   private unsubscribePlayerState?: () => void;
 
   // State
-  private gameState!            : GameState;
-  private selectedStage!        : any;
-  private playerCharacter!      : Player;
+  private gameState!    : GameState;
+  private selectedStage!: any;
+  private player!       : Player;
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -85,8 +85,8 @@ export default class BattleScene extends Phaser.Scene {
       });
     }
     // 플레이어 캐릭터 정리
-    if (this.playerCharacter && this.playerCharacter.scene) {
-      this.playerCharacter.destroy();
+    if (this.player && this.player.scene) {
+      this.player.destroy();
     }
     // 카드 핸드 정리
     if (this.cardHandManager) {
@@ -128,10 +128,7 @@ export default class BattleScene extends Phaser.Scene {
     this.selectedStage  = this.registry.get('selectedStage');
     Logger.debug('BattleScene create - Stage:', this.selectedStage?.id);
 
-    // Sound Manager 초기화
-    this.soundManager = new SoundManager(this);
-
-    // UI Manager와 Card Managers 먼저 초기화
+    this.soundManager   = new SoundManager(this);
     this.uiManager      = new BattleUIManager(this);
     this.cardHandManager= new CardHandManager(this, this.deckManager, this.uiManager, this.soundManager);
     this.cardViewManager= new CardViewManager(this);
@@ -146,7 +143,7 @@ export default class BattleScene extends Phaser.Scene {
     );
 
     // 플레이어 캐릭터 생성
-    this.playerCharacter = this.initializer.createPlayerCharacter();
+    this.player = this.initializer.createPlayer();
 
     // UI 생성
     this.initializer.createUI(
@@ -163,18 +160,6 @@ export default class BattleScene extends Phaser.Scene {
     // BattleManager 초기화 (enemies를 받아서 생성)
     this.initializeBattleManager(enemies);
 
-    // Controllers 생성
-    this.turnController = new BattleTurnController(
-      this,
-      this.battleManager,
-      this.cardHandManager,
-      () => this.stateSynchronizer.updateDeckInfo()
-    );
-
-    // CardHandManager에 setEndTurnAllowed 콜백 설정
-    (this.cardHandManager as any).setEndTurnAllowed = (allowed: boolean) =>
-      this.turnController.setEndTurnAllowed(allowed);
-
     this.stateSynchronizer = new BattleStateSynchronizer(
       this.uiManager,
       this.deckManager,
@@ -187,6 +172,20 @@ export default class BattleScene extends Phaser.Scene {
       this.gameState,
       this.selectedStage
     );
+
+    // Controllers 생성
+    this.turnController = new BattleTurnController(
+      this,
+      this.battleManager,
+      this.cardHandManager,
+      this.uiManager,
+      this.stateSynchronizer,
+      this.resultHandler
+    );
+
+    // CardHandManager에 setEndTurnAllowed 콜백 설정
+    (this.cardHandManager as any).setEndTurnAllowed = (allowed: boolean) =>
+      this.turnController.setEndTurnAllowed(allowed);
 
     this.consoleCommandHandler = new BattleConsoleCommandHandler(
       this,
@@ -207,23 +206,19 @@ export default class BattleScene extends Phaser.Scene {
       this.cardHandManager,
       this.deckManager,
       this.uiManager,
-      this.playerCharacter,
-      () => this.stateSynchronizer.updateDeckInfo(),
-      this.soundManager
+      this.player,
+      this.soundManager,
+      () => this.stateSynchronizer.updateDeckInfo()
     );
     this.eventManager.registerEventListeners();
     // 콘솔 명령어 이벤트 리스너 등록
     this.consoleCommandHandler.registerEventListeners();
     // 초기 덱 설정
     this.initializer.setupDeck();
-    // 적 의도 설정
-    enemies.forEach((enemy: Enemy) => {
-      const enemyData: EnemyData = (enemy as any).enemyData;
-      this.battleManager.setEnemyIntent(enemy, enemyData, () => Phaser.Math.Between(0, 100) / 100);
-    });
     // 게임 시작 사운드 재생
     this.soundManager.play('game-start');
-    // 첫 턴 시작
+    // TurnController 초기화 및 첫 턴 시작
+    this.turnController.initialize();
     this.turnController.startPlayerTurn();
     // 키보드 단축키 등록
     this.registerKeyboardShortcuts();
@@ -231,35 +226,6 @@ export default class BattleScene extends Phaser.Scene {
 
   private initializeBattleManager(enemies: Enemy[]): void {
     const callbacks: BattleCallbacks = {
-      onPlayerTurnStart: () => {
-        // 카드 뽑기 (5장)
-        // drawCards 내부에서 자동으로 버튼 비활성화/활성화 처리됨
-        this.cardHandManager.drawCards(5, () => {
-          this.stateSynchronizer.updateDeckInfo();
-        });
-      },
-      onEnemyTurnStart: () => {
-        // 적 턴 동안 턴 종료 버튼 비활성화
-        this.uiManager.setEndTurnButtonEnabled(false);
-      },
-      onEnemyAction: (enemy: Enemy, intent) => {
-        if (intent.type === 'attack') {
-          enemy.playAttackAnimation(() => {
-            let damage = intent.value;
-            // weak 효과: 공격력 50% 감소
-            if (enemy.hasBuff('weak')) {
-              damage = Math.floor(damage * 0.5);
-            }
-            // Player에게 직접 데미지 적용
-            this.playerCharacter.takeDamage(damage);
-            // 플레이어 사망 시 처리
-            if (this.playerCharacter.isDead()) {
-              this.cameras.main.flash(200, 255, 0, 0);
-              this.battleManager.checkBattleEnd();
-            }
-          });
-        }
-      },
       onEnemyDefeated: (_enemy: Enemy) => {
         // BattleManager에서 enemies 배열 처리 완료
         // 여기서는 추가 UI 업데이트만 필요하면 처리
@@ -267,15 +233,7 @@ export default class BattleScene extends Phaser.Scene {
         Logger.debug(`BattleScene onEnemyDefeated callback - Enemy removed, remaining: ${remainingEnemies.length}`);
       },
       onBattleEnd: (victory: boolean) => {
-        if (victory) {
-          this.time.delayedCall(1000, () => {
-            this.resultHandler.winBattle();
-          });
-        } else {
-          this.time.delayedCall(1000, () => {
-            this.resultHandler.checkGameOver();
-          });
-        }
+        this.turnController.handleBattleEnd(victory);
       },
       onDrawCards: (count: number) => {
         // 카드 드로우 효과 처리
@@ -285,13 +243,18 @@ export default class BattleScene extends Phaser.Scene {
       }
     };
 
-    this.battleManager = new BattleManager(this.playerCharacter, enemies, callbacks);
+    this.battleManager = new BattleManager(this.player, enemies, callbacks);
     // 플레이어 상태 옵저버 구독
-    this.unsubscribePlayerState = this.playerCharacter.subscribeToState((state) => {
+    this.unsubscribePlayerState = this.player.subscribeToState((state) => {
       // 1. GameState 동기화 (React UI 및 씬 간 데이터 전달용)
       this.gameState.player = { ...state };
       // 2. UI 업데이트
       this.uiManager.updateEnergyUI(state);
+    });
+
+    // 플레이어 사망 이벤트 리스닝
+    this.events.on('playerDied', () => {
+      this.cameras.main.flash(200, 255, 0, 0);
     });
   }
 
@@ -362,32 +325,20 @@ export default class BattleScene extends Phaser.Scene {
     });
   }
 
-  /**
-   * 카드 단축키 처리 (1-5)
-   */
   private handleCardShortcut(cardIndex: number): void {
     this.eventManager.handleCardShortcut(cardIndex);
   }
 
-  /**
-   * 적 단축키 처리 (화살표 키)
-   */
   private handleEnemyShortcut(enemyIndex: number): void {
     this.eventManager.handleEnemyShortcut(enemyIndex);
   }
 
-  /**
-   * 턴 종료 단축키 처리 (스페이스바)
-   */
   private handleEndTurnShortcut(): void {
     if (this.battleManager.getTurn() === 'player') {
       this.turnController.endPlayerTurn();
     }
   }
 
-  /**
-   * My Deck 버튼 생성
-   */
   private createMyDeckButton(): void {
     const deckContainer = this.add.container(100, 60);
 
@@ -395,8 +346,7 @@ export default class BattleScene extends Phaser.Scene {
     deckBg.setStrokeStyle(3, 0x7c3aed);
 
     const deckText = this.add.text(
-      0,
-      0,
+      0, 0,
       'My Deck',
       { fontSize: '20px', fontFamily: 'Arial', color: '#ffffff', fontStyle: 'bold' }
     ).setOrigin(0.5);

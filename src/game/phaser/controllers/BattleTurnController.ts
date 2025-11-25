@@ -1,8 +1,12 @@
 import Phaser from 'phaser';
-import Enemy from '../objects/Enemy';
-import BattleManager from '../managers/BattleManager';
-import CardHandManager from '../managers/CardHandManager';
-import { EnemyData } from '../managers/BattleManager';
+
+import Enemy                    from '../objects/Enemy';
+import BattleManager            from '../managers/BattleManager';
+import CardHandManager          from '../managers/CardHandManager';
+import BattleUIManager          from '../managers/BattleUIManager';
+import BattleStateSynchronizer  from './BattleStateSynchronizer';
+import BattleResultHandler      from './BattleResultHandler';
+import { EnemyData }            from '../../../types';
 
 /**
  * 전투 턴 흐름을 제어하는 컨트롤러
@@ -12,10 +16,12 @@ export default class BattleTurnController {
   private canEndTurn: boolean = true;
 
   constructor(
-    private scene           : Phaser.Scene,
-    private battleManager   : BattleManager,
-    private cardHandManager : CardHandManager,
-    private updateDeckInfo  : () => void
+    private scene             : Phaser.Scene,
+    private battleManager     : BattleManager,
+    private cardHandManager   : CardHandManager,
+    private uiManager         : BattleUIManager,
+    private stateSynchronizer : BattleStateSynchronizer,
+    private resultHandler     : BattleResultHandler
   ) {}
 
   /**
@@ -33,12 +39,28 @@ export default class BattleTurnController {
   }
 
   /**
+   * 초기화: 첫 턴 시작 전 적 의도 설정
+   */
+  initialize(): void {
+    const aliveEnemies = this.battleManager.getAliveEnemies();
+    aliveEnemies.forEach(enemy => {
+      const enemyData: EnemyData = (enemy as any).enemyData;
+      this.battleManager.setEnemyIntent(enemy, enemyData, () => Phaser.Math.Between(0, 100) / 100);
+    });
+  }
+
+  /**
    * 플레이어 턴 시작
    */
   startPlayerTurn(): void {
     this.canEndTurn = true;
     this.battleManager.startPlayerTurn();
-    
+
+    // 카드 뽑기 (5장)
+    this.cardHandManager.drawCards(5, () => {
+      this.stateSynchronizer.updateDeckInfo();
+    });
+
     // 새 턴 시작 시 모든 적의 의도를 업데이트
     const aliveEnemies = this.battleManager.getAliveEnemies();
     aliveEnemies.forEach(enemy => {
@@ -68,7 +90,7 @@ export default class BattleTurnController {
       }
     );
 
-    this.updateDeckInfo();
+    this.stateSynchronizer.updateDeckInfo();
   }
 
   /**
@@ -77,6 +99,9 @@ export default class BattleTurnController {
   startEnemyTurn(): void {
     // 적 턴 동안에는 턴 종료 불가
     this.canEndTurn = false;
+
+    // 턴 종료 버튼 비활성화
+    this.uiManager.setEndTurnButtonEnabled(false);
 
     this.battleManager.startEnemyTurn();
 
@@ -102,5 +127,20 @@ export default class BattleTurnController {
   private executeEnemyAction(enemy: Enemy): void {
     // BattleManager에서 적 행동 실행 (콜백에서 애니메이션 처리)
     this.battleManager.executeEnemyAction(enemy);
+  }
+
+  /**
+   * 전투 종료 처리
+   */
+  handleBattleEnd(victory: boolean): void {
+    if (victory) {
+      this.scene.time.delayedCall(1000, () => {
+        this.resultHandler.winBattle();
+      });
+    } else {
+      this.scene.time.delayedCall(1000, () => {
+        this.resultHandler.checkGameOver();
+      });
+    }
   }
 }

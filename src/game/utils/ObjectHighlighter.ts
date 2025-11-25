@@ -5,7 +5,7 @@ import Phaser from 'phaser';
  */
 export class ObjectHighlighter {
   private static highlightGraphics: Phaser.GameObjects.Graphics | null = null;
-  private static currentScene: Phaser.Scene | null = null;
+  private static currentScene     : Phaser.Scene | null = null;
 
   /**
    * 하이라이트 초기화
@@ -43,19 +43,15 @@ export class ObjectHighlighter {
     // 하이라이트 그리기 (노란색 윤곽선)
     this.highlightGraphics.lineStyle(3, 0xffff00, 1);
     this.highlightGraphics.strokeRect(
-      bounds.x,
-      bounds.y,
-      bounds.width,
-      bounds.height
+      bounds.x, bounds.y,
+      bounds.width, bounds.height
     );
 
     // 반투명 배경
     this.highlightGraphics.fillStyle(0xffff00, 0.1);
     this.highlightGraphics.fillRect(
-      bounds.x,
-      bounds.y,
-      bounds.width,
-      bounds.height
+      bounds.x, bounds.y,
+      bounds.width, bounds.height
     );
 
     // 중심점 표시
@@ -118,54 +114,59 @@ export class ObjectHighlighter {
     // 타입별로 크기 계산
     if (obj.type === 'Rectangle') {
       const rect = obj as Phaser.GameObjects.Rectangle;
+
       width = rect.width * Math.abs(rect.scaleX);
-      height = rect.height * Math.abs(rect.scaleY);
-      x = worldX - (width * rect.originX);
-      y = worldY - (height * rect.originY);
+      height= rect.height * Math.abs(rect.scaleY);
+      x     = worldX - (width * rect.originX);
+      y     = worldY - (height * rect.originY);
     } else if (obj.type === 'Arc' || obj.type === 'Circle') {
       const arc = obj as Phaser.GameObjects.Arc;
       const radius = arc.radius * Math.abs(arc.scaleX);
+      
       width = radius * 2;
-      height = radius * 2;
-      x = worldX - radius;
-      y = worldY - radius;
+      height= radius * 2;
+      x     = worldX - radius;
+      y     = worldY - radius;
     } else if (obj.type === 'Text') {
       const text = obj as Phaser.GameObjects.Text;
+      
       width = text.width * Math.abs(text.scaleX);
-      height = text.height * Math.abs(text.scaleY);
-      x = worldX - (width * text.originX);
-      y = worldY - (height * text.originY);
+      height= text.height * Math.abs(text.scaleY);
+      x     = worldX - (width * text.originX);
+      y     = worldY - (height * text.originY);
     } else if (obj.type === 'Sprite' || obj.type === 'Image') {
       const sprite = obj as Phaser.GameObjects.Sprite;
+      
       width = sprite.displayWidth;
-      height = sprite.displayHeight;
-      x = worldX - (width * sprite.originX);
-      y = worldY - (height * sprite.originY);
+      height= sprite.displayHeight;
+      x     = worldX - (width * sprite.originX);
+      y     = worldY - (height * sprite.originY);
     } else if (obj.type === 'Container') {
       const container = obj as Phaser.GameObjects.Container;
       const bounds = container.getBounds();
-      x = bounds.x;
-      y = bounds.y;
+      
       width = bounds.width;
-      height = bounds.height;
+      height= bounds.height;
+      x     = bounds.x;
+      y     = bounds.y;      
     } else if (obj.type === 'Graphics') {
       // Graphics는 bounds를 정확히 계산하기 어려움
       width = 100;
-      height = 100;
-      x = worldX - 50;
-      y = worldY - 50;
+      height= 100;
+      x     = worldX - 50;
+      y     = worldY - 50;
     } else if ('width' in transform && 'height' in transform) {
       // 일반적인 경우
       width = (transform.width || 50) * Math.abs(transform.scaleX || 1);
-      height = (transform.height || 50) * Math.abs(transform.scaleY || 1);
-      x = worldX - ((width * (transform.originX || 0.5)));
-      y = worldY - ((height * (transform.originY || 0.5)));
+      height= (transform.height || 50) * Math.abs(transform.scaleY || 1);
+      x     = worldX - ((width * (transform.originX || 0.5)));
+      y     = worldY - ((height * (transform.originY || 0.5)));
     } else {
       // 크기를 알 수 없는 경우 기본값
       width = 50;
-      height = 50;
-      x = worldX - 25;
-      y = worldY - 25;
+      height= 50;
+      x     = worldX - 25;
+      y     = worldY - 25;
     }
 
     return {

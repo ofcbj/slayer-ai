@@ -4,15 +4,15 @@ import CardRenderer from '../utils/CardRenderer';
 import { tweenConfig } from '../managers/TweenConfigManager';
 
 export default class Card extends Phaser.GameObjects.Container {
-  private cardData: CardData;
-  private isSelected: boolean;
-  private originalY: number;
-  private originalDepth: number;
-  private selectedOriginalDepth: number = 0; // 선택 전의 depth를 저장 (선택 해제 시 복원용)
-  private bg!: Phaser.GameObjects.Rectangle;
-  private handContainer: Phaser.GameObjects.Container | null = null;
-  private originalLocalX: number = 0;
-  private originalLocalY: number = 0;
+  private cardData              : CardData;
+  private isSelected            : boolean;
+  private originalY             : number;
+  private originalDepth         : number;
+  private selectedOriginalDepth : number = 0; // 선택 전의 depth를 저장 (선택 해제 시 복원용)
+  private bg                    : Phaser.GameObjects.Rectangle;
+  private handContainer         : Phaser.GameObjects.Container | null = null;
+  private originalLocalX        : number = 0;
+  private originalLocalY        : number = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number, cardData: CardData) {
     super(scene, x, y);
@@ -32,8 +32,7 @@ export default class Card extends Phaser.GameObjects.Container {
     // CardRenderer를 사용하여 카드 컨텐츠 생성
     const cardContainer = CardRenderer.createCardContainer(
       this.scene,
-      0,
-      0,
+      0, 0,
       this.cardData,
       { width: 168, height: 240, showInteraction: true }
     );
@@ -47,10 +46,8 @@ export default class Card extends Phaser.GameObjects.Container {
 
     // bg 참조 저장 (인터랙션용)
     this.bg = (cardContainer as any).bg;
-
     // 컨테이너 크기 설정
     this.setSize(168, 240);
-
     // cardContainer 제거 (자식들은 이미 this로 이동됨)
     cardContainer.destroy();
   }
@@ -58,7 +55,6 @@ export default class Card extends Phaser.GameObjects.Container {
 
   private setupInteraction(): void {
     this.bg.setInteractive({ useHandCursor: true });
-
     this.bg.on('pointerover', () => {
       if (!this.isSelected) {
         this.bringCardToTop();
@@ -211,10 +207,8 @@ export default class Card extends Phaser.GameObjects.Container {
     if (!this.handContainer.list.includes(this)) {
       // 씬에서 제거
       this.scene.children.remove(this);
-
       // 컨테이너에 다시 추가
       this.handContainer.add(this);
-
       // 저장된 로컬 좌표로 복원
       this.setPosition(this.originalLocalX, this.originalLocalY);
     }

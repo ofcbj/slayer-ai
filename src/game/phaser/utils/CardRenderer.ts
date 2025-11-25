@@ -21,10 +21,11 @@ export default class CardRenderer {
    * 카드 컨테이너를 생성합니다.
    */
   static createCardContainer(
-    scene: Phaser.Scene,
-    x: number, y: number,
+    scene   : Phaser.Scene,
+    x       : number,
+    y       : number,
     cardData: CardData,
-    options: CardRenderOptions = {}
+    options : CardRenderOptions = {}
   ): Phaser.GameObjects.Container {
     const container = scene.add.container(x, y);
 

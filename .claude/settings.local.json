@@ -10,7 +10,9 @@
       "Bash(npm run build:dev:*)",
       "Bash(npm run:*)",
       "Bash(pkill:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm test:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

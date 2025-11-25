@@ -25,13 +25,13 @@ export class SceneInspector {
     this.idCounter = 0;
 
     const sceneNode: GameObjectNode = {
-      id: 'scene',
+      id  : 'scene',
       type: 'Scene',
       name: scene.scene.key,
       properties: {
-        key: scene.scene.key,
-        active: scene.scene.isActive(),
-        visible: scene.scene.isVisible(),
+        key     : scene.scene.key,
+        active  : scene.scene.isActive(),
+        visible : scene.scene.isVisible(),
         isPaused: scene.scene.isPaused(),
       },
       children: []
@@ -106,11 +106,11 @@ export class SceneInspector {
     const typeName = manager.constructor?.name || name;
 
     const node: GameObjectNode = {
-      id: `manager-${index}-${name}`,
-      type: typeName,
-      name: this.formatManagerName(name),
+      id        : `manager-${index}-${name}`,
+      type      : typeName,
+      name      : this.formatManagerName(name),
       properties: {},
-      children: [],
+      children  : [],
     };
 
     // 매니저의 모든 속성을 자동으로 추출
@@ -250,17 +250,17 @@ export class SceneInspector {
    * 개별 게임 오브젝트를 노드로 변환
    */
   private static inspectGameObject(
-    obj: Phaser.GameObjects.GameObject,
-    index: number,
+    obj       : Phaser.GameObjects.GameObject,
+    index     : number,
     parentPath: string
   ): GameObjectNode {
     const uniqueId = `${parentPath}-${index}-${obj.type}-${this.idCounter++}`;
     const node: GameObjectNode = {
-      id: uniqueId,
-      type: obj.type,
-      name: (obj as any).name || `${obj.type}_${index}`,
+      id        : uniqueId,
+      type      : obj.type,
+      name      : (obj as any).name || `${obj.type}_${index}`,
       properties: this.extractProperties(obj),
-      children: [],
+      children  : [],
       gameObject: obj, // 실제 오브젝트 참조 저장
     };
 
@@ -280,9 +280,9 @@ export class SceneInspector {
    */
   private static extractProperties(obj: Phaser.GameObjects.GameObject): Record<string, any> {
     const props: Record<string, any> = {
-      type: obj.type,
-      active: obj.active,
-      visible: (obj as any).visible !== undefined ? (obj as any).visible : true,
+      type    : obj.type,
+      active  : obj.active,
+      visible : (obj as any).visible !== undefined ? (obj as any).visible : true,
     };
 
     // Transform 속성
@@ -311,7 +311,7 @@ export class SceneInspector {
     // 크기 속성
     if ('width' in obj && 'height' in obj) {
       props.size = {
-        width: (obj as any).width,
+        width : (obj as any).width,
         height: (obj as any).height,
       };
     }
@@ -323,10 +323,10 @@ export class SceneInspector {
 
     // 텍스트 오브젝트 특수 속성
     if (obj.type === 'Text') {
-      const text = obj as Phaser.GameObjects.Text;
-      props.text = text.text;
-      props.fontSize = text.style.fontSize;
-      props.color = text.style.color;
+      const text    = obj as Phaser.GameObjects.Text;
+      props.text    = text.text;
+      props.fontSize= text.style.fontSize;
+      props.color   = text.style.color;
     }
 
     // 스프라이트 특수 속성
@@ -395,13 +395,13 @@ export class SceneInspector {
     const physics = scene.physics.world;
 
     return {
-      enabled: true,
-      gravity: {
+      enabled : true,
+      gravity : {
         x: physics.gravity.x,
         y: physics.gravity.y,
       },
-      bodies: physics.bodies.size,
-      fps: physics.fps,
+      bodies  : physics.bodies.size,
+      fps     : physics.fps,
       isPaused: physics.isPaused,
     };
   }

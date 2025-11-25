@@ -104,6 +104,11 @@ export default class Player extends Actor {
       state.health = this.health;
       state.defense = this.defense;
     });
+
+    // 플레이어 사망 시 이벤트 발생
+    if (this.isDead()) {
+      this.scene.events.emit('playerDied');
+    }
   }
 
   override applyDefense(amount: number): void {

@@ -17,8 +17,7 @@ export class UIFactory {
    */
   static createStatContainer(
     scene: Phaser.Scene,
-    x: number,
-    y: number,
+    x: number, y: number,
     icon: string,
     value: string
   ): { container: Phaser.GameObjects.Container; valueText: Phaser.GameObjects.Text } {
@@ -42,8 +41,7 @@ export class UIFactory {
    */
   static createHPContainer(
     scene: Phaser.Scene,
-    x: number,
-    y: number,
+    x: number, y: number,
     health: number
   ): { container: Phaser.GameObjects.Container; healthText: Phaser.GameObjects.Text } {
     const result = this.createStatContainer(scene, x, y, '❤️', health.toString());
@@ -55,8 +53,7 @@ export class UIFactory {
    */
   static createDefenseContainer(
     scene: Phaser.Scene,
-    x: number,
-    y: number,
+    x: number, y: number,
     defense: number = 0
   ): { container: Phaser.GameObjects.Container; defenseText: Phaser.GameObjects.Text } {
     const result = this.createStatContainer(scene, x, y, '🛡️', defense.toString());

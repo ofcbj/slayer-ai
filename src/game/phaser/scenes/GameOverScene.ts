@@ -32,13 +32,11 @@ export default class GameOverScene extends Phaser.Scene {
   }
 
   create(): void {
-    // React에 현재 Scene이 준비되었음을 알림
     EventBus.emit('current-scene-ready', this);
 
     const width : number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
 
-    // 배경
     const bgColor: number = this.victory ? 0x1a3a1a : 0x3a1a1a;
     this.add.rectangle(0, 0, width, height, bgColor).setOrigin(0);
 
@@ -48,23 +46,19 @@ export default class GameOverScene extends Phaser.Scene {
       this.createDefeatScreen();
     }
 
-    // 버튼들
     this.createButtons();
   }
 
   private createVictoryScreen(): void {
     const width : number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
-    // 타이틀
     const title : Phaser.GameObjects.Text = this.add.text(
-      width / 2,
-      height / 3,
+      width/2, height/3,
       'VICTORY!',
       textStyle.getStyle('titles.victory')
     );
     title.setOrigin(0.5);
 
-    // 애니메이션
     tweenConfig.apply(this, 'transitions.titleBreathing', title, {
       scaleX: 1.1,
       scaleY: 1.1
@@ -72,8 +66,7 @@ export default class GameOverScene extends Phaser.Scene {
 
     // 메시지
     this.add.text(
-      width / 2,
-      height / 2,
+      width/2, height/2,
       'You have defeated the Demon Lord!',
       textStyle.getStyle('titles.section', { fontSize: '32px' })
     ).setOrigin(0.5);
@@ -86,10 +79,8 @@ export default class GameOverScene extends Phaser.Scene {
     const width : number = this.cameras.main.width;
     const height: number = this.cameras.main.height;
 
-    // 타이틀
     const title: Phaser.GameObjects.Text = this.add.text(
-      width / 2,
-      height / 3,
+      width/2, height/3,
       'DEFEAT',
       textStyle.getStyle('titles.gameOver')
     );
@@ -97,8 +88,7 @@ export default class GameOverScene extends Phaser.Scene {
 
     // 메시지
     this.add.text(
-      width / 2,
-      height / 2,
+      width/2, height/2,
       'Your journey ends here...',
       textStyle.getStyle('reward.instruction', { fontSize: '32px' })
     ).setOrigin(0.5);
@@ -108,21 +98,19 @@ export default class GameOverScene extends Phaser.Scene {
     const statsText: string = `Stages Cleared: ${gameState.stagesCleared.length}\nDeck Size: ${gameState.deck.length} cards`;
 
     this.add.text(
-      width / 2,
-      height / 2 + 80,
+      width/2, height/2 + 80,
       statsText,
       textStyle.getStyle('buttons.secondary', { fontFamily: 'monospace', color: '#aaaaaa' })
     ).setOrigin(0.5);
   }
 
   private createButtons(): void {
-    const width: number = this.cameras.main.width;
-    const height: number = this.cameras.main.height;
+    const width  : number = this.cameras.main.width;
+    const height : number = this.cameras.main.height;
 
     // 다시하기 버튼
     this.createButton(
-      width / 2 - 150,
-      height - 150,
+      width/2-150, height-150,
       'Restart',
       (): void => {
         // 게임 상태 리셋
@@ -146,8 +134,7 @@ export default class GameOverScene extends Phaser.Scene {
 
     // 메인 메뉴 버튼
     this.createButton(
-      width / 2 + 150,
-      height - 150,
+      width/2+150, height-150,
       'Main Menu',
       (): void => {
         this.scene.start('MenuScene');
@@ -156,8 +143,7 @@ export default class GameOverScene extends Phaser.Scene {
   }
 
   private createButton(
-    x: number,
-    y: number,
+    x: number, y: number,
     text: string,
     onClick: () => void
   ): Phaser.GameObjects.Container {

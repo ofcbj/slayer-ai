@@ -50,9 +50,6 @@ class GameDataManager {
     return GameDataManager.instance;
   }
 
-  /**
-   * 게임 데이터 로드 (JSON 파일들)
-   */
   public async loadGameData(): Promise<void> {
     if (this.gameData) return; // 이미 로드됨
 
@@ -81,9 +78,6 @@ class GameDataManager {
     }
   }
 
-  /**
-   * 카드 데이터 가져오기 (언어별로 변환)
-   */
   public getCardData(): Record<string, CardData> {
     if (!this.gameData) {
       console.error('Game data not loaded');
@@ -132,9 +126,6 @@ class GameDataManager {
     return result;
   }
 
-  /**
-   * 적 데이터 가져오기 (언어별로 변환)
-   */
   public getEnemyData() {
     if (!this.gameData) {
       console.error('Game data not loaded');
@@ -157,9 +148,6 @@ class GameDataManager {
     return result;
   }
 
-  /**
-   * 스테이지 데이터 가져오기 (언어별로 변환)
-   */
   public getStageData() {
     if (!this.gameData) {
       console.error('Game data not loaded');
@@ -184,9 +172,6 @@ class GameDataManager {
     return result;
   }
 
-  /**
-   * 시작 덱 가져오기 (카드 ID 배열)
-   */
   public getStartDeck(): string[] {
     if (!this.gameData) {
       console.error('Game data not loaded');
@@ -204,9 +189,6 @@ class GameDataManager {
     return deck;
   }
 
-  /**
-   * 카드 ID 배열을 CardData 배열로 변환
-   */
   public convertCardIdsToCardData(cardIds: string[]): CardData[] {
     const allCards = this.getCardData();
     return cardIds
@@ -214,9 +196,6 @@ class GameDataManager {
       .filter((card): card is CardData => card !== undefined);
   }
 
-  /**
-   * 보상 카드 목록 가져오기
-   */
   public getRewardCards(): any[] {
     if (!this.gameData) {
       console.error('Game data not loaded');
@@ -229,9 +208,6 @@ class GameDataManager {
     return rewardCardIds.map(id => allCards[id]).filter(Boolean);
   }
 
-  /**
-   * 버프 지속시간 가져오기
-   */
   public getBuffDuration(buffId: string): number {
     if (!this.gameData || !this.gameData.buffs || !this.gameData.buffs[buffId]) {
       console.warn(`Buff data not found for: ${buffId}, using default duration 2`);
@@ -240,15 +216,12 @@ class GameDataManager {
     return this.gameData.buffs[buffId].duration;
   }
 
-  /**
-   * 스테이지 타입 번역
-   */
   private translateStageType(stageType: string, lang: 'ko' | 'ja'): string {
     const typeMap: Record<string, Record<'ko' | 'ja', string>> = {
-      'normal'  : { ko: '일반', ja: 'ノーマル' },
+      'normal'  : { ko: '일반',   ja: 'ノーマル' },
       'elite'   : { ko: '중보스', ja: 'エリート' },
       'mid_boss': { ko: '중보스', ja: '中ボス' },
-      'boss'    : { ko: '보스', ja: 'ボス' }
+      'boss'    : { ko: '보스',   ja: 'ボス' }
     };
 
     return typeMap[stageType]?.[lang] || stageType;

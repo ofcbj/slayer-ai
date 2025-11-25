@@ -14,9 +14,6 @@ export type { CardData, EnemyData, PlayerState, StageData, GameState };
 
 // Callbacks for UI updates
 export interface BattleCallbacks {
-  onPlayerTurnStart?    : () => void;
-  onEnemyTurnStart?     : () => void;
-  onEnemyAction?        : (enemy: Enemy, intent: EnemyIntent) => void;
   onEnemyDefeated?      : (enemy: Enemy) => void;
   onBattleEnd?          : (victory: boolean) => void;
   onDrawCards?          : (count: number) => void;
@@ -59,10 +56,6 @@ export default class BattleManager {
     // 에너지 회복 및 방어도 초기화
     this.player.setEnergy(this.player.maxEnergy);
     this.player.resetDefense();
-
-    if (this.callbacks.onPlayerTurnStart) {
-      this.callbacks.onPlayerTurnStart();
-    }
   }
 
   public endPlayerTurn(): void {
@@ -71,20 +64,25 @@ export default class BattleManager {
 
   public startEnemyTurn(): void {
     this.turn = 'enemy';
-
-    if (this.callbacks.onEnemyTurnStart) {
-      this.callbacks.onEnemyTurnStart();
-    }
   }
 
   public executeEnemyAction(enemy: Enemy): void {
     const intent: EnemyIntent = (enemy as any).intent;
 
     if (intent.type === 'attack') {
-      if (this.callbacks.onEnemyAction) {
-        this.callbacks.onEnemyAction(enemy, intent);
-      }
-      // 실제 피해는 콜백에서 처리 (애니메이션 후)
+      enemy.playAttackAnimation(() => {
+        let damage = intent.value;
+        // weak 효과: 공격력 50% 감소
+        if (enemy.hasBuff('weak')) {
+          damage = Math.floor(damage * 0.5);
+        }
+        // Player에게 직접 데미지 적용
+        this.player.takeDamage(damage);
+        // 플레이어 사망 시 처리
+        if (this.player.isDead()) {
+          this.checkBattleEnd();
+        }
+      });
     } else if (intent.type === 'defend') {
       // 적 방어도 증가
       enemy.applyDefense(intent.value);

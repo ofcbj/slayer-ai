@@ -1,35 +1,36 @@
 import Phaser from 'phaser';
-import Card from '../objects/Card';
-import DeckManager from './DeckManager';
-import BattleUIManager from './BattleUIManager';
-import SoundManager from './SoundManager';
-import { tweenConfig } from './TweenConfigManager';
-import { CardData } from '../../../types';
+
+import Card             from '../objects/Card';
+import DeckManager      from './DeckManager';
+import BattleUIManager  from './BattleUIManager';
+import SoundManager     from './SoundManager';
+import { tweenConfig }  from './TweenConfigManager';
+import { CardData }     from '../../../types';
 
 /**
  * 카드 핸드를 관리하는 클래스
  * 카드 드로우, 배치, 버리기, 선택 등을 관리합니다.
  */
 export default class CardHandManager {
-  private scene: Phaser.Scene;
-  private deckManager: DeckManager;
-  private uiManager: BattleUIManager;
-  private soundManager?: SoundManager;
-  private hand: Card[] = [];
-  private selectedCard: Card | null = null;
-  private handContainer!: Phaser.GameObjects.Container;
+  private scene             : Phaser.Scene;
+  private deckManager       : DeckManager;
+  private uiManager         : BattleUIManager;
+  private soundManager?     : SoundManager;
+  private hand              : Card[] = [];
+  private selectedCard      : Card | null = null;
+  private handContainer!    : Phaser.GameObjects.Container;
   private setEndTurnAllowed?: (allowed: boolean) => void;
 
   constructor(
-    scene: Phaser.Scene,
-    deckManager: DeckManager,
-    uiManager: BattleUIManager,
-    soundManager?: SoundManager,
+    scene         : Phaser.Scene,
+    deckManager   : DeckManager,
+    uiManager     : BattleUIManager,
+    soundManager? : SoundManager,
     setEndTurnAllowed?: (allowed: boolean) => void
   ) {
-    this.scene = scene;
-    this.deckManager = deckManager;
-    this.uiManager = uiManager;
+    this.scene        = scene;
+    this.deckManager  = deckManager;
+    this.uiManager    = uiManager;
     this.soundManager = soundManager;
     this.setEndTurnAllowed = setEndTurnAllowed;
 
@@ -86,7 +87,7 @@ export default class CardHandManager {
   }
 
   public initializeHandContainer(): void {
-    const width = this.scene.cameras.main.width;
+    const width  = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
 
     // 핸드 영역 (20px 위로 올림)
@@ -120,7 +121,7 @@ export default class CardHandManager {
     // 현재 드로우 가능한 카드 수 확인
     const remainingToDraw = totalCount - drawnCount;
     const availableInDeck = this.deckManager.getDeckSize();
-    const canDrawNow = Math.min(remainingToDraw, availableInDeck);
+    const canDrawNow      = Math.min(remainingToDraw, availableInDeck);
 
     // 현재 배치에서 드로우할 카드들
     const cardsToDrawData: CardData[] = [];
@@ -132,8 +133,8 @@ export default class CardHandManager {
     }
 
     const currentHandSize = this.hand.length;
-    const cardsDrawn = cardsToDrawData.length;
-    const finalHandSize = currentHandSize + cardsDrawn;
+    const cardsDrawn      = cardsToDrawData.length;
+    const finalHandSize   = currentHandSize + cardsDrawn;
 
     // 드로우할 카드가 없고 리셔플도 불가능하면 즉시 종료
     if (cardsDrawn === 0 && !this.deckManager.needsReshuffle()) {
@@ -192,14 +193,12 @@ export default class CardHandManager {
   private playReshuffleAnimation(onComplete: () => void): void {
     // 버린 카드 더미에서 덱으로 카드가 이동하는 연출
     const discardPileContainer = this.uiManager.getDiscardPileContainer();
-    const deckPileContainer = this.uiManager.getDeckPileContainer();
-
-    const discardWorldPos = discardPileContainer.getWorldTransformMatrix();
-    const deckWorldPos = deckPileContainer.getWorldTransformMatrix();
-
+    const deckPileContainer    = this.uiManager.getDeckPileContainer();
+    const discardWorldPos      = discardPileContainer.getWorldTransformMatrix();
+    const deckWorldPos         = deckPileContainer.getWorldTransformMatrix();
     // 버린 카드 더미의 카드 수 가져오기
-    const discardPileSize = this.deckManager.getDiscardPileSize();
-    const cardsToShow = Math.min(discardPileSize, 10); // 최대 10장까지만 연출
+    const discardPileSize      = this.deckManager.getDiscardPileSize();
+    const cardsToShow          = Math.min(discardPileSize, 10); // 최대 10장까지만 연출
 
     // 버린 카드 더미 애니메이션
     this.uiManager.animateDiscardPile();
@@ -226,12 +225,10 @@ export default class CardHandManager {
             if (i === cardsToShow - 1) {
               // 덱 파일 애니메이션
               this.uiManager.animateDeckPile();
-
               // 리셔플 사운드 재생 (있다면)
               if (this.soundManager) {
                 this.soundManager.play('card-draw', 0.7);
               }
-
               // 약간의 딜레이 후 콜백
               this.scene.time.delayedCall(200, onComplete);
             }
@@ -252,11 +249,10 @@ export default class CardHandManager {
   private addCardToHandWithAnimation(cardData: CardData, cardIndex: number, finalHandSize: number): void {
     // 덱 위치에서 카드 생성
     const deckPileContainer = this.uiManager.getDeckPileContainer();
-    const deckWorldPos = deckPileContainer.getWorldTransformMatrix();
-    const startX = deckWorldPos.tx;
-    const startY = deckWorldPos.ty;
-
-    const card = new Card(this.scene, startX, startY, cardData);
+    const deckWorldPos      = deckPileContainer.getWorldTransformMatrix();
+    const startX            = deckWorldPos.tx;
+    const startY            = deckWorldPos.ty;
+    const card              = new Card(this.scene, startX, startY, cardData);
     card.setScale(0.8);
 
     // 드로우 애니메이션 중에는 인터랙션 비활성화
@@ -428,7 +424,6 @@ export default class CardHandManager {
       this.selectedCard = null;
     }
   }
-
   /**
    * 카드를 버린 카드 더미로 이동하는 애니메이션을 재생합니다.
    */

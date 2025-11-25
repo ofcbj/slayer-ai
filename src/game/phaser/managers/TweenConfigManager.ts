@@ -1,31 +1,23 @@
 import type Phaser from 'phaser';
 
-/**
- * Tween configuration interface
- */
 interface TweenConfig {
-  duration: number;
-  ease?: string;
-  yoyo?: boolean;
-  repeat?: number;
+  duration  : number;
+  ease      : string;
+  yoyo      : boolean;
+  repeat    : number;
   properties: Record<string, number>;
 }
 
-/**
- * Tween configuration data structure
- */
 interface TweenConfigData {
   interactive: Record<string, TweenConfig>;
-  combat: Record<string, TweenConfig>;
-  ui: Record<string, TweenConfig>;
-  cards: Record<string, TweenConfig>;
+  combat     : Record<string, TweenConfig>;
+  ui         : Record<string, TweenConfig>;
+  cards      : Record<string, TweenConfig>;
   transitions: Record<string, TweenConfig>;
-  particles: Record<string, TweenConfig>;
+  particles  : Record<string, TweenConfig>;
 }
 
-/**
- * Singleton manager for loading and applying tween configurations from JSON
- */
+
 export class TweenConfigManager {
   private static instance: TweenConfigManager;
   private config: TweenConfigData | null = null;
@@ -111,10 +103,10 @@ export class TweenConfigManager {
    * @returns The created tween or null if config not found
    */
   public apply(
-    scene: Phaser.Scene,
-    path: string,
-    targets: any,
-    overrides?: Partial<Phaser.Types.Tweens.TweenBuilderConfig>
+    scene       : Phaser.Scene,
+    path        : string,
+    targets     : any,
+    overrides?  : Partial<Phaser.Types.Tweens.TweenBuilderConfig>
   ): Phaser.Tweens.Tween | null {
     const config = this.get(path);
     if (!config) {

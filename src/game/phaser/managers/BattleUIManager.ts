@@ -15,21 +15,22 @@ interface EnergyOrbData {
  * 에너지 UI, 턴 종료 버튼, 덱/버린 카드 더미 UI 등을 관리합니다.
  */
 export default class BattleUIManager {
-  private scene: Phaser.Scene;
-  private energyContainer!: Phaser.GameObjects.Container;
-  private energyOrbs: EnergyOrbData[] = [];
-  private deckPileContainer!: Phaser.GameObjects.Container;
-  private discardPileContainer!: Phaser.GameObjects.Container;
-  private deckText!: Phaser.GameObjects.Text;
-  private deckCountText!: Phaser.GameObjects.Text;
-  private discardCountText!: Phaser.GameObjects.Text;
-  private endTurnButton!: Phaser.GameObjects.Container;
-  private endTurnButtonBg!: Phaser.GameObjects.Rectangle;
-  private endTurnButtonText!: Phaser.GameObjects.Text;
+  private scene                 : Phaser.Scene;
+  private energyContainer!      : Phaser.GameObjects.Container;
+  private energyOrbs            : EnergyOrbData[] = [];
+  private deckPileContainer!    : Phaser.GameObjects.Container;
+  private discardPileContainer! : Phaser.GameObjects.Container;
+  private deckText!             : Phaser.GameObjects.Text;
+  private deckCountText!        : Phaser.GameObjects.Text;
+  private discardCountText!     : Phaser.GameObjects.Text;
+  private endTurnButton!        : Phaser.GameObjects.Container;
+  private endTurnButtonBg!      : Phaser.GameObjects.Rectangle;
+  private endTurnButtonText!    : Phaser.GameObjects.Text;
   private isEndTurnButtonEnabled: boolean = true;
-  private onEndTurnClick?: () => void;
-  private onDeckPileClick?: () => void;
-  private onDiscardPileClick?: () => void;
+  
+  private onEndTurnClick?       : () => void;
+  private onDeckPileClick?      : () => void;
+  private onDiscardPileClick?   : () => void;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -243,9 +244,9 @@ export default class BattleUIManager {
   }
 
   public updateEnergyUI(playerState: PlayerState): void {
-    const currentEnergy = playerState.energy;
-    const maxEnergy = playerState.maxEnergy;
-    const requiredOrbs = Math.max(currentEnergy, maxEnergy);
+    const currentEnergy   = playerState.energy;
+    const maxEnergy       = playerState.maxEnergy;
+    const requiredOrbs    = Math.max(currentEnergy, maxEnergy);
     const currentOrbCount = this.energyOrbs.length;
 
     // 필요하면 구슬 추가 (에너지가 maxEnergy를 초과한 경우)
@@ -311,7 +312,6 @@ export default class BattleUIManager {
     });
   }
 
-
   public updateDeckInfo(deckSize: number, handSize: number, discardSize: number): void {
     const totalCards = deckSize + handSize + discardSize;
     console.log(`[BattleUIManager] updateDeckInfo - Deck: ${deckSize}, Hand: ${handSize}, Discard: ${discardSize}, Total: ${totalCards}`);
@@ -332,9 +332,8 @@ export default class BattleUIManager {
   }
 
   public showMessage(text: string): void {
-    const width = this.scene.cameras.main.width;
-    const height = this.scene.cameras.main.height;
-
+    const width   = this.scene.cameras.main.width;
+    const height  = this.scene.cameras.main.height;
     const message = this.scene.add.text(width/2, height/2, text,
       textStyle.getStyle('ui.message', { fontSize: '32px', strokeThickness: 6 })
     );

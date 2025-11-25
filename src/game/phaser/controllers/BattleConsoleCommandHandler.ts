@@ -1,8 +1,8 @@
-import Phaser from 'phaser';
-import EventBus from '../../EventBus';
-import BattleManager from '../managers/BattleManager';
-import DeckManager from '../managers/DeckManager';
-import CardHandManager from '../managers/CardHandManager';
+import Phaser           from 'phaser';
+import EventBus         from '../../EventBus';
+import BattleManager    from '../managers/BattleManager';
+import DeckManager      from '../managers/DeckManager';
+import CardHandManager  from '../managers/CardHandManager';
 
 /**
  * 콘솔 명령어 처리를 담당하는 컨트롤러
