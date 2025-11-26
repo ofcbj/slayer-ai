@@ -2,7 +2,7 @@
   "battle": {
     "player": {
       "x": "center",
-      "yOffset": 100
+      "yOffset": 70
     },
     "enemy": {
       "y": 220,
@@ -16,7 +16,7 @@
     },
     "handContainer": {
       "x": "center",
-      "yOffset": -150
+      "yOffset": -180
     }
   },
   "ui": {
@@ -120,6 +120,18 @@
       "height": 70
     },
     "messageOffset": 150
+  },
+  "hotkeyText": {
+    "fontSize": "16px",
+    "fontFamily": "Arial",
+    "fontStyle": "bold",
+    "color": "#ffffff",
+    "bgColor": "0x000000",
+    "bgAlpha": 0.7,
+    "padding": 4,
+    "borderRadius": 4,
+    "strokeColor": "#000000",
+    "strokeThickness": 3
   },
   "colors": {
     "CARD_TYPE_ATTACK": "0xff6b6b",

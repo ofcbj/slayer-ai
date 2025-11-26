@@ -301,6 +301,8 @@ export default class CardHandManager {
 
         // 애니메이션 완료 후 인터랙션 활성화
         card.enableInteraction();
+        // 단축키 인덱스 설정
+        card.setHotkeyIndex(cardIndex);
       }
     });
   }
@@ -328,6 +330,8 @@ export default class CardHandManager {
       card.setDepth(index);
       // 원래 depth도 함께 설정 (호버 해제 시 복원용)
       card.setOriginalDepth(index);
+      // 단축키 인덱스 업데이트
+      card.setHotkeyIndex(index);
     });
   }
 
@@ -351,6 +355,8 @@ export default class CardHandManager {
       card.setDepth(index);
       // 원래 depth도 함께 설정 (호버 해제 시 복원용)
       card.setOriginalDepth(index);
+      // 단축키 인덱스 설정
+      card.setHotkeyIndex(index);
     });
   }
 

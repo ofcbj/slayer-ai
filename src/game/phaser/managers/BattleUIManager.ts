@@ -83,7 +83,37 @@ export default class BattleUIManager {
     );
     text.setOrigin(0.5);
 
-    button.add([bg, text]);
+    // 단축키 텍스트 추가
+    const hotkeyConfig = uiConfig.getHotkeyTextConfig();
+    
+    // 배경
+    const hotkeyBg = this.scene.add.rectangle(
+      0,
+      size.height / 2 + 15,
+      60,
+      24,
+      parseInt(hotkeyConfig.bgColor, 16),
+      hotkeyConfig.bgAlpha
+    );
+    hotkeyBg.setStrokeStyle(2, 0xffffff);
+
+    // 텍스트
+    const hotkeyText = this.scene.add.text(
+      0,
+      size.height / 2 + 15,
+      'SPACE',
+      {
+        fontSize: hotkeyConfig.fontSize,
+        fontFamily: hotkeyConfig.fontFamily,
+        fontStyle: hotkeyConfig.fontStyle,
+        color: hotkeyConfig.color,
+        stroke: hotkeyConfig.strokeColor,
+        strokeThickness: hotkeyConfig.strokeThickness
+      }
+    );
+    hotkeyText.setOrigin(0.5);
+
+    button.add([bg, text, hotkeyBg, hotkeyText]);
     button.setSize(size.width, size.height);
     button.setInteractive({ useHandCursor: true });
 
