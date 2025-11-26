@@ -74,6 +74,9 @@ export default class BattleEventManager {
   private handleCardAction = (card: Card): void => {
     if (this.battleManager.getTurn() !== 'player') return;
 
+    // 카드 인터랙션이 비활성화되어 있으면 무시 (애니메이션 중)
+    if (!card.isInteractionEnabled()) return;
+
     const cardData: CardData = (card as any).cardData;
     const playerState = this.battleManager.getPlayerState();
 
@@ -256,8 +259,13 @@ export default class BattleEventManager {
       return;
     }
 
+    // 카드 사용 즉시 인터랙션 비활성화 및 핸드에서 제거 (중복 사용 방지)
+    card.disableInteraction();
+    this.cardHandManager.removeCardFromHand(card);
+    this.deckManager.discardCard(cardData);
+
     this.playCardEffects(card, cardData, target);
-    this.cleanupCard(card, cardData);
+    this.cleanupCard(card);
   }
 
   /**
@@ -303,11 +311,9 @@ export default class BattleEventManager {
   }
 
   /**
-   * 카드를 정리합니다 (핸드에서 제거, 버린 카드 더미로 이동)
+   * 카드를 정리합니다 (버린 카드 더미로 애니메이션 이동)
    */
-  private cleanupCard(card: Card, cardData: CardData): void {
-    this.cardHandManager.removeCardFromHand(card);
-    this.deckManager.discardCard(cardData);
+  private cleanupCard(card: Card): void {
     this.cardHandManager.discardCardWithAnimation(card);
     this.cardHandManager.arrangeHand();
     

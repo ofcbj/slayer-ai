@@ -17,6 +17,7 @@ export default class Card extends Phaser.GameObjects.Container {
   private hotkeyIndex           : number = -1; // 단축키 인덱스 (1-5)
   private hotkeyText?           : Phaser.GameObjects.Text;
   private hotkeyBg?             : Phaser.GameObjects.Rectangle;
+  private interactionEnabled    : boolean = true; // 인터랙션 활성화 상태
 
   constructor(scene: Phaser.Scene, x: number, y: number, cardData: CardData) {
     super(scene, x, y);
@@ -155,10 +156,16 @@ export default class Card extends Phaser.GameObjects.Container {
 
   public disableInteraction(): void {
     this.bg.disableInteractive();
+    this.interactionEnabled = false;
   }
 
   public enableInteraction(): void {
     this.bg.setInteractive({ useHandCursor: true });
+    this.interactionEnabled = true;
+  }
+
+  public isInteractionEnabled(): boolean {
+    return this.interactionEnabled;
   }
 
   public select(): void {
@@ -173,7 +180,15 @@ export default class Card extends Phaser.GameObjects.Container {
     // 선택 시에도 맨 위로 올리기
     this.bringCardToTop();
 
-    tweenConfig.apply(this.scene, 'cards.select', this);
+    // 애니메이션 중 인터랙션 비활성화
+    this.disableInteraction();
+
+    tweenConfig.apply(this.scene, 'cards.select', this, {
+      onComplete: () => {
+        // 애니메이션 완료 후 인터랙션 다시 활성화
+        this.enableInteraction();
+      }
+    });
   }
 
   public deselect(): void {
@@ -188,10 +203,17 @@ export default class Card extends Phaser.GameObjects.Container {
     // originalDepth도 업데이트 (다음 선택을 위해)
     this.originalDepth = this.selectedOriginalDepth;
 
+    // 애니메이션 중 인터랙션 비활성화
+    this.disableInteraction();
+
     tweenConfig.apply(this.scene, 'cards.deselect', this, {
       y: this.originalY,
       scaleX: 1,
-      scaleY: 1
+      scaleY: 1,
+      onComplete: () => {
+        // 애니메이션 완료 후 인터랙션 다시 활성화
+        this.enableInteraction();
+      }
     });
   }
 
