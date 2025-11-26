@@ -83,6 +83,18 @@ export default class ShopScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * 골드를 소비하고 디스플레이를 업데이트합니다.
+   */
+  private consumeGold(amount: number): void {
+    const gameState: GameState = this.registry.get('gameState');
+    gameState.player.gold = (gameState.player.gold || 0) - amount;
+    this.updateGoldDisplay(gameState.player.gold);
+    
+    // 구매 사운드 재생
+    this.sound.play('buy', { volume: 0.5 });
+  }
+
   private generateShopCards(): void {
     const gameDataManager = GameDataManager.getInstance();
     const allCards = gameDataManager.getCardData();
@@ -231,8 +243,7 @@ export default class ShopScene extends Phaser.Scene {
     }
 
     // 골드 차감
-    gameState.player.gold -= cardData.price;
-    this.updateGoldDisplay(gameState.player.gold);
+    this.consumeGold(cardData.price);
 
     // 덱에 카드 추가 (전체 카드 데이터를 복사)
     gameState.deck.push({
@@ -478,8 +489,7 @@ export default class ShopScene extends Phaser.Scene {
 
     // 골드 차감
     const cost = gameState.removalCost || 50;
-    gameState.player.gold -= cost;
-    this.updateGoldDisplay(gameState.player.gold);
+    this.consumeGold(cost);
 
     // 삭제 비용 증가
     gameState.removalCost = cost + 25;
