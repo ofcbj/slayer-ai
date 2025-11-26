@@ -6,6 +6,7 @@ import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 import CardViewManager from '../managers/CardViewManager';
 import { StageData, GameState } from '../../../types';
+import { UIFactory } from '../utils/UIFactory';
 
 interface StagesDataMap {
   [key: number]: StageData;
@@ -91,37 +92,32 @@ export default class StageSelectScene extends Phaser.Scene {
     // 타이틀
     const langManager = LanguageManager.getInstance();
     const titleText = this.add.text(
-      125,
-      15,
+      125, 15,
       langManager.t('stage.playerInfo'),
       textStyle.getStyle('character.name', { color: '#8b5cf6' })
     ).setOrigin(0.5, 0);
 
     const healthText = this.add.text(
-      20,
-      50,
+      20, 50,
       `❤️ 체력: ${player.health}/${player.maxHealth}`,
       textStyle.getStyle('character.hp', { fontSize: '20px' })
     );
 
     const energyText = this.add.text(
-      20,
-      80,
+      20, 80,
       `⚡ 에너지: ${player.maxEnergy}`,
       textStyle.getStyle('ui.label', { fontSize: '20px', color: '#4ecdc4' })
     );
 
     const goldText = this.add.text(
-      20,
-      110,
+      20, 110,
       `💰 골드: ${player.gold}G`,
       textStyle.getStyle('ui.label', { fontSize: '20px', color: '#fbbf24' })
     );
 
     const gameState: GameState = this.registry.get('gameState');
     const deckText = this.add.text(
-      20,
-      140,
+      20, 140,
       `🎴 덱: ${gameState.deck.length}장`,
       textStyle.getStyle('character.name')
     );
@@ -132,19 +128,14 @@ export default class StageSelectScene extends Phaser.Scene {
 
   private createStageMapTree(stagesData: StagesDataMap, currentStage: number, clearedStages: number[]): void {
     const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
 
     // 스테이지를 트리 구조로 계산
     const stageTree = this.buildStageTree(stagesData);
-
     // 세로 방향으로 배치 (위에서 아래로)
     const startY = 200;
     const verticalSpacing = 150;
-    const maxLevels = stageTree.length;
-
     // 먼저 모든 연결선을 그리기 (노드 뒤에 표시되도록)
     this.drawAllConnections(stageTree, stagesData, startY, verticalSpacing, width, clearedStages);
-
     // 각 레벨의 노드 그리기 (역순으로)
     stageTree.forEach((level, levelIndex) => {
       const y = startY + levelIndex * verticalSpacing;
@@ -446,23 +437,20 @@ export default class StageSelectScene extends Phaser.Scene {
 
     // 아이콘/이름
     const iconText = this.add.text(
-      0,
-      -5,
+      0, -5,
       stageIcon,
       textStyle.getStyle('stageSelect.icon')
     ).setOrigin(0.5);
 
     const nameText = this.add.text(
-      0,
-      20,
+      0, 20,
       stage.name,
       textStyle.getStyle('stage.nodeName')
     ).setOrigin(0.5);
 
     // 스테이지 설명
     const descText = this.add.text(
-      0,
-      75,
+      0, 75,
       stage.description || '',
       textStyle.getStyle('stage.nodeName', { fontSize: '14px', stroke: '#000000', strokeThickness: 2 })
     ).setOrigin(0.5);
@@ -540,48 +528,13 @@ export default class StageSelectScene extends Phaser.Scene {
   }
 
   private createMyDeckButton(): void {
-    const deckContainer = this.add.container(100, 60);
-
-    const deckBg = this.add.rectangle(0, 0, 160, 50, 0x8b5cf6, 0.9);
-    deckBg.setStrokeStyle(3, 0x7c3aed);
-
-    const deckText = this.add.text(
-      0,
-      0,
-      'My Deck',
-      textStyle.getStyle('character.name', { fontSize: '20px' })
-    ).setOrigin(0.5);
-
-    deckContainer.add([deckBg, deckText]);
-    deckContainer.setScrollFactor(0); // 고정
-
-    deckBg.setInteractive({ useHandCursor: true });
-
-    deckBg.on('pointerover', () => {
-      deckBg.setFillStyle(0x7c3aed);
-      this.tweens.add({
-        targets: deckContainer,
-        scale: 1.05,
-        duration: 200
-      });
-    });
-
-    deckBg.on('pointerout', () => {
-      deckBg.setFillStyle(0x8b5cf6);
-      this.tweens.add({
-        targets: deckContainer,
-        scale: 1,
-        duration: 200
-      });
-    });
-
-    deckBg.on('pointerdown', () => {
-      if (this.cardViewManager) {
-        const gameState: GameState = this.registry.get('gameState');
-        const langManager = LanguageManager.getInstance();
-        this.cardViewManager.showCardListView(langManager.t('battle.deck'), gameState.deck);
-      }
-    });
+    const gameState: GameState = this.registry.get('gameState');
+    UIFactory.createMyDeckButton(
+      this,
+      this.cardViewManager,
+      () => gameState.deck,
+      { scrollFactor: 0 } // 화면 고정
+    );
   }
 
   private setupScrolling(): void {

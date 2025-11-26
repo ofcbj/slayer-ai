@@ -18,8 +18,9 @@ import BattleTurnController         from '../controllers/BattleTurnController';
 import BattleStateSynchronizer      from '../controllers/BattleStateSynchronizer';
 import BattleResultHandler          from '../controllers/BattleResultHandler';
 import BattleConsoleCommandHandler  from '../controllers/BattleConsoleCommandHandler';
-import UIConfigManager              from '../managers/UIConfigManager';
+
 import { Logger }                   from '../../utils/Logger';
+import { UIFactory }                from '../utils/UIFactory';
 
 /**
  * 전투 씬
@@ -341,51 +342,23 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   private createMyDeckButton(): void {
-    const uiConfig = UIConfigManager.getInstance();
-    const buttonConfig = uiConfig.getMyDeckButton();
-    const deckContainer = this.add.container(buttonConfig.x, buttonConfig.y);
-
-    const deckBg = this.add.rectangle(0, 0, buttonConfig.width, buttonConfig.height, 0x8b5cf6, 0.9);
-    deckBg.setStrokeStyle(3, 0x7c3aed);
-
-    const deckText = this.add.text(
-      0, 0,
-      'My Deck',
-      { fontSize: '20px', fontFamily: 'Arial', color: '#ffffff', fontStyle: 'bold' }
-    ).setOrigin(0.5);
-
-    deckContainer.add([deckBg, deckText]);
-    deckContainer.setDepth(1000); // 최상단에 표시
-
-    deckBg.setInteractive({ useHandCursor: true });
-
-    deckBg.on('pointerover', () => {
-      deckBg.setFillStyle(0x7c3aed);
-      this.tweens.add({
-        targets: deckContainer,
-        scale: 1.05,
-        duration: 200
-      });
-    });
-
-    deckBg.on('pointerout', () => {
-      deckBg.setFillStyle(0x8b5cf6);
-      this.tweens.add({
-        targets: deckContainer,
-        scale: 1,
-        duration: 200
-      });
-    });
-
-    deckBg.on('pointerdown', () => {
-      const handCards = this.cardHandManager.getHand().map(card => (card as any).cardData);
-      const allCards = [
-        ...this.deckManager.getDeck(),
-        ...handCards,
-        ...this.deckManager.getDiscardPile()
-      ];
-      const langManager = LanguageManager.getInstance();
-      this.cardViewManager.showCardListView(langManager.t('battle.deck'), allCards);
-    });
+    UIFactory.createMyDeckButton(
+      this,
+      this.cardViewManager,
+      () => {
+        // 핸드, 덱, 버린 카드 더미의 모든 카드를 수집
+        const handCards = this.cardHandManager.getHand().map(card => (card as any).cardData);
+        const allCards = [
+          ...this.deckManager.getDeck(),
+          ...handCards,
+          ...this.deckManager.getDiscardPile()
+        ];
+        return allCards;
+      },
+      {
+        useUIConfig: true,
+        depth: 1000
+      }
+    );
   }
 }
