@@ -275,7 +275,7 @@ export default class CardHandManager {
     const targetX = handCenterX + finalLocalX;
     const targetY = handCenterY;
 
-    tweenConfig.apply(this.scene, 'cards.draw', card, {
+      tweenConfig.apply(this.scene, 'cards.draw', card, {
       x: targetX,
       y: targetY,
       onComplete: () => {
@@ -291,10 +291,13 @@ export default class CardHandManager {
         // 핸드 컨테이너 참조 설정 (호버 시 컨테이너에서 제거하기 위해 필요)
         card.setHandContainer(this.handContainer);
 
+        // 컨테이너에 추가한 후 단축키 인덱스 설정
+        // hand 배열에서의 실제 인덱스를 사용
+        const actualIndex = this.hand.indexOf(card);
+        card.setHotkeyIndex(actualIndex);
+
         // 애니메이션 완료 후 인터랙션 활성화
         card.enableInteraction();
-        // 단축키 인덱스 설정
-        card.setHotkeyIndex(cardIndex);
       }
     });
   }
