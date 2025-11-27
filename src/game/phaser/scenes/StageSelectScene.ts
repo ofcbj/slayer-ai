@@ -1,12 +1,7 @@
-import Phaser from 'phaser';
-import EventBus from '../../EventBus';
-import LanguageManager from '../../../i18n/LanguageManager';
-import GameDataManager from '../managers/GameDataManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
-import CardViewManager from '../managers/CardViewManager';
 import { StageData, GameState } from '../../../types';
-import { UIFactory } from '../utils/UIFactory';
+import BaseScene from './BaseScene';
 
 interface StagesDataMap {
   [key: number]: StageData;
@@ -17,13 +12,12 @@ interface SelectedStage {
   data: StageData;
 }
 
-export default class StageSelectScene extends Phaser.Scene {
+export default class StageSelectScene extends BaseScene {
   private stageNodes: Map<number, Phaser.GameObjects.Container>;
   private scrollContainer: Phaser.GameObjects.Container | null = null;
   private isDragging: boolean = false;
   private dragStartY: number = 0;
   private scrollY: number = 0;
-  private cardViewManager: CardViewManager | null = null;
 
   constructor() {
     super({ key: 'StageSelectScene' });
@@ -31,11 +25,9 @@ export default class StageSelectScene extends Phaser.Scene {
   }
 
   create(): void {
-    // React에 현재 Scene이 준비되었음을 알림
-    EventBus.emit('current-scene-ready', this);
+    this.initializeBase();
 
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+    const { width, height } = this.getCameraDimensions();
 
     // 배경 그라데이션 (스크롤되지 않는 고정 배경)
     const graphics = this.add.graphics();
@@ -44,24 +36,22 @@ export default class StageSelectScene extends Phaser.Scene {
     graphics.setScrollFactor(0);
 
     // 타이틀 (고정)
-    const langManager = LanguageManager.getInstance();
     this.add.text(
       width / 2,
       60,
-      langManager.t('stage.select'),
+      this.langManager.t('stage.select'),
       textStyle.getStyle('titles.section', { fontSize: '56px' })
     ).setOrigin(0.5).setScrollFactor(0);
 
     // 플레이어 상태 표시 (고정)
-    const gameState: GameState = this.registry.get('gameState');
+    const gameState = this.getGameState();
     this.createPlayerStats(gameState.player);
 
     // 스크롤 가능한 컨테이너 생성
     this.scrollContainer = this.add.container(0, 0);
 
     // 스테이지 데이터 로드 (번역된 데이터 사용)
-    const gameDataManager = GameDataManager.getInstance();
-    const stagesData: StagesDataMap = gameDataManager.getStageData();
+    const stagesData: StagesDataMap = this.gameDataManager.getStageData();
     const currentStage: number = gameState.currentStage || 1;
     const clearedStages: number[] = gameState.stagesCleared || [];
 
@@ -69,8 +59,11 @@ export default class StageSelectScene extends Phaser.Scene {
     this.createStageMapTree(stagesData, currentStage, clearedStages);
 
     // My Deck 버튼 (고정)
-    this.cardViewManager = new CardViewManager(this);
-    this.createMyDeckButton();
+    this.initializeCardViewManager();
+    this.createMyDeckButton(
+      () => gameState.deck,
+      { scrollFactor: 0 }
+    );
 
     // 스크롤 기능 설정
     this.setupScrolling();
@@ -90,10 +83,9 @@ export default class StageSelectScene extends Phaser.Scene {
     bg.setOrigin(0);
 
     // 타이틀
-    const langManager = LanguageManager.getInstance();
     const titleText = this.add.text(
       125, 15,
-      langManager.t('stage.playerInfo'),
+      this.langManager.t('stage.playerInfo'),
       textStyle.getStyle('character.name', { color: '#8b5cf6' })
     ).setOrigin(0.5, 0);
 
@@ -115,7 +107,7 @@ export default class StageSelectScene extends Phaser.Scene {
       textStyle.getStyle('ui.label', { fontSize: '20px', color: '#fbbf24' })
     );
 
-    const gameState: GameState = this.registry.get('gameState');
+    const gameState = this.getGameState();
     const deckText = this.add.text(
       20, 140,
       `🎴 덱: ${gameState.deck.length}장`,
@@ -527,15 +519,7 @@ export default class StageSelectScene extends Phaser.Scene {
     return icons[type] || '❓';
   }
 
-  private createMyDeckButton(): void {
-    const gameState: GameState = this.registry.get('gameState');
-    UIFactory.createMyDeckButton(
-      this,
-      this.cardViewManager,
-      () => gameState.deck,
-      { scrollFactor: 0 } // 화면 고정
-    );
-  }
+
 
   private setupScrolling(): void {
     const height = this.cameras.main.height;
@@ -552,7 +536,7 @@ export default class StageSelectScene extends Phaser.Scene {
       const maxScroll = contentHeight - viewHeight + 200;
 
       // 마우스 휠 스크롤
-      this.input.on('wheel', (pointer: Phaser.Input.Pointer, gameObjects: any[], deltaX: number, deltaY: number) => {
+      this.input.on('wheel', (_pointer: Phaser.Input.Pointer, _gameObjects: any[], _deltaX: number, deltaY: number) => {
         if (this.scrollContainer) {
           this.scrollY += deltaY * 0.5;
           this.scrollY = Phaser.Math.Clamp(this.scrollY, -maxScroll, 0);
@@ -627,8 +611,7 @@ export default class StageSelectScene extends Phaser.Scene {
     } else {
       // 가장 최근에 클리어한 스테이지의 다음 스테이지들 중 첫 번째
       const lastClearedId = clearedStages[clearedStages.length - 1];
-      const gameDataManager = GameDataManager.getInstance();
-      const stagesData = gameDataManager.getStageData();
+      const stagesData = this.gameDataManager.getStageData();
       const lastClearedStage = stagesData[lastClearedId];
 
       if (lastClearedStage && lastClearedStage.nextStages && lastClearedStage.nextStages.length > 0) {

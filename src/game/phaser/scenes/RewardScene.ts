@@ -8,7 +8,6 @@ import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 import GameDataManager from '../managers/GameDataManager';
 
-
 export default class RewardScene extends Phaser.Scene {
   private continueButton!: Phaser.GameObjects.Container;
 
@@ -68,7 +67,6 @@ export default class RewardScene extends Phaser.Scene {
 
     // 보상 카드 생성
     this.createRewardCards();
-
     // 계속하기 버튼
     this.createContinueButton();
   }
@@ -170,8 +168,7 @@ export default class RewardScene extends Phaser.Scene {
     bg.setStrokeStyle(3, 0xffffff);
 
     const text = this.add.text(
-      0,
-      0,
+      0, 0,
       'Continue',
       textStyle.getStyle('titles.section', { fontSize: '32px' })
     );
@@ -204,7 +201,6 @@ export default class RewardScene extends Phaser.Scene {
 
     button.on('pointerdown', () => {
       const gameState = this.registry.get('gameState') as GameState;
-
       // 최종 보스를 클리어했는지 확인
       if (gameState.stagesCleared.includes(10)) {
         // 게임 클리어!

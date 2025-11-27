@@ -3,7 +3,6 @@ import Phaser from 'phaser';
 import Card             from '../objects/Card';
 import DeckManager      from './DeckManager';
 import BattleUIManager  from './BattleUIManager';
-import SoundManager     from './SoundManager';
 import UIConfigManager  from './UIConfigManager';
 import { tweenConfig }  from './TweenConfigManager';
 import { CardData }     from '../../../types';
@@ -16,7 +15,6 @@ export default class CardHandManager {
   private scene             : Phaser.Scene;
   private deckManager       : DeckManager;
   private uiManager         : BattleUIManager;
-  private soundManager?     : SoundManager;
   private hand              : Card[] = [];
   private selectedCard      : Card | null = null;
   private handContainer!    : Phaser.GameObjects.Container;
@@ -26,13 +24,11 @@ export default class CardHandManager {
     scene         : Phaser.Scene,
     deckManager   : DeckManager,
     uiManager     : BattleUIManager,
-    soundManager? : SoundManager,
     setEndTurnAllowed?: (allowed: boolean) => void
   ) {
     this.scene        = scene;
     this.deckManager  = deckManager;
     this.uiManager    = uiManager;
-    this.soundManager = soundManager;
     this.setEndTurnAllowed = setEndTurnAllowed;
 
     this.initializeHandContainer();
@@ -161,9 +157,7 @@ export default class CardHandManager {
       this.scene.time.delayedCall(index * 150, () => {
         this.addCardToHandWithAnimation(cardData, currentHandSize + index, finalHandSize);
         // 카드 드로우 사운드 재생
-        if (this.soundManager) {
-          this.soundManager.play('card-draw', 0.7);
-        }
+        this.scene.sound.play('card-draw', { volume: 0.35 });
       });
     });
 
@@ -229,9 +223,7 @@ export default class CardHandManager {
               // 덱 파일 애니메이션
               this.uiManager.animateDeckPile();
               // 리셔플 사운드 재생 (있다면)
-              if (this.soundManager) {
-                this.soundManager.play('card-draw', 0.7);
-              }
+              this.scene.sound.play('card-draw', { volume: 0.7 });
               // 약간의 딜레이 후 콜백
               this.scene.time.delayedCall(200, onComplete);
             }
@@ -239,8 +231,8 @@ export default class CardHandManager {
         });
 
         // 카드 이동 사운드 (첫 번째와 중간중간만)
-        if (i % 3 === 0 && this.soundManager) {
-          this.soundManager.play('card-draw', 0.7);
+        if (i % 3 === 0) {
+          this.scene.sound.play('card-draw', { volume: 0.35 });
         }
       });
     }
@@ -376,8 +368,8 @@ export default class CardHandManager {
     card.select();
 
     // 새로운 카드를 선택할 때만 소리 재생
-    if (isDifferentCard && this.soundManager) {
-      this.soundManager.play('card-click', 0.5);
+    if (isDifferentCard) {
+      this.scene.sound.play('card-click', { volume: 0.25 });
     }
   }
   

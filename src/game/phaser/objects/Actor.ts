@@ -51,7 +51,7 @@ export default abstract class Actor extends Phaser.GameObjects.Container {
       if (fullBlock) {
         // 방어막 이펙트 표시
         if (isBattleScene(this.scene)) {
-          this.scene.soundManager.play('block', 1.0);
+          this.scene.sound.play('block', { volume: 0.5 });
         }
         if (this.playDefendAnimation) {
           this.playDefendAnimation();
@@ -72,9 +72,7 @@ export default abstract class Actor extends Phaser.GameObjects.Container {
   }
 
   applyDefense(amount: number): void {
-    const soundManager = (this.scene as any).soundManager;
-    if (soundManager)
-        soundManager.play('defend', 0.5);
+    this.scene.sound.play('defend', { volume: 0.25 });
 
     this.defense += amount;
     this.updateDefenseDisplay();
@@ -109,13 +107,10 @@ export default abstract class Actor extends Phaser.GameObjects.Container {
   }
 
   playDamageSound(damage : number): void {
-    const soundManager = (this.scene as any).soundManager;
-    if (soundManager) {
-      if (damage > 10) {
-        soundManager.play('damage-big', 0.5);
-      } else {
-        soundManager.play('damage-small', 0.5);
-      }
+    if (damage >= 15) {
+      this.scene.sound.play('damage-big', { volume: 0.25 });
+    } else {
+      this.scene.sound.play('damage-small', { volume: 0.25 });
     }
   }
 

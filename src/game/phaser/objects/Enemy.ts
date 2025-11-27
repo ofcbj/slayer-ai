@@ -300,10 +300,7 @@ export default class Enemy extends Actor {
         // Scene이 여전히 활성화되어 있고, 이 Enemy가 파괴되지 않았을 때만 이벤트 발생
         if (sceneActive && this.active) {
           // 적 사망 사운드 재생
-          const soundManager = (this.scene as any).soundManager;
-          if (soundManager) {
-            soundManager.play('enemy-death')
-          }
+          // this.scene.sound.play('enemy-death');
 
           this.scene.events.emit('enemyDefeated', this);
           // EventBus에도 emit하여 EventLogger에서 캡처 가능하도록

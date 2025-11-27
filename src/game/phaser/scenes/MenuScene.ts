@@ -22,8 +22,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // 타이틀
     const title: Phaser.GameObjects.Text = this.add.text(
-      width / 2,
-      height / 3,
+      width/2, height/3,
       langManager.t('menu.title'),
       textStyle.getStyle('titles.main')
     );
@@ -34,8 +33,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // 시작 버튼
     const startButton: Phaser.GameObjects.Container = this.createButton(
-      width / 2,
-      height / 2 + 50,
+      width/2, height/2+50,
       langManager.t('menu.startGame'),
       () => {
         // 게임 데이터 매니저에서 시작 덱 가져오기
@@ -65,8 +63,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // 언어 선택 버튼
     const languageButton: Phaser.GameObjects.Container = this.createButton(
-      width / 2,
-      height / 2 + 130,
+      width/2, height/2+130,
       langManager.t('menu.selectLanguage'),
       () => {
         // 언어 선택 화면으로 이동
@@ -77,8 +74,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // 설명 텍스트
     const description: Phaser.GameObjects.Text = this.add.text(
-      width / 2,
-      height - 100,
+      width/2, height-100,
       langManager.t('menu.description'),
       textStyle.getStyle('reward.instruction')
     );
@@ -102,8 +98,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // 버튼 텍스트
     const btnText: Phaser.GameObjects.Text = this.add.text(
-      0,
-      0,
+      0, 0,
       text,
       textStyle.getStyle('buttons.primary')
     );

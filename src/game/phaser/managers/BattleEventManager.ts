@@ -6,7 +6,6 @@ import BattleManager from './BattleManager';
 import CardHandManager from './CardHandManager';
 import DeckManager from './DeckManager';
 import BattleUIManager from './BattleUIManager';
-import SoundManager from './SoundManager';
 import { CardData } from '../../../types';
 
 
@@ -21,7 +20,6 @@ export default class BattleEventManager {
   private deckManager       : DeckManager;
   private uiManager         : BattleUIManager;
   private playerCharacter   : Player;
-  private soundManager?     : SoundManager;
   private onDeckInfoUpdate? : () => void;
 
   constructor(
@@ -31,7 +29,6 @@ export default class BattleEventManager {
     deckManager       : DeckManager,
     uiManager         : BattleUIManager,
     playerCharacter   : Player,
-    soundManager?     : SoundManager,
     onDeckInfoUpdate? : () => void    
   ) {
     this.scene            = scene;
@@ -41,7 +38,6 @@ export default class BattleEventManager {
     this.uiManager        = uiManager;
     this.playerCharacter  = playerCharacter;
     this.onDeckInfoUpdate = onDeckInfoUpdate;
-    this.soundManager     = soundManager;
   }
 
   /**
@@ -273,17 +269,13 @@ export default class BattleEventManager {
    */
   private playCardEffects(card: Card, cardData: CardData, target: Enemy | null): void {
     // 카드 사용 사운드 재생
-    if (this.soundManager) {
-      if (cardData.sound && cardData.sound !== '') {
-        this.soundManager.play(cardData.sound);
-      }
+    if (cardData.sound && cardData.sound !== '') {
+      this.scene.sound.play(cardData.sound, { volume: 0.5 });
     }
 
     // 공격 카드 효과
     if (cardData.type === 'attack') {
-      if (this.soundManager) {
-        this.soundManager.play('attack', 0.8);
-      }
+      this.scene.sound.play('attack', { volume: 0.4 });
       if (cardData.allEnemies) {
         (card as any).playParticleEffect(this.scene.cameras.main.width / 2, 250);
       } else if (target) {
@@ -298,9 +290,7 @@ export default class BattleEventManager {
     if (cardData.block) {
       this.playerCharacter.playDefendAnimation();
       this.scene.time.delayedCall(100, () => {
-        if (this.soundManager) {
-          this.soundManager.play('defend', 0.7);
-        }
+        this.scene.sound.play('defend', { volume: 0.35 });
       });
     }
 
