@@ -65,7 +65,6 @@ export interface CardExtended {
 export interface EnemyData {
   id        : string;
   name      : string;
-  health    : number;
   hp        : number;
   attack    : number;
   defense   : number;
@@ -95,6 +94,11 @@ export interface StageData {
 }
 
 /**
+ * 난이도 레벨
+ */
+export type Difficulty = 'very_easy' | 'easy' | 'normal' | 'hard' | 'very_hard';
+
+/**
  * 게임 상태
  */
 export interface GameState {
@@ -102,6 +106,7 @@ export interface GameState {
   deck          : CardData[];
   stagesCleared : number[];
   currentStage  : number;
+  difficulty?   : Difficulty;  // 난이도 설정
   removalCost?  : number;  // 카드 삭제 비용
   [key: string] : any;     // 추가 속성 허용
 }

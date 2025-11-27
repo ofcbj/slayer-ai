@@ -5,6 +5,19 @@
     "description": "デッキ構築型ローグライクカードゲーム",
     "selectLanguage": "言語選択"
   },
+  "difficulty": {
+    "title": "難易度選択",
+    "veryEasy": "とても簡単",
+    "easy": "簡単",
+    "normal": "普通",
+    "hard": "難しい",
+    "veryHard": "とても難しい",
+    "veryEasyDesc": "モンスター能力値 50%",
+    "easyDesc": "モンスター能力値 75%",
+    "normalDesc": "モンスター能力値 100%",
+    "hardDesc": "モンスター能力値 110%",
+    "veryHardDesc": "モンスター能力値 120%"
+  },
   "stage": {
     "select": "ステージ選択",
     "playerInfo": "プレイヤー情報",

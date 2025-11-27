@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import EventBus from '../../EventBus';
 import LanguageManager from '../../../i18n/LanguageManager';
-import GameDataManager from '../managers/GameDataManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 
@@ -36,28 +35,8 @@ export default class MenuScene extends Phaser.Scene {
       width/2, height/2+50,
       langManager.t('menu.startGame'),
       () => {
-        // 게임 데이터 매니저에서 시작 덱 가져오기
-        const gameDataManager = GameDataManager.getInstance();
-        const startDeckIds = gameDataManager.getStartDeck();
-        const startDeck = gameDataManager.convertCardIdsToCardData(startDeckIds);
-
-        // 게임 상태 초기화 (새 게임 시작)
-        const gameState = {
-          player: {
-            maxHealth: 100,
-            health: 100,
-            energy: 3,
-            maxEnergy: 3,
-            defense: 0,
-            gold: 100
-          },
-          deck: startDeck,
-          currentStage: 0,
-          stagesCleared: []
-        };
-        this.registry.set('gameState', gameState);
-
-        this.scene.start('StageSelectScene');
+        // 난이도 선택 화면으로 이동
+        this.scene.start('DifficultySelectScene');
       }
     );
 

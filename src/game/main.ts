@@ -3,6 +3,7 @@ import BootScene from './phaser/scenes/BootScene';
 import PreloadScene from './phaser/scenes/PreloadScene';
 import LanguageSelectScene from './phaser/scenes/LanguageSelectScene';
 import MenuScene from './phaser/scenes/MenuScene';
+import DifficultySelectScene from './phaser/scenes/DifficultySelectScene';
 import StageSelectScene from './phaser/scenes/StageSelectScene';
 import BattleScene from './phaser/scenes/BattleScene';
 import RewardScene from './phaser/scenes/RewardScene';
@@ -39,6 +40,7 @@ export const StartGame = (containerId: string): Phaser.Game => {
       PreloadScene,
       LanguageSelectScene,
       MenuScene,
+      DifficultySelectScene,
       StageSelectScene,
       BattleScene,
       RewardScene,

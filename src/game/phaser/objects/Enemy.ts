@@ -37,8 +37,8 @@ export default class Enemy extends Actor {
 
     this.enemyData  = enemyData;
     this.enemyIndex = index;
-    this.health     = enemyData.health || enemyData.hp || 0;
-    this.maxHealth  = enemyData.health || enemyData.hp || 0;
+    this.health     = enemyData.hp;
+    this.maxHealth  = enemyData.hp;
     this.defense    = 0;
     this.intent     = null;
     this.isTargeted = false;

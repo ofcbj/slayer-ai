@@ -70,6 +70,17 @@ export default class BattleSceneInitializer {
 
     console.log(`[BattleSceneInitializer] createEnemies - Stage: ${this.selectedStage.id}, Expected enemies:`, stageEnemies);
 
+    // 난이도 배율 가져오기
+    const difficultyMultipliers = {
+      'very_easy': 0.5,
+      'easy': 0.75,
+      'normal': 1.0,
+      'hard': 1.1,
+      'very_hard': 1.2
+    };
+    const difficulty = this.gameState.difficulty || 'normal';
+    const multiplier = difficultyMultipliers[difficulty];
+
     const spacing = uiConfig.getEnemySpacing(width, stageEnemies.length);
     const startX = (width - (spacing * (stageEnemies.length - 1))) / 2;
 
@@ -77,10 +88,17 @@ export default class BattleSceneInitializer {
     stageEnemies.forEach((enemyName: string, index: number) => {
       const enemyData = gameDataManager.getEnemyData()[enemyName];
       if (enemyData) {
+        // 난이도에 따라 적 스탯 조정
+        const scaledEnemyData = {
+          ...enemyData,
+          hp: Math.ceil(enemyData.hp * multiplier),
+          attack: Math.ceil(enemyData.attack * multiplier)
+        };
+
         const x = startX + (index * spacing);
         const y = uiConfig.getEnemyY(); // 적들을 상단에 배치
 
-        const enemy = new Enemy(this.scene, x, y, enemyData, index);
+        const enemy = new Enemy(this.scene, x, y, scaledEnemyData, index);
         createdEnemies.push(enemy);
       }
     });
@@ -91,7 +109,7 @@ export default class BattleSceneInitializer {
       enemy.setHotkeyByEnemyCount(totalEnemies);
     });
 
-    console.log(`[BattleSceneInitializer] createEnemies - Created ${createdEnemies.length} enemies`);
+    console.log(`[BattleSceneInitializer] createEnemies - Created ${createdEnemies.length} enemies with difficulty ${difficulty} (${multiplier}x)`);
     return createdEnemies;
   }
 

@@ -5,6 +5,19 @@
     "description": "덱 빌딩 로그라이크 카드 게임",
     "selectLanguage": "언어 선택"
   },
+  "difficulty": {
+    "title": "난이도 선택",
+    "veryEasy": "매우 쉬움",
+    "easy": "쉬움",
+    "normal": "보통",
+    "hard": "어려움",
+    "veryHard": "매우 어려움",
+    "veryEasyDesc": "몬스터 능력치 50%",
+    "easyDesc": "몬스터 능력치 75%",
+    "normalDesc": "몬스터 능력치 100%",
+    "hardDesc": "몬스터 능력치 110%",
+    "veryHardDesc": "몬스터 능력치 120%"
+  },
   "stage": {
     "select": "스테이지 선택",
     "playerInfo": "플레이어 정보",
