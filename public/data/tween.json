@@ -348,5 +348,36 @@
         "alpha": 0
       }
     }
+  },
+  "rewards": {
+    "cardSelect": {
+      "duration": 500,
+      "properties": {
+        "scaleX": 1.3,
+        "scaleY": 1.3,
+        "alpha": 0
+      }
+    },
+    "otherCardsFade": {
+      "duration": 300,
+      "properties": {
+        "alpha": 0
+      }
+    },
+    "messageFadeIn": {
+      "duration": 500,
+      "properties": {
+        "alpha": 1
+      }
+    }
+  },
+  "effects": {
+    "victoryParticleFall": {
+      "duration": 3000,
+      "repeat": -1,
+      "properties": {
+        "alpha": 0
+      }
+    }
   }
 }

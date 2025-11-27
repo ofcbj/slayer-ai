@@ -15,6 +15,8 @@ interface TweenConfigData {
   cards      : Record<string, TweenConfig>;
   transitions: Record<string, TweenConfig>;
   particles  : Record<string, TweenConfig>;
+  rewards    : Record<string, TweenConfig>;
+  effects    : Record<string, TweenConfig>;
 }
 
 

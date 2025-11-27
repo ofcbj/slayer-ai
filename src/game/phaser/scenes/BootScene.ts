@@ -17,11 +17,10 @@ export default class BootScene extends Phaser.Scene {
     const progressBar: Phaser.GameObjects.Graphics = this.add.graphics();
     const progressBox: Phaser.GameObjects.Graphics = this.add.graphics();
     progressBox.fillStyle(0x222222, 0.8);
-    progressBox.fillRect(width / 2 - 160, height / 2 - 25, 320, 50);
+    progressBox.fillRect(width/2-160, height/2-25, 320, 50);
 
     const loadingText: Phaser.GameObjects.Text = this.make.text({
-      x: width / 2,
-      y: height / 2 - 50,
+      x: width/2, y: height/2-50,
       text: 'Loading...',
       style: {
         font: '20px monospace',
@@ -31,8 +30,7 @@ export default class BootScene extends Phaser.Scene {
     loadingText.setOrigin(0.5, 0.5);
 
     const percentText: Phaser.GameObjects.Text = this.make.text({
-      x: width / 2,
-      y: height / 2,
+      x: width/2, y: height/2,
       text: '0%',
       style: {
         font: '18px monospace',
@@ -42,10 +40,10 @@ export default class BootScene extends Phaser.Scene {
     percentText.setOrigin(0.5, 0.5);
 
     this.load.on('progress', (value: number): void => {
-      percentText.setText(parseInt(value * 100) + '%');
+      percentText.setText(parseInt(value*100) + '%');
       progressBar.clear();
       progressBar.fillStyle(0xffffff, 1);
-      progressBar.fillRect(width / 2 - 150, height / 2 - 15, 300 * value, 30);
+      progressBar.fillRect(width/2-150, height/2-15, 300*value, 30);
     });
 
     this.load.on('complete', (): void => {

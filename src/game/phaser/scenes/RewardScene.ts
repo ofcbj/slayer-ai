@@ -31,10 +31,10 @@ export default class RewardScene extends Phaser.Scene {
     const langManager = LanguageManager.getInstance();
     const titlePos = uiConfig.getRewardTitlePosition(this.cameras.main);
     this.add.text(
-      titlePos.x,
-      titlePos.y,
-      langManager.t('reward.victory'),
-      textStyle.getStyle('titles.section', { fontSize: '64px', color: '#2ecc71', stroke: '#ffffff', strokeThickness: 4 })
+      titlePos.x, titlePos.y, 
+      langManager.t('reward.victory'), 
+      textStyle.getStyle('titles.section', 
+        { fontSize: '64px', color: '#2ecc71', stroke: '#ffffff', strokeThickness: 4 })
     ).setOrigin(0.5);
 
     // 승리 파티클
@@ -60,15 +60,13 @@ export default class RewardScene extends Phaser.Scene {
     // 설명
     const descPos = uiConfig.getRewardDescriptionPosition(this.cameras.main);
     this.add.text(
-      descPos.x,
-      descPos.y,
+      descPos.x, descPos.y,
       langManager.t('reward.chooseCard'),
       textStyle.getStyle('buttons.secondary')
     ).setOrigin(0.5);
 
     // 보상 카드 생성
     this.createRewardCards();
-
     // 계속하기 버튼
     this.createContinueButton();
   }
@@ -115,12 +113,7 @@ export default class RewardScene extends Phaser.Scene {
     gameState.deck.push({ ...cardData });
 
     // 선택 효과
-    this.tweens.add({
-      targets: cardObj,
-      scaleX: 1.3,
-      scaleY: 1.3,
-      alpha: 0,
-      duration: 500,
+    tweenConfig.apply(this, 'rewards.cardSelect', cardObj, {
       onComplete: () => {
         cardObj.destroy();
       }
@@ -129,10 +122,7 @@ export default class RewardScene extends Phaser.Scene {
     // 다른 카드 페이드 아웃
     this.children.getAll().forEach((child: Phaser.GameObjects.GameObject) => {
       if (child instanceof Card && child !== cardObj) {
-        this.tweens.add({
-          targets: child,
-          alpha: 0,
-          duration: 300,
+        tweenConfig.apply(this, 'rewards.otherCardsFade', child, {
           onComplete: () => child.destroy()
         });
       }
@@ -149,11 +139,7 @@ export default class RewardScene extends Phaser.Scene {
     message.setOrigin(0.5);
     message.setAlpha(0);
 
-    this.tweens.add({
-      targets: message,
-      alpha: 1,
-      duration: 500
-    });
+    tweenConfig.apply(this, 'rewards.messageFadeIn', message);
 
     // 계속하기 버튼 활성화
     this.continueButton.setVisible(true);
@@ -170,8 +156,7 @@ export default class RewardScene extends Phaser.Scene {
     bg.setStrokeStyle(3, 0xffffff);
 
     const text = this.add.text(
-      0,
-      0,
+      0, 0,
       'Continue',
       textStyle.getStyle('titles.section', { fontSize: '32px' })
     );
@@ -183,22 +168,12 @@ export default class RewardScene extends Phaser.Scene {
     button.setVisible(false); // 처음에는 숨김
 
     button.on('pointerover', () => {
-      this.tweens.add({
-        targets: button,
-        scaleX: 1.1,
-        scaleY: 1.1,
-        duration: 100
-      });
+      tweenConfig.apply(this, 'interactive.buttonHover', button);
       bg.setFillStyle(0x5fddd5);
     });
 
     button.on('pointerout', () => {
-      this.tweens.add({
-        targets: button,
-        scaleX: 1,
-        scaleY: 1,
-        duration: 100
-      });
+      tweenConfig.apply(this, 'interactive.buttonHoverOut', button);
       bg.setFillStyle(0x4ecdc4);
     });
 
@@ -224,19 +199,17 @@ export default class RewardScene extends Phaser.Scene {
 
     // 승리 파티클 효과
     for (let i = 0; i < 50; i++) {
-      const x = Phaser.Math.Between(0, width);
-      const y = Phaser.Math.Between(-100, height);
-      const size = Phaser.Math.Between(3, 8);
+      const x     = Phaser.Math.Between(0, width);
+      const y     = Phaser.Math.Between(-100, height);
+      const size  = Phaser.Math.Between(3, 8);
       const color = Phaser.Math.RND.pick([0xffd700, 0xffff00, 0xffa500]);
 
       const particle = this.add.circle(x, y, size, color);
+      const targetY  = y + Phaser.Math.Between(200, 400);
 
-      this.tweens.add({
-        targets: particle,
-        y: y + Phaser.Math.Between(200, 400),
-        alpha: 0,
+      tweenConfig.apply(this, 'effects.victoryParticleFall', particle, {
+        y: targetY,
         duration: Phaser.Math.Between(2000, 4000),
-        repeat: -1,
         delay: Phaser.Math.Between(0, 2000)
       });
     }
