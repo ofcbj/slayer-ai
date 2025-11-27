@@ -8,7 +8,6 @@ import { tweenConfig } from '../managers/TweenConfigManager';
 import { textStyle } from '../managers/TextStyleManager';
 import GameDataManager from '../managers/GameDataManager';
 
-
 export default class RewardScene extends Phaser.Scene {
   private continueButton!: Phaser.GameObjects.Container;
 
@@ -179,7 +178,6 @@ export default class RewardScene extends Phaser.Scene {
 
     button.on('pointerdown', () => {
       const gameState = this.registry.get('gameState') as GameState;
-
       // 최종 보스를 클리어했는지 확인
       if (gameState.stagesCleared.includes(10)) {
         // 게임 클리어!

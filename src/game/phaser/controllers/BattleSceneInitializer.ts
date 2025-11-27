@@ -85,6 +85,12 @@ export default class BattleSceneInitializer {
       }
     });
 
+    // 모든 적 생성 후 단축키 설정
+    const totalEnemies = createdEnemies.length;
+    createdEnemies.forEach((enemy) => {
+      enemy.setHotkeyByEnemyCount(totalEnemies);
+    });
+
     console.log(`[BattleSceneInitializer] createEnemies - Created ${createdEnemies.length} enemies`);
     return createdEnemies;
   }

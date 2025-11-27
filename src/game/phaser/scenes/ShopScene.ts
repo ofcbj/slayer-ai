@@ -1,27 +1,34 @@
-import Phaser from 'phaser';
-import EventBus from '../../EventBus';
-import LanguageManager from '../../../i18n/LanguageManager';
-import GameDataManager from '../managers/GameDataManager';
 import { textStyle } from '../managers/TextStyleManager';
+import { tweenConfig } from '../managers/TweenConfigManager';
 import Card from '../objects/Card';
 import { CardData, GameState } from '../../../types';
-import CardViewManager from '../managers/CardViewManager';
+import BaseScene from './BaseScene';
 
-export default class ShopScene extends Phaser.Scene {
+/**
+ * 상점 씬
+ * 
+ * 주요 기능:
+ * - 카드 구매/삭제
+ * - 골드 관리
+ * - UI 표시 및 상호작용
+ */
+export default class ShopScene extends BaseScene {
   private cardObjects: { card: Card; price: number; data: CardData; priceContainer: Phaser.GameObjects.Container }[] = [];
   private shopCards: (CardData & { price: number })[] = [];
-  private cardViewManager: CardViewManager | null = null;
 
   constructor() {
     super({ key: 'ShopScene' });
   }
 
+  // ============================================================
+  // Lifecycle Methods
+  // ============================================================
+
   create(): void {
-    EventBus.emit('current-scene-ready', this);
+    this.initializeBase();
     this.cardObjects = [];
 
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+    const { width, height } = this.getCameraDimensions();
 
     // 배경
     const graphics = this.add.graphics();
@@ -29,16 +36,14 @@ export default class ShopScene extends Phaser.Scene {
     graphics.fillRect(0, 0, width, height);
 
     // 타이틀
-    const langManager = LanguageManager.getInstance();
     this.add.text(
       width/2, 60,
-      langManager.t('shop.title') || '상점',
+      this.langManager.t('shop.title') || '상점',
       textStyle.getStyle('titles.section', { fontSize: '56px' })
     ).setOrigin(0.5);
 
     // 게임 상태 로드
     const gameState: GameState = this.registry.get('gameState');
-
     // 골드가 없으면 초기화
     if (gameState.player.gold === undefined) {
       gameState.player.gold = 100;
@@ -50,18 +55,20 @@ export default class ShopScene extends Phaser.Scene {
     }
     this.createGoldDisplay(gameState.player.gold);
 
-    this.cardViewManager = new CardViewManager(this);
-    this.createMyDeckButton();
+    this.initializeCardViewManager();
+    this.createMyDeckButton(() => gameState.deck);
     this.generateShopCards();
     this.displayShopCards();
     this.createExitButton();
   }
 
+  // ============================================================
+  // UI Creation - Gold Display
+  // ============================================================
+
   private createGoldDisplay(gold: number): void {
     const width = this.cameras.main.width;
-
     const goldContainer = this.add.container(width - 200, 60);
-
     const goldBg = this.add.rectangle(0, 0, 180, 60, 0x1e293b, 0.95);
     goldBg.setStrokeStyle(3, 0xfbbf24);
 
@@ -82,11 +89,22 @@ export default class ShopScene extends Phaser.Scene {
       goldText.setText(`💰 ${gold}G`);
     }
   }
+  /**
+   * 골드를 소비하고 디스플레이를 업데이트합니다.
+   */
+  private consumeGold(amount: number): void {
+    const gameState: GameState = this.registry.get('gameState');
+    gameState.player.gold = (gameState.player.gold || 0) - amount;
+    this.updateGoldDisplay(gameState.player.gold);
+    // 구매 사운드 재생
+    this.sound.play('buy', { volume: 0.5 });
+  }
 
+  // ============================================================
+  // UI Creation - Shop Cards
+  // ============================================================
   private generateShopCards(): void {
-    const gameDataManager = GameDataManager.getInstance();
-    const allCards = gameDataManager.getCardData();
-    const langManager = LanguageManager.getInstance();
+    const allCards = this.gameDataManager.getCardData();
 
     // 모든 카드를 배열로 변환
     const cardArray = Object.entries(allCards).map(([id, data]) => ({
@@ -105,32 +123,32 @@ export default class ShopScene extends Phaser.Scene {
 
     // 카드 삭제 카드 추가
     const removeCardData: CardData & { price: number } = {
-      id: 'card-removal',
-      name: langManager.t('shop.removeCard') || '카드 삭제',
-      type: 'skill',
-      cost: 0,
-      price: (this.registry.get('gameState') as GameState).removalCost || 50,
-      image: '❌',
-      description: langManager.t('shop.removeCardDesc') || '덱에서 카드를 한 장 제거합니다.',
-      rarity: 'common'
+      id    : 'card-removal',
+      name  : this.langManager.t('shop.removeCard'),
+      type  : 'skill',
+      cost  : 0,
+      price : (this.registry.get('gameState') as GameState).removalCost || 50,
+      image : '❌',
+      rarity: 'common',      
+      description: this.langManager.t('shop.removeCardDesc') || '덱에서 카드를 한 장 제거합니다.',
+      // Required CardData properties (set to defaults)
+      damage: 0, defense: 0, block: 0, heal: 0, energy: 0, selfDamage: 0, draw: 0,
+      effect: '', effects: [], sound: '', allEnemies: false, hits: 0, buff: ''
     };
 
     this.shopCards.push(removeCardData);
   }
 
   private displayShopCards(): void {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
-
-    const cardWidth = 168;
-    const cardHeight = 240;
-    const spacing = 50;
-    const totalWidth = this.shopCards.length * cardWidth + (this.shopCards.length - 1) * spacing;
-    const startX = (width - totalWidth) / 2 + cardWidth / 2;
-    const y = height / 2 + 20;
+    const { width, height } = this.getCameraDimensions();
+    const cardWidth         = 168;
+    const spacing           = 50;
+    const totalWidth        = this.shopCards.length*cardWidth+(this.shopCards.length-1)*spacing;
+    const startX            = (width-totalWidth)/2+cardWidth/2;
+    const y                 = height/2+20;
 
     this.shopCards.forEach((cardData, index) => {
-      const x = startX + index * (cardWidth + spacing);
+      const x = startX+index*(cardWidth+spacing);
       this.createCardDisplay(x, y, cardData);
     });
   }
@@ -142,18 +160,15 @@ export default class ShopScene extends Phaser.Scene {
   ): void {
     // Card 객체 생성
     const card = new Card(this, x, y, cardData);
-
     // 가격 표시를 위한 컨테이너
     const priceContainer = this.add.container(x, y + 150);
-
     // 가격 배경
     const priceBg = this.add.rectangle(0, 0, 168, 50, 0x1e293b, 0.95);
     priceBg.setStrokeStyle(3, 0xfbbf24);
 
     // 가격 텍스트
     const priceText = this.add.text(
-      0,
-      0,
+      0, 0,
       `💰 ${cardData.price}G`,
       textStyle.getStyle('character.name', { fontSize: '24px', color: '#fbbf24' })
     ).setOrigin(0.5).setName('priceText');
@@ -162,27 +177,16 @@ export default class ShopScene extends Phaser.Scene {
 
     // 인터랙티브 설정 (카드의 기본 인터랙션 비활성화)
     card.disableInteraction();
-
     // 커스텀 인터랙션 설정
     const cardBg = (card as any).bg;
     cardBg.setInteractive({ useHandCursor: true });
 
     cardBg.on('pointerover', () => {
-      this.tweens.add({
-        targets: [card, priceContainer],
-        scaleX: 1.1,
-        scaleY: 1.1,
-        duration: 200
-      });
+      tweenConfig.apply(this, 'shop.cardHover', [card, priceContainer]);
     });
 
     cardBg.on('pointerout', () => {
-      this.tweens.add({
-        targets: [card, priceContainer],
-        scaleX: 1,
-        scaleY: 1,
-        duration: 200
-      });
+      tweenConfig.apply(this, 'shop.cardHoverOut', [card, priceContainer]);
     });
 
     cardBg.on('pointerdown', () => {
@@ -199,25 +203,21 @@ export default class ShopScene extends Phaser.Scene {
     priceContainer.setAlpha(0);
     priceContainer.setScale(0.8);
 
-    this.tweens.add({
-      targets: [card, priceContainer],
-      alpha: 1,
-      scale: 1,
-      duration: 400,
-      ease: 'Back.easeOut'
-    });
-
+    tweenConfig.apply(this, 'shop.cardAppear', [card, priceContainer]);
     this.cardObjects.push({ card, price: cardData.price, data: cardData, priceContainer });
   }
 
+  // ============================================================
+  // Shop Operations - Purchase
+  // ============================================================
+
   private purchaseCard(cardData: CardData & { price: number }, card: Card, priceContainer: Phaser.GameObjects.Container): void {
-    const gameState: GameState = this.registry.get('gameState');
-    const langManager = LanguageManager.getInstance();
+    const gameState = this.getGameState();
 
     // 골드가 충분한지 확인
-    if (gameState.player.gold < cardData.price) {
+    if ((gameState.player.gold ?? 0) < cardData.price) {
       // 골드 부족 알림
-      this.showMessage(langManager.t('shop.notEnoughGold'), 0xef4444);
+      this.showMessage(this.langManager.t('shop.notEnoughGold'), { color: 0xef4444 });
 
       // 컨테이너 흔들기
       this.tweens.add({
@@ -231,8 +231,7 @@ export default class ShopScene extends Phaser.Scene {
     }
 
     // 골드 차감
-    gameState.player.gold -= cardData.price;
-    this.updateGoldDisplay(gameState.player.gold);
+    this.consumeGold(cardData.price);
 
     // 덱에 카드 추가 (전체 카드 데이터를 복사)
     gameState.deck.push({
@@ -240,126 +239,42 @@ export default class ShopScene extends Phaser.Scene {
       // price 필드는 제거
       price: undefined
     } as any);
-
     // 구매 성공 메시지
-    this.showMessage(`${cardData.name} ${langManager.t('shop.purchased')}`, 0x22c55e);
-
+    this.showMessage(`${cardData.name} ${this.langManager.t('shop.purchased')}`, { color: 0x22c55e });
     // 카드 제거 애니메이션
-    this.tweens.add({
-      targets: [card, priceContainer],
-      alpha: 0,
-      scaleX: 0.5,
-      scaleY: 0.5,
-      duration: 300,
+    tweenConfig.apply(this, 'shop.cardPurchase', [card, priceContainer], {
       onComplete: () => {
         card.destroy();
         priceContainer.destroy();
       }
     });
-
     // 상점 카드 배열에서 제거
     this.shopCards = this.shopCards.filter(c => c.id !== cardData.id);
     this.cardObjects = this.cardObjects.filter(obj => obj.data.id !== cardData.id);
   }
+  /**
+   * 화면에 메시지를 표시합니다.
+   */
 
-  private showMessage(text: string, color: number): void {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
-
-    const message = this.add.text(
-      width / 2,
-      height / 2 - 150,
-      text,
-      textStyle.getStyle('titles.section', { fontSize: '32px', color: `#${color.toString(16)}` })
-    ).setOrigin(0.5);
-
-    message.setAlpha(0);
-
-    this.tweens.add({
-      targets: message,
-      alpha: 1,
-      y: height / 2 - 200,
-      duration: 300,
-      onComplete: () => {
-        this.time.delayedCall(1500, () => {
-          this.tweens.add({
-            targets: message,
-            alpha: 0,
-            duration: 300,
-            onComplete: () => {
-              message.destroy();
-            }
-          });
-        });
-      }
-    });
-  }
-
-  private createMyDeckButton(): void {
-    const deckContainer = this.add.container(100, 60);
-
-    const deckBg = this.add.rectangle(0, 0, 160, 50, 0x8b5cf6, 0.9);
-    deckBg.setStrokeStyle(3, 0x7c3aed);
-
-    const deckText = this.add.text(
-      0,
-      0,
-      'My Deck',
-      textStyle.getStyle('character.name', { fontSize: '20px' })
-    ).setOrigin(0.5);
-
-    deckContainer.add([deckBg, deckText]);
-
-    deckBg.setInteractive({ useHandCursor: true });
-
-    deckBg.on('pointerover', () => {
-      deckBg.setFillStyle(0x7c3aed);
-      this.tweens.add({
-        targets: deckContainer,
-        scale: 1.05,
-        duration: 200
-      });
-    });
-
-    deckBg.on('pointerout', () => {
-      deckBg.setFillStyle(0x8b5cf6);
-      this.tweens.add({
-        targets: deckContainer,
-        scale: 1,
-        duration: 200
-      });
-    });
-
-    deckBg.on('pointerdown', () => {
-      if (this.cardViewManager) {
-        const gameState: GameState = this.registry.get('gameState');
-        const langManager = LanguageManager.getInstance();
-        this.cardViewManager.showCardListView(langManager.t('battle.deck'), gameState.deck);
-      }
-    });
-  }
 
   private handleRemoveCard(): void {
-    const gameState: GameState = this.registry.get('gameState');
-    const langManager = LanguageManager.getInstance();
+    const gameState = this.getGameState();
 
     // 골드가 충분한지 확인
     const cost = gameState.removalCost || 50;
-    if (gameState.player.gold < cost) {
-      this.showMessage(langManager.t('shop.notEnoughGold'), 0xef4444);
+    if ((gameState.player.gold ?? 0) < cost) {
+      this.showMessage(this.langManager.t('shop.notEnoughGold'), { color: 0xef4444 });
       return;
     }
-
     // 덱이 비어있는지 확인
     if (gameState.deck.length === 0) {
-      this.showMessage(langManager.t('shop.deckEmpty'), 0xef4444);
+      this.showMessage(this.langManager.t('shop.deckEmpty'), { color: 0xef4444 });
       return;
     }
-
     // 카드 선택 모드로 CardViewManager 열기
     if (this.cardViewManager) {
-      this.cardViewManager.showCardListView(
-        langManager.t('shop.selectCardToRemove'),
+      this.cardViewManager!.showCardListView(
+        this.langManager.t('shop.selectCardToRemove'),
         gameState.deck,
         {
           selectable: true,
@@ -373,34 +288,27 @@ export default class ShopScene extends Phaser.Scene {
   }
 
   private showConfirmDialog(card: CardData, closeCardView: () => void): void {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
-    const langManager = LanguageManager.getInstance();
-
+    const { width, height } = this.getCameraDimensions();
     // 오버레이
     const overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.8);
     overlay.setOrigin(0);
     overlay.setDepth(2000);
     overlay.setInteractive();
-
     // 다이얼로그 배경
     const dialogBg = this.add.rectangle(width / 2, height / 2, 500, 300, 0x1e293b);
     dialogBg.setStrokeStyle(4, 0xef4444);
     dialogBg.setDepth(2001);
-
     // 메시지
     const messageText = this.add.text(
-      width / 2,
-      height / 2 - 80,
-      langManager.t('shop.confirmRemove').replace('{cardName}', card.name),
+      width/2, height/2-80,
+      this.langManager.t('shop.confirmRemove').replace('{cardName}', card.name),
       textStyle.getStyle('character.name', { fontSize: '24px' })
     ).setOrigin(0.5);
     messageText.setDepth(2002);
 
     const costText = this.add.text(
-      width / 2,
-      height / 2 - 30,
-      `${langManager.t('shop.removeCost')}: ${(this.registry.get('gameState') as GameState).removalCost || 50}G`,
+      width/2, height/2-30,
+      `${this.langManager.t('shop.removeCost')}: ${this.getGameState().removalCost || 50}G`,
       textStyle.getStyle('ui.label', { fontSize: '20px', color: '#fbbf24' })
     ).setOrigin(0.5);
     costText.setDepth(2002);
@@ -412,7 +320,7 @@ export default class ShopScene extends Phaser.Scene {
     const confirmBg = this.add.rectangle(0, 0, 120, 50, 0xef4444);
     confirmBg.setStrokeStyle(3, 0xdc2626);
 
-    const confirmText = this.add.text(0, 0, langManager.t('shop.confirm'), textStyle.getStyle('character.name')).setOrigin(0.5);
+    const confirmText = this.add.text(0, 0, this.langManager.t('shop.confirm'), textStyle.getStyle('character.name')).setOrigin(0.5);
 
     confirmContainer.add([confirmBg, confirmText]);
     confirmBg.setInteractive({ useHandCursor: true });
@@ -428,10 +336,8 @@ export default class ShopScene extends Phaser.Scene {
     confirmBg.on('pointerdown', () => {
       // 카드 삭제 실행
       this.executeRemoveCard(card);
-
       // CardViewManager 닫기
       closeCardView();
-
       // 다이얼로그 닫기
       overlay.destroy();
       dialogBg.destroy();
@@ -448,7 +354,7 @@ export default class ShopScene extends Phaser.Scene {
     const cancelBg = this.add.rectangle(0, 0, 120, 50, 0x64748b);
     cancelBg.setStrokeStyle(3, 0x475569);
 
-    const cancelText = this.add.text(0, 0, langManager.t('shop.cancel'), textStyle.getStyle('character.name')).setOrigin(0.5);
+    const cancelText = this.add.text(0, 0, this.langManager.t('shop.cancel'), textStyle.getStyle('character.name')).setOrigin(0.5);
 
     cancelContainer.add([cancelBg, cancelText]);
     cancelBg.setInteractive({ useHandCursor: true });
@@ -473,13 +379,11 @@ export default class ShopScene extends Phaser.Scene {
   }
 
   private executeRemoveCard(card: CardData): void {
-    const gameState: GameState = this.registry.get('gameState');
-    const langManager = LanguageManager.getInstance();
+    const gameState = this.getGameState();
 
     // 골드 차감
     const cost = gameState.removalCost || 50;
-    gameState.player.gold -= cost;
-    this.updateGoldDisplay(gameState.player.gold);
+    this.consumeGold(cost);
 
     // 삭제 비용 증가
     gameState.removalCost = cost + 25;
@@ -492,13 +396,13 @@ export default class ShopScene extends Phaser.Scene {
     const cardIndex = gameState.deck.findIndex(c => c.id === card.id);
     if (cardIndex !== -1) {
       gameState.deck.splice(cardIndex, 1);
-      this.showMessage(langManager.t('shop.cardRemoved').replace('{cardName}', card.name), 0x22c55e);
+      this.showMessage(this.langManager.t('shop.cardRemoved').replace('{cardName}', card.name), { color: 0x22c55e });
     }
   }
 
   private updateRemovalCardPrice(): void {
-    const gameState: GameState = this.registry.get('gameState');
-    const newPrice = gameState.removalCost || 50;
+    const gameState = this.getGameState();
+    const newPrice  = gameState.removalCost || 50;
 
     // shopCards 배열 업데이트
     const removalCardData = this.shopCards.find(c => c.id === 'card-removal');
@@ -525,19 +429,16 @@ export default class ShopScene extends Phaser.Scene {
   }
 
   private createExitButton(): void {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+    const { width, height } = this.getCameraDimensions();
 
-    const exitContainer = this.add.container(width / 2, height - 80);
+    const exitContainer = this.add.container(width/2, height-80);
 
     const exitBg = this.add.rectangle(0, 0, 200, 60, 0x8b5cf6, 0.9);
     exitBg.setStrokeStyle(3, 0x7c3aed);
 
-    const langManager = LanguageManager.getInstance();
     const exitText = this.add.text(
-      0,
-      0,
-      langManager.t('shop.exit') || '나가기',
+      0, 0,
+      this.langManager.t('shop.exit') || '나가기',
       textStyle.getStyle('character.name', { fontSize: '24px' })
     ).setOrigin(0.5);
 
@@ -547,25 +448,17 @@ export default class ShopScene extends Phaser.Scene {
 
     exitBg.on('pointerover', () => {
       exitBg.setFillStyle(0x7c3aed);
-      this.tweens.add({
-        targets: exitContainer,
-        scale: 1.05,
-        duration: 200
-      });
+      tweenConfig.apply(this, 'shop.buttonHover', exitContainer);
     });
 
     exitBg.on('pointerout', () => {
       exitBg.setFillStyle(0x8b5cf6);
-      this.tweens.add({
-        targets: exitContainer,
-        scale: 1,
-        duration: 200
-      });
+      tweenConfig.apply(this, 'shop.buttonHoverOut', exitContainer);
     });
 
     exitBg.on('pointerdown', () => {
       // 스테이지 클리어 처리
-      const gameState: GameState = this.registry.get('gameState');
+      const gameState = this.getGameState();
       const selectedStage = this.registry.get('selectedStage');
 
       if (selectedStage) {

@@ -14,6 +14,10 @@ export default class Card extends Phaser.GameObjects.Container {
   private handContainer         : Phaser.GameObjects.Container | null = null;
   private originalLocalX        : number = 0;
   private originalLocalY        : number = 0;
+  private hotkeyIndex           : number = -1; // 단축키 인덱스 (1-5)
+  private hotkeyText?           : Phaser.GameObjects.Text;
+  private hotkeyBg?             : Phaser.GameObjects.Rectangle;
+  private interactionEnabled    : boolean = true; // 인터랙션 활성화 상태
 
   constructor(scene: Phaser.Scene, x: number, y: number, cardData: CardData) {
     super(scene, x, y);
@@ -53,6 +57,64 @@ export default class Card extends Phaser.GameObjects.Container {
     this.setSize(cardConfig.width, cardConfig.height);
     // cardContainer 제거 (자식들은 이미 this로 이동됨)
     cardContainer.destroy();
+
+    // 단축키 텍스트 생성 (초기에는 숨김)
+    this.createHotkeyText(cardConfig);
+  }
+
+  /**
+   * 단축키 텍스트를 생성합니다.
+   */
+  private createHotkeyText(cardConfig: { width: number; height: number }): void {
+    const hotkeyConfig = UIConfigManager.getInstance().getHotkeyTextConfig();
+    
+    // 배경
+    this.hotkeyBg = this.scene.add.rectangle(
+      0,
+      cardConfig.height / 2 + 15,
+      24,
+      24,
+      parseInt(hotkeyConfig.bgColor, 16),
+      hotkeyConfig.bgAlpha
+    );
+    this.hotkeyBg.setStrokeStyle(2, 0xffffff);
+    this.hotkeyBg.setVisible(false);
+
+    // 텍스트
+    this.hotkeyText = this.scene.add.text(
+      0,
+      cardConfig.height / 2 + 15,
+      '',
+      {
+        fontSize: hotkeyConfig.fontSize,
+        fontFamily: hotkeyConfig.fontFamily,
+        fontStyle: hotkeyConfig.fontStyle,
+        color: hotkeyConfig.color,
+        stroke: hotkeyConfig.strokeColor,
+        strokeThickness: hotkeyConfig.strokeThickness
+      }
+    );
+    this.hotkeyText.setOrigin(0.5);
+    this.hotkeyText.setVisible(false);
+
+    this.add([this.hotkeyBg, this.hotkeyText]);
+  }
+
+  /**
+   * 단축키 인덱스를 설정합니다 (0-4, 화면에는 1-5로 표시).
+   */
+  public setHotkeyIndex(index: number): void {
+    this.hotkeyIndex = index;
+    if (this.hotkeyText && this.hotkeyBg) {
+      if (index >= 0 && index < 5) {
+        this.hotkeyText.setText((index + 1).toString());
+        this.hotkeyText.setVisible(true);
+        this.hotkeyBg.setVisible(true);
+      } else {
+        this.hotkeyText.setVisible(false);
+        this.hotkeyBg.setVisible(false);
+      }
+    }
   }
 
 
@@ -94,10 +156,16 @@ export default class Card extends Phaser.GameObjects.Container {
 
   public disableInteraction(): void {
     this.bg.disableInteractive();
+    this.interactionEnabled = false;
   }
 
   public enableInteraction(): void {
     this.bg.setInteractive({ useHandCursor: true });
+    this.interactionEnabled = true;
+  }
+
+  public isInteractionEnabled(): boolean {
+    return this.interactionEnabled;
   }
 
   public select(): void {
@@ -112,7 +180,15 @@ export default class Card extends Phaser.GameObjects.Container {
     // 선택 시에도 맨 위로 올리기
     this.bringCardToTop();
 
-    tweenConfig.apply(this.scene, 'cards.select', this);
+    // 애니메이션 중 인터랙션 비활성화
+    this.disableInteraction();
+
+    tweenConfig.apply(this.scene, 'cards.select', this, {
+      onComplete: () => {
+        // 애니메이션 완료 후 인터랙션 다시 활성화
+        this.enableInteraction();
+      }
+    });
   }
 
   public deselect(): void {
@@ -127,10 +203,17 @@ export default class Card extends Phaser.GameObjects.Container {
     // originalDepth도 업데이트 (다음 선택을 위해)
     this.originalDepth = this.selectedOriginalDepth;
 
+    // 애니메이션 중 인터랙션 비활성화
+    this.disableInteraction();
+
     tweenConfig.apply(this.scene, 'cards.deselect', this, {
       y: this.originalY,
       scaleX: 1,
-      scaleY: 1
+      scaleY: 1,
+      onComplete: () => {
+        // 애니메이션 완료 후 인터랙션 다시 활성화
+        this.enableInteraction();
+      }
     });
   }
 

@@ -141,10 +141,7 @@ export default class Player extends Actor {
       state.health = this.health;
     });
     this.updateHealthDisplay();
-    const soundManager = (this.scene as any).soundManager;
-    if (soundManager) {
-        soundManager.play('heal', 0.5);
-    }
+    this.scene.sound.play('heal', { volume: 0.25 });
   }
 
   public resetDefense(): void {

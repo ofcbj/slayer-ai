@@ -20,7 +20,8 @@ export default class BootScene extends Phaser.Scene {
     progressBox.fillRect(width/2-160, height/2-25, 320, 50);
 
     const loadingText: Phaser.GameObjects.Text = this.make.text({
-      x: width/2, y: height/2-50,
+      x: width/2,
+      y: height/2-50,
       text: 'Loading...',
       style: {
         font: '20px monospace',
@@ -30,7 +31,8 @@ export default class BootScene extends Phaser.Scene {
     loadingText.setOrigin(0.5, 0.5);
 
     const percentText: Phaser.GameObjects.Text = this.make.text({
-      x: width/2, y: height/2,
+      x: width/2,
+      y: height/2,
       text: '0%',
       style: {
         font: '18px monospace',

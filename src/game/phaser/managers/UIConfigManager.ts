@@ -126,6 +126,18 @@ interface UIConfig {
     };
     messageOffset: number;
   };
+  hotkeyText: {
+    fontSize: string;
+    fontFamily: string;
+    fontStyle: string;
+    color: string;
+    bgColor: string;
+    bgAlpha: number;
+    padding: number;
+    borderRadius: number;
+    strokeColor: string;
+    strokeThickness: number;
+  };
   colors: {
     [key: string]: string;
   };
@@ -342,6 +354,13 @@ export default class UIConfigManager {
    */
   public getCardReshuffleConfig() {
     return this.getConfig().card.reshuffle;
+  }
+
+  /**
+   * 단축키 텍스트 설정을 반환합니다.
+   */
+  public getHotkeyTextConfig() {
+    return this.getConfig().hotkeyText;
   }
 
   /**

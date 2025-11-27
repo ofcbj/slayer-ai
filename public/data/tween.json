@@ -331,6 +331,63 @@
       }
     }
   },
+  "shop": {
+    "cardHover": {
+      "duration": 200,
+      "properties": {
+        "scaleX": 1.1,
+        "scaleY": 1.1
+      }
+    },
+    "cardHoverOut": {
+      "duration": 200,
+      "properties": {
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    "cardAppear": {
+      "duration": 400,
+      "ease": "Back.easeOut",
+      "properties": {
+        "alpha": 1,
+        "scale": 1
+      }
+    },
+    "cardPurchase": {
+      "duration": 300,
+      "properties": {
+        "alpha": 0,
+        "scaleX": 0.5,
+        "scaleY": 0.5
+      }
+    },
+    "messageAppear": {
+      "duration": 300,
+      "properties": {
+        "alpha": 1,
+        "yOffset": -50
+      }
+    },
+    "messageFade": {
+      "duration": 300,
+      "properties": {
+        "alpha": 0
+      }
+    },
+    "buttonHover": {
+      "duration": 200,
+      "properties": {
+        "scale": 1.05
+      }
+    },
+    "buttonHoverOut": {
+      "duration": 200,
+      "properties": {
+        "scale": 1
+      }
+    }
+  },
   "particles": {
     "burst": {
       "duration": 1000,

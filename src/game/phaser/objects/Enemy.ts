@@ -3,6 +3,7 @@ import Actor from './Actor';
 import { EnemyData, Buff } from '../../../types';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import UIConfigManager from '../managers/UIConfigManager';
 import { UIFactory } from '../../utils/UIFactory';
 import { Logger } from '../../utils/Logger';
 import LanguageManager from '../../../i18n/LanguageManager';
@@ -22,6 +23,8 @@ export default class Enemy extends Actor {
   intentValue!   : Phaser.GameObjects.Text;
   private buffs  : Map<string, Buff> = new Map();
   private buffContainer?: Phaser.GameObjects.Container;
+  private hotkeyText?    : Phaser.GameObjects.Text;
+  private hotkeyBg?      : Phaser.GameObjects.Rectangle;
 
   constructor(
     scene: Phaser.Scene,
@@ -92,6 +95,75 @@ export default class Enemy extends Actor {
     this.intentValue = intentValue;
 
     this.setSize(width, height);
+
+    // 단축키 텍스트 생성
+    this.createHotkeyText(width, height);
+  }
+
+  /**
+   * 단축키 텍스트를 생성합니다.
+   */
+  private createHotkeyText(width: number, height: number): void {
+    const uiConfig = UIConfigManager.getInstance();
+    const hotkeyConfig = uiConfig.getHotkeyTextConfig();
+    
+    // 배경
+    this.hotkeyBg = this.scene.add.rectangle(
+      0,
+      height / 2 + 15,
+      24,
+      24,
+      parseInt(hotkeyConfig.bgColor, 16),
+      hotkeyConfig.bgAlpha
+    );
+    this.hotkeyBg.setStrokeStyle(2, 0xffffff);
+    this.hotkeyBg.setVisible(false);
+
+    // 텍스트
+    this.hotkeyText = this.scene.add.text(
+      0,
+      height / 2 + 15,
+      '',
+      {
+        fontSize: '20px', // 적 에서는 약간 크게
+        fontFamily: hotkeyConfig.fontFamily,
+        fontStyle: hotkeyConfig.fontStyle,
+        color: hotkeyConfig.color,
+        stroke: hotkeyConfig.strokeColor,
+        strokeThickness: hotkeyConfig.strokeThickness
+      }
+    );
+    this.hotkeyText.setOrigin(0.5);
+    this.hotkeyText.setVisible(false);
+
+    this.add([this.hotkeyBg, this.hotkeyText]);
+  }
+
+  /**
+   * 단축키를 설정합니다 (적의 수와 인덱스에 따라 화살표 표시).
+   */
+  public setHotkeyByEnemyCount(totalEnemies: number): void {
+    if (!this.hotkeyText || !this.hotkeyBg) return;
+
+    let arrow = '';
+    if (totalEnemies === 1) {
+      // 1마리: 아래 화살표
+      arrow = '↓';
+    } else if (totalEnemies === 2) {
+      // 2마리: 왼쪽, 오른쪽
+      arrow = this.enemyIndex === 0 ? '←' : '→';
+    } else if (totalEnemies >= 3) {
+      // 3마리 이상: 왼쪽, 아래, 오른쪽
+      if (this.enemyIndex === 0) arrow = '←';
+      else if (this.enemyIndex === 1) arrow = '↓';
+      else if (this.enemyIndex === 2) arrow = '→';
+    }
+
+    if (arrow) {
+      this.hotkeyText.setText(arrow);
+      this.hotkeyText.setVisible(true);
+      this.hotkeyBg.setVisible(true);
+    }
   }
 
   getEnemyImage(): string {
@@ -228,10 +300,7 @@ export default class Enemy extends Actor {
         // Scene이 여전히 활성화되어 있고, 이 Enemy가 파괴되지 않았을 때만 이벤트 발생
         if (sceneActive && this.active) {
           // 적 사망 사운드 재생
-          const soundManager = (this.scene as any).soundManager;
-          if (soundManager) {
-            soundManager.play('enemy-death')
-          }
+          // this.scene.sound.play('enemy-death');
 
           this.scene.events.emit('enemyDefeated', this);
           // EventBus에도 emit하여 EventLogger에서 캡처 가능하도록

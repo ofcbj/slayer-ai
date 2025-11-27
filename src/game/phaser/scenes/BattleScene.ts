@@ -1,39 +1,33 @@
-import Phaser from 'phaser';
-
 import EventBus from '../../EventBus';
-import Enemy    from '../objects/Enemy';
-import Player   from '../objects/Player';
+import Enemy from '../objects/Enemy';
+import Player from '../objects/Player';
 
-import DeckManager        from '../managers/DeckManager';
-import BattleUIManager    from '../managers/BattleUIManager';
-import CardHandManager    from '../managers/CardHandManager';
-import CardViewManager    from '../managers/CardViewManager';
+import DeckManager from '../managers/DeckManager';
+import BattleUIManager from '../managers/BattleUIManager';
+import CardHandManager from '../managers/CardHandManager';
 import BattleEventManager from '../managers/BattleEventManager';
 import BattleManager, { BattleCallbacks, GameState } from '../managers/BattleManager';
-import SoundManager       from '../managers/SoundManager';
-import LanguageManager    from '../../../i18n/LanguageManager';
 
-import BattleSceneInitializer       from '../controllers/BattleSceneInitializer';
-import BattleTurnController         from '../controllers/BattleTurnController';
-import BattleStateSynchronizer      from '../controllers/BattleStateSynchronizer';
-import BattleResultHandler          from '../controllers/BattleResultHandler';
-import BattleConsoleCommandHandler  from '../controllers/BattleConsoleCommandHandler';
-import UIConfigManager              from '../managers/UIConfigManager';
-import { Logger }                   from '../../utils/Logger';
+import BattleSceneInitializer from '../controllers/BattleSceneInitializer';
+import BattleTurnController from '../controllers/BattleTurnController';
+import BattleStateSynchronizer from '../controllers/BattleStateSynchronizer';
+import BattleResultHandler from '../controllers/BattleResultHandler';
+import BattleConsoleCommandHandler from '../controllers/BattleConsoleCommandHandler';
+
+import { Logger } from '../../utils/Logger';
+import BaseScene from './BaseScene';
 
 /**
  * 전투 씬
  * 각 매니저와 컨트롤러를 조율하여 전투를 관리합니다.
  */
-export default class BattleScene extends Phaser.Scene {
+export default class BattleScene extends BaseScene {
   // Managers
   private deckManager!          : DeckManager;
   private battleManager!        : BattleManager;
   private uiManager!            : BattleUIManager;
   private cardHandManager!      : CardHandManager;
-  private cardViewManager!      : CardViewManager;
   private eventManager!         : BattleEventManager;
-  private soundManager!         : SoundManager;
 
   // Controllers
   private initializer!          : BattleSceneInitializer;
@@ -116,11 +110,10 @@ export default class BattleScene extends Phaser.Scene {
     // Scene에 EventBus 참조 추가 (Card, Enemy에서 사용)
     (this as any).eventBus = EventBus;
 
-    // React에 현재 Scene이 준비되었음을 알림
-    EventBus.emit('current-scene-ready', this);
+    // BaseScene 공통 초기화
+    this.initializeBase();
 
-    const width   = this.cameras.main.width;
-    const height  = this.cameras.main.height;
+    const { width, height } = this.getCameraDimensions();
     // 배경
     this.add.rectangle(0, 0, width, height, 0x0f0f1e).setOrigin(0);
 
@@ -129,10 +122,9 @@ export default class BattleScene extends Phaser.Scene {
     this.selectedStage  = this.registry.get('selectedStage');
     Logger.debug('BattleScene create - Stage:', this.selectedStage?.id);
 
-    this.soundManager   = new SoundManager(this);
     this.uiManager      = new BattleUIManager(this);
-    this.cardHandManager= new CardHandManager(this, this.deckManager, this.uiManager, this.soundManager);
-    this.cardViewManager= new CardViewManager(this);
+    this.cardHandManager= new CardHandManager(this, this.deckManager, this.uiManager);
+    this.initializeCardViewManager();
 
     // Initializer 생성 및 초기화
     this.initializer = new BattleSceneInitializer(
@@ -208,7 +200,6 @@ export default class BattleScene extends Phaser.Scene {
       this.deckManager,
       this.uiManager,
       this.player,
-      this.soundManager,
       () => this.stateSynchronizer.updateDeckInfo()
     );
     this.eventManager.registerEventListeners();
@@ -217,7 +208,7 @@ export default class BattleScene extends Phaser.Scene {
     // 초기 덱 설정
     this.initializer.setupDeck();
     // 게임 시작 사운드 재생
-    this.soundManager.play('game-start');
+    this.sound.play('game-start', { volume: 0.5 });
     // TurnController 초기화 및 첫 턴 시작
     this.turnController.initialize();
     this.turnController.startPlayerTurn();
@@ -266,18 +257,16 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   private onDeckPileClick(): void {
-    const langManager = LanguageManager.getInstance();
     const deck = this.deckManager.getDeck();
-    this.cardViewManager.showDeckView(deck, () => {
-      this.uiManager.showMessage(langManager.t('battle.deckEmpty'));
+    this.cardViewManager!.showDeckView(deck, () => {
+      this.uiManager.showMessage(this.langManager.t('battle.deckEmpty'));
     });
   }
 
   private onDiscardPileClick(): void {
-    const langManager = LanguageManager.getInstance();
     const discardPile = this.deckManager.getDiscardPile();
-    this.cardViewManager.showDiscardPileView(discardPile, () => {
-      this.uiManager.showMessage(langManager.t('battle.discardEmpty'));
+    this.cardViewManager!.showDiscardPileView(discardPile, () => {
+      this.uiManager.showMessage(this.langManager.t('battle.discardEmpty'));
     });
   }
 
@@ -340,52 +329,22 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  private createMyDeckButton(): void {
-    const uiConfig = UIConfigManager.getInstance();
-    const buttonConfig = uiConfig.getMyDeckButton();
-    const deckContainer = this.add.container(buttonConfig.x, buttonConfig.y);
-
-    const deckBg = this.add.rectangle(0, 0, buttonConfig.width, buttonConfig.height, 0x8b5cf6, 0.9);
-    deckBg.setStrokeStyle(3, 0x7c3aed);
-
-    const deckText = this.add.text(
-      0, 0,
-      'My Deck',
-      { fontSize: '20px', fontFamily: 'Arial', color: '#ffffff', fontStyle: 'bold' }
-    ).setOrigin(0.5);
-
-    deckContainer.add([deckBg, deckText]);
-    deckContainer.setDepth(1000); // 최상단에 표시
-
-    deckBg.setInteractive({ useHandCursor: true });
-
-    deckBg.on('pointerover', () => {
-      deckBg.setFillStyle(0x7c3aed);
-      this.tweens.add({
-        targets: deckContainer,
-        scale: 1.05,
-        duration: 200
-      });
-    });
-
-    deckBg.on('pointerout', () => {
-      deckBg.setFillStyle(0x8b5cf6);
-      this.tweens.add({
-        targets: deckContainer,
-        scale: 1,
-        duration: 200
-      });
-    });
-
-    deckBg.on('pointerdown', () => {
-      const handCards = this.cardHandManager.getHand().map(card => (card as any).cardData);
-      const allCards = [
-        ...this.deckManager.getDeck(),
-        ...handCards,
-        ...this.deckManager.getDiscardPile()
-      ];
-      const langManager = LanguageManager.getInstance();
-      this.cardViewManager.showCardListView(langManager.t('battle.deck'), allCards);
-    });
+  protected createMyDeckButton(): void {
+    super.createMyDeckButton(
+      () => {
+        // 핸드, 덱, 버린 카드 더미의 모든 카드를 수집
+        const handCards = this.cardHandManager.getHand().map(card => (card as any).cardData);
+        const allCards = [
+          ...this.deckManager.getDeck(),
+          ...handCards,
+          ...this.deckManager.getDiscardPile()
+        ];
+        return allCards;
+      },
+      {
+        useUIConfig: true,
+        depth: 1000
+      }
+    );
   }
 }
