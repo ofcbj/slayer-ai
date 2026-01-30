@@ -178,11 +178,11 @@ export default class GameOverScene extends Phaser.Scene {
     const height: number = this.cameras.main.height;
 
     for (let i: number = 0; i < 100; i++) {
-      const x: number = Phaser.Math.Between(0, width);
-      const y: number = Phaser.Math.Between(-200, height);
-      const size: number = Phaser.Math.Between(4, 12);
-      const colors: number[] = [0xffd700, 0xffff00, 0xffa500, 0xff69b4, 0x00ff00];
-      const color: number = Phaser.Math.RND.pick(colors);
+      const x: number       = Phaser.Math.Between(0, width);
+      const y: number       = Phaser.Math.Between(-200, height);
+      const size: number    = Phaser.Math.Between(4, 12);
+      const colors: number[]= [0xffd700, 0xffff00, 0xffa500, 0xff69b4, 0x00ff00];
+      const color: number   = Phaser.Math.RND.pick(colors);
 
       const particle: Phaser.GameObjects.Arc = this.add.circle(x, y, size, color);
 

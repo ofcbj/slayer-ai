@@ -23,47 +23,9 @@ export default class LanguageSelectScene extends Phaser.Scene {
       )
       .setOrigin(0.5);
 
-    const koreanButton = this.add
-      .text(width/2, height/2, '한국어 (Korean)',
-        textStyle.getStyle('language.button', { stroke: '#000000', strokeThickness: 4 })
-      )
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
-
-    const japaneseButton = this.add
-      .text(width/2, height/2 + 80, '日本語 (Japanese)',
-        textStyle.getStyle('language.button', { stroke: '#000000', strokeThickness: 4 })
-      )
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
-
-    koreanButton.on('pointerover', () => {
-      koreanButton.setScale(1.1);
-      koreanButton.setColor('#ffff00');
-    });
-
-    koreanButton.on('pointerout', () => {
-      koreanButton.setScale(1);
-      koreanButton.setColor('#ffffff');
-    });
-
-    koreanButton.on('pointerdown', () => {
-      this.selectLanguage('ko');
-    });
-
-    japaneseButton.on('pointerover', () => {
-      japaneseButton.setScale(1.1);
-      japaneseButton.setColor('#ffff00');
-    });
-
-    japaneseButton.on('pointerout', () => {
-      japaneseButton.setScale(1);
-      japaneseButton.setColor('#ffffff');
-    });
-
-    japaneseButton.on('pointerdown', () => {
-      this.selectLanguage('ja');
-    });
+    // 언어 버튼들 생성
+    this.createLanguageButton(width/2, height/2, '한국어 (Korean)', 'ko');
+    this.createLanguageButton(width/2, height/2 + 80, '日本語 (Japanese)', 'ja');
 
     // 배경 파티클 효과 (간단한 원으로 생성)
     for (let i = 0; i < 30; i++) {
@@ -81,6 +43,29 @@ export default class LanguageSelectScene extends Phaser.Scene {
         delay: Phaser.Math.Between(0, 3000)
       });
     }
+  }
+
+  private createLanguageButton(x: number, y: number, label: string, language: Language): void {
+    const button = this.add
+      .text(x, y, label,
+        textStyle.getStyle('language.button', { stroke: '#000000', strokeThickness: 4 })
+      )
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    button.on('pointerover', () => {
+      button.setScale(1.1);
+      button.setColor('#ffff00');
+    });
+
+    button.on('pointerout', () => {
+      button.setScale(1);
+      button.setColor('#ffffff');
+    });
+
+    button.on('pointerdown', () => {
+      this.selectLanguage(language);
+    });
   }
 
   private selectLanguage(language: Language) {

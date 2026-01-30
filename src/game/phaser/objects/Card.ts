@@ -3,18 +3,24 @@ import { CardData } from '../../../types';
 import CardRenderer from '../utils/CardRenderer';
 import UIConfigManager from '../managers/UIConfigManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
+import type EventBus from '../../EventBus';
+
+// Scene with optional eventBus (for BattleScene compatibility)
+interface SceneWithEventBus extends Phaser.Scene {
+  eventBus?: typeof EventBus;
+}
 
 export default class Card extends Phaser.GameObjects.Container {
+  declare scene: SceneWithEventBus;
   private cardData              : CardData;
   private isSelected            : boolean;
   private originalY             : number;
   private originalDepth         : number;
   private selectedOriginalDepth : number = 0; // 선택 전의 depth를 저장 (선택 해제 시 복원용)
-  private bg                    : Phaser.GameObjects.Rectangle;
+  public  bg!                   : Phaser.GameObjects.Rectangle;
   private handContainer         : Phaser.GameObjects.Container | null = null;
   private originalLocalX        : number = 0;
   private originalLocalY        : number = 0;
-  private hotkeyIndex           : number = -1; // 단축키 인덱스 (1-5)
   private hotkeyText?           : Phaser.GameObjects.Text;
   private hotkeyBg?             : Phaser.GameObjects.Rectangle;
   private interactionEnabled    : boolean = true; // 인터랙션 활성화 상태
@@ -104,7 +110,6 @@ export default class Card extends Phaser.GameObjects.Container {
    * 단축키 인덱스를 설정합니다 (0-4, 화면에는 1-5로 표시).
    */
   public setHotkeyIndex(index: number): void {
-    this.hotkeyIndex = index;
     if (this.hotkeyText && this.hotkeyBg) {
       if (index >= 0 && index < 5) {
         this.hotkeyText.setText((index + 1).toString());
@@ -144,11 +149,11 @@ export default class Card extends Phaser.GameObjects.Container {
       // 카드 클릭 이벤트만 발생 (소리는 CardHandManager에서 관리)
       this.scene.events.emit('cardClicked', this);
       // EventBus에도 emit하여 EventLogger에서 캡처 가능하도록
-      if ((this.scene as any).eventBus) {
-        (this.scene as any).eventBus.emit('cardClicked', {
+      if (this.scene.eventBus) {
+        this.scene.eventBus.emit('cardClicked', {
           type: 'Card',
-          name: (this as any).cardData?.name || 'Unknown',
-          id: (this as any).id || 'N/A',
+          name: this.cardData?.name || 'Unknown',
+          id: this.cardData?.id || 'N/A',
         });
       }
     });

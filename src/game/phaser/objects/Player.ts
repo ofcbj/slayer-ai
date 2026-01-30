@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import type BattleScene from '../scenes/BattleScene';
 import { PlayerState } from '../../../types';
 import Actor from './Actor';
 import { PlayerStateObservable } from '../state/PlayerStateObservable';
@@ -20,7 +21,7 @@ export default class Player extends Actor {
   public maxEnergy        : number = 3;
   public energy           : number = 3;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, initialState: PlayerState) {
+  constructor(scene: BattleScene, x: number, y: number, initialState: PlayerState) {
     super(scene, x, y);
 
     // PlayerStateObservable 초기화
@@ -184,7 +185,7 @@ export default class Player extends Actor {
 
   override playDefendAnimation(): void {
     // 방어 애니메이션 - 푸른 빛
-    const shield: Phaser.GameObjects.Circle = this.scene.add.circle(0, 0, 120, 0x4ecdc4, 0.3);
+    const shield: Phaser.GameObjects.Arc = this.scene.add.circle(0, 0, 120, 0x4ecdc4, 0.3);
     this.add(shield);
 
     tweenConfig.apply(this.scene, 'combat.playerDefendShield', shield, {
@@ -196,7 +197,7 @@ export default class Player extends Actor {
     // 치유 애니메이션 - 녹색 빛
     for (let i: number = 0; i < 10; i++) {
       const angle: number = (Math.PI * 2 * i) / 10;
-      const particle: Phaser.GameObjects.Circle = this.scene.add.circle(
+      const particle: Phaser.GameObjects.Arc = this.scene.add.circle(
         this.x + Math.cos(angle) * 80,
         this.y + Math.sin(angle) * 80,
         6,

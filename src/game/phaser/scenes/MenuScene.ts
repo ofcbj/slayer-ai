@@ -31,7 +31,7 @@ export default class MenuScene extends Phaser.Scene {
     tweenConfig.apply(this, 'transitions.titleBreathing', title);
 
     // 시작 버튼
-    const startButton: Phaser.GameObjects.Container = this.createButton(
+    this.createButton(
       width/2, height/2+50,
       langManager.t('menu.startGame'),
       () => {

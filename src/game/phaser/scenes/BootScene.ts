@@ -42,7 +42,7 @@ export default class BootScene extends Phaser.Scene {
     percentText.setOrigin(0.5, 0.5);
 
     this.load.on('progress', (value: number): void => {
-      percentText.setText(parseInt(value*100) + '%');
+      percentText.setText(Math.floor(value * 100) + '%');
       progressBar.clear();
       progressBar.fillStyle(0xffffff, 1);
       progressBar.fillRect(width/2-150, height/2-15, 300*value, 30);

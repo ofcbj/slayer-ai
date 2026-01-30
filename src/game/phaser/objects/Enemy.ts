@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import Actor from './Actor';
+import type BattleScene from '../scenes/BattleScene';
 import { EnemyData, Buff } from '../../../types';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
@@ -18,7 +19,7 @@ export default class Enemy extends Actor {
   enemyIndex     : number;
   intent         : Intent | null;
   isTargeted     : boolean;
-  bg             : Phaser.GameObjects.Rectangle;
+  bg!            : Phaser.GameObjects.Rectangle;
   intentIcon!    : Phaser.GameObjects.Text;
   intentValue!   : Phaser.GameObjects.Text;
   private buffs  : Map<string, Buff> = new Map();
@@ -27,7 +28,7 @@ export default class Enemy extends Actor {
   private hotkeyBg?      : Phaser.GameObjects.Rectangle;
 
   constructor(
-    scene: Phaser.Scene,
+    scene: BattleScene,
     x: number, 
     y: number,
     enemyData: EnemyData,
@@ -103,7 +104,7 @@ export default class Enemy extends Actor {
   /**
    * 단축키 텍스트를 생성합니다.
    */
-  private createHotkeyText(width: number, height: number): void {
+  private createHotkeyText(_width: number, height: number): void {
     const uiConfig = UIConfigManager.getInstance();
     const hotkeyConfig = uiConfig.getHotkeyTextConfig();
     
@@ -192,11 +193,11 @@ export default class Enemy extends Actor {
       if (!this.isDead()) {
         this.scene.events.emit('enemyClicked', this);
         // EventBus에도 emit하여 EventLogger에서 캡처 가능하도록
-        if ((this.scene as any).eventBus) {
-          (this.scene as any).eventBus.emit('enemyClicked', {
+        if (this.scene.eventBus) {
+          this.scene.eventBus.emit('enemyClicked', {
             type: 'Enemy',
-            name: (this as any).enemyData?.name || 'Unknown',
-            id: (this as any).id || 'N/A',
+            name: this.enemyData?.name || 'Unknown',
+            id: this.enemyData?.id || 'N/A',
           });
         }
       }
@@ -304,11 +305,11 @@ export default class Enemy extends Actor {
 
           this.scene.events.emit('enemyDefeated', this);
           // EventBus에도 emit하여 EventLogger에서 캡처 가능하도록
-          if ((this.scene as any).eventBus) {
-            (this.scene as any).eventBus.emit('enemyDefeated', {
+          if (this.scene.eventBus) {
+            this.scene.eventBus.emit('enemyDefeated', {
               type: 'Enemy',
-              name: (this as any).enemyData?.name || 'Unknown',
-              id: (this as any).id || 'N/A',
+              name: this.enemyData?.name || 'Unknown',
+              id: this.enemyData?.id || 'N/A',
             });
           }
         } else {

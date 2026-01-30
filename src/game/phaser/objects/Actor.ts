@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import type BattleScene from '../scenes/BattleScene';
 import { textStyle } from '../managers/TextStyleManager';
 import { tweenConfig } from '../managers/TweenConfigManager';
 import { Logger } from '../../utils/Logger';
@@ -8,13 +9,14 @@ import { Logger } from '../../utils/Logger';
  * 체력, 방어력, 데미지 처리 등 공통 기능을 제공
  */
 export default abstract class Actor extends Phaser.GameObjects.Container {
+  declare scene: BattleScene;
   health       : number;
   maxHealth    : number;
   defense      : number;
   healthText!  : Phaser.GameObjects.Text;
   defenseText! : Phaser.GameObjects.Text;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: BattleScene, x: number, y: number) {
     super(scene, x, y);
     this.health    = 0;
     this.maxHealth = 0;

@@ -1,4 +1,4 @@
-import Phaser           from 'phaser';
+import type BattleScene from '../scenes/BattleScene';
 
 import Enemy            from '../objects/Enemy';
 import Player           from '../objects/Player';
@@ -14,7 +14,7 @@ import GameDataManager  from '../managers/GameDataManager';
  */
 export default class BattleSceneInitializer {
   constructor(
-    private scene           : Phaser.Scene,
+    private scene           : BattleScene,
     private gameState       : GameState,
     private selectedStage   : StageData,
     private deckManager     : DeckManager,

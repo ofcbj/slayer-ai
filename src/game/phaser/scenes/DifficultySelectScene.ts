@@ -46,7 +46,7 @@ export default class DifficultySelectScene extends Phaser.Scene {
 
     difficulties.forEach((diff, index) => {
       const y = startY + index * spacing;
-      const button = this.createDifficultyButton(
+      this.createDifficultyButton(
         width/2, y,
         langManager.t(`difficulty.${diff.nameKey}`),
         langManager.t(`difficulty.${diff.descKey}`),

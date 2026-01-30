@@ -22,6 +22,9 @@ import BaseScene from './BaseScene';
  * 각 매니저와 컨트롤러를 조율하여 전투를 관리합니다.
  */
 export default class BattleScene extends BaseScene {
+  // Public EventBus for child objects (Enemy, Card, etc.)
+  public eventBus = EventBus;
+
   // Managers
   private deckManager!          : DeckManager;
   private battleManager!        : BattleManager;
@@ -106,9 +109,6 @@ export default class BattleScene extends BaseScene {
 
   create(): void {
     Logger.debug('BattleScene create called');
-
-    // Scene에 EventBus 참조 추가 (Card, Enemy에서 사용)
-    (this as any).eventBus = EventBus;
 
     // BaseScene 공통 초기화
     this.initializeBase();
