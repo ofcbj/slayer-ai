@@ -126,7 +126,7 @@ export default class CardRenderer {
     if (cardData.type === 'skill') {
       if (cardData.block)   return 'defend';
       if (cardData.heal)    return 'heal';
-      if (cardData.energy) return 'energy';
+      if (cardData.energy)  return 'energy';
     }
     return 'skill';
   }

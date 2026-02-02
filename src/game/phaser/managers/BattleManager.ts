@@ -142,24 +142,24 @@ export default class BattleManager {
       }
     }
 
-    if (cardData.selfDamage) {
+    if (cardData.selfDamage)
       this.player.takeDamage(cardData.selfDamage);
-    }
-    if (cardData.block) {
+
+    if (cardData.block)
       this.player.applyDefense(cardData.block);
-    } 
-    if (cardData.heal) {
+
+    if (cardData.heal)
       this.player.heal(cardData.heal);
-    } 
-    if (cardData.energy) {
+
+    if (cardData.energy)
       this.player.setEnergy(this.player.energy + cardData.energy);
-    }
+
     if (cardData.draw) {
       // 카드 드로우 효과
-      if (this.callbacks.onDrawCards) {
+      if (this.callbacks.onDrawCards)
         this.callbacks.onDrawCards(cardData.draw);
-      }
     }
+
     // 버프 적용
     if (cardData.buff) {
       const gameDataManager = GameDataManager.getInstance();
@@ -168,12 +168,10 @@ export default class BattleManager {
       if (cardData.allEnemies) {
         // 모든 적에게 버프 적용
         this.enemies.forEach(enemy => {
-          if (!enemy.isDead()) {
+          if (!enemy.isDead())
             enemy.applyBuff(cardData.buff!, buffDuration);
-          }
         });
       } else if (target) {
-        // 단일 적에게 버프 적용
         target.applyBuff(cardData.buff, buffDuration);
       }
     }
@@ -183,17 +181,15 @@ export default class BattleManager {
 
   public onEnemyDefeated(enemy: Enemy): void {
     // 좀비 Enemy 체크 - 이미 파괴된 적이면 무시
-    if (!enemy.active) {
+    if (!enemy.active)
       return;
-    }
 
     // 적을 배열에서 제거하지 않고 죽은 상태로 유지
     // 이렇게 하면 원래 인덱스(enemyIndex)가 유지되어 단축키 매핑이 일관성 있게 작동함
     // 이미 enemy.isDead()가 true이므로 다른 로직에서 자동으로 필터링됨
 
-    if (this.callbacks.onEnemyDefeated) {
+    if (this.callbacks.onEnemyDefeated)
       this.callbacks.onEnemyDefeated(enemy);
-    }
 
     this.checkBattleEnd();
   }
@@ -204,23 +200,20 @@ export default class BattleManager {
     if (aliveEnemies.length === 0) {
       // 승리
       Logger.debug('BattleManager Battle won!');
-      if (this.callbacks.onBattleEnd) {
+      if (this.callbacks.onBattleEnd)
         this.callbacks.onBattleEnd(true);
-      }
     } else if (this.player.isDead()) {
       // 패배
       Logger.debug('BattleManager Battle lost!');
-      if (this.callbacks.onBattleEnd) {
+      if (this.callbacks.onBattleEnd)
         this.callbacks.onBattleEnd(false);
-      }
     }
   }
 
   public winBattle(selectedStage: StageData, gameState: GameState): void {
     // 스테이지 클리어 처리
-    if (!gameState.stagesCleared.includes(selectedStage.id)) {
+    if (!gameState.stagesCleared.includes(selectedStage.id))
       gameState.stagesCleared.push(selectedStage.id);
-    }
 
     // 체력 회복
     const healPercent = selectedStage.data.type === '보스' ? 0.6 :

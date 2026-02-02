@@ -85,13 +85,10 @@ export default class BattleUIManager {
 
     // 단축키 텍스트 추가
     const hotkeyConfig = uiConfig.getHotkeyTextConfig();
-    
     // 배경
     const hotkeyBg = this.scene.add.rectangle(
-      0,
-      size.height / 2 + 15,
-      60,
-      24,
+      0, size.height/2 + 15,
+      60, 24,
       parseInt(hotkeyConfig.bgColor, 16),
       hotkeyConfig.bgAlpha
     );
@@ -99,8 +96,7 @@ export default class BattleUIManager {
 
     // 텍스트
     const hotkeyText = this.scene.add.text(
-      0,
-      size.height / 2 + 15,
+      0, size.height/2 + 15,
       'SPACE',
       {
         fontSize: hotkeyConfig.fontSize,
@@ -239,9 +235,8 @@ export default class BattleUIManager {
       uiConfig.getColor('DECK_PILE_BG'), uiConfig.getColor('DECK_PILE_STROKE'),
       -1, // 왼쪽으로 오프셋
       () => {
-        if (this.onDeckPileClick) {
+        if (this.onDeckPileClick)
           this.onDeckPileClick();
-        }
       }
     );
 
@@ -262,9 +257,8 @@ export default class BattleUIManager {
       uiConfig.getColor('DISCARD_PILE_BG'), uiConfig.getColor('DISCARD_PILE_STROKE'),
       1, // 오른쪽으로 오프셋
       () => {
-        if (this.onDiscardPileClick) {
+        if (this.onDiscardPileClick)
           this.onDiscardPileClick();
-        }
       }
     );
 
@@ -383,7 +377,7 @@ export default class BattleUIManager {
 
     tweenConfig.apply(this.scene, 'ui.damageText', message, {
       duration: 1500,
-      y: height / 2 - 50,
+      y: height/2 - 50,
       onComplete: () => message.destroy()
     });
   }

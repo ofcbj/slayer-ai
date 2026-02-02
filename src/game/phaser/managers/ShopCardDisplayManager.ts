@@ -59,7 +59,7 @@ export default class ShopCardDisplayManager {
 
     this.shopCards = selectedCards.map(card => ({
       ...card,
-      price: (card as any).price || Math.max(30, card.cost * 15)
+      price: (card as any).price || Math.max(30, card.cost*15)
     }));
 
     // 카드 삭제 카드 추가

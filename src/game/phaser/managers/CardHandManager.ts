@@ -97,7 +97,6 @@ export default class CardHandManager {
       this.setEndTurnAllowed(false);
     }
     this.uiManager.setEndTurnButtonEnabled(false);
-
     this.drawCardsRecursive(count, 0, onComplete);
   }
 
@@ -154,7 +153,7 @@ export default class CardHandManager {
 
     // 순차적으로 카드 추가 애니메이션
     cardsToDrawData.forEach((cardData, index) => {
-      this.scene.time.delayedCall(index * 150, () => {
+      this.scene.time.delayedCall(index*150, () => {
         this.addCardToHandWithAnimation(cardData, currentHandSize + index, finalHandSize);
         // 카드 드로우 사운드 재생
         this.scene.sound.play('card-draw', { volume: 0.35 });
@@ -162,7 +161,7 @@ export default class CardHandManager {
     });
 
     // 이번 배치의 카드 드로우가 끝난 후
-    const batchDuration = cardsDrawn * 150 + 500;
+    const batchDuration = cardsDrawn*150 + 500;
 
     this.scene.time.delayedCall(batchDuration, () => {
       const newDrawnCount = drawnCount + cardsDrawn;
@@ -200,11 +199,11 @@ export default class CardHandManager {
 
     // 여러 장의 카드를 시간차를 두고 이동
     for (let i = 0; i < cardsToShow; i++) {
-      this.scene.time.delayedCall(i * 50, () => {
+      this.scene.time.delayedCall(i*50, () => {
         // 임시 카드 이미지 생성 (연출용)
-        const uiConfig = UIConfigManager.getInstance();
+        const uiConfig        = UIConfigManager.getInstance();
         const reshuffleConfig = uiConfig.getCardReshuffleConfig();
-        const tempCard = this.scene.add.rectangle(
+        const tempCard        = this.scene.add.rectangle(
           discardWorldPos.tx, discardWorldPos.ty,
           reshuffleConfig.tempCardWidth, reshuffleConfig.tempCardHeight,
           uiConfig.getColor('RESHUFFLE_TEMP_CARD'), 0.8
@@ -213,11 +212,9 @@ export default class CardHandManager {
 
         // 카드가 버린 더미에서 덱으로 이동
         tweenConfig.apply(this.scene, 'cards.reshuffle', tempCard, {
-          x: deckWorldPos.tx,
-          y: deckWorldPos.ty,
+          x: deckWorldPos.tx, y: deckWorldPos.ty,
           onComplete: () => {
             tempCard.destroy();
-
             // 마지막 카드일 때만 추가 처리
             if (i === cardsToShow - 1) {
               // 덱 파일 애니메이션
@@ -229,11 +226,9 @@ export default class CardHandManager {
             }
           }
         });
-
         // 카드 이동 사운드 (첫 번째와 중간중간만)
-        if (i % 3 === 0) {
+        if (i%3 === 0) 
           this.scene.sound.play('card-draw', { volume: 0.35 });
-        }
       });
     }
   }
@@ -262,22 +257,21 @@ export default class CardHandManager {
     // 최종 위치 계산 (모든 카드가 드로우된 후의 핸드 배치 기준)
     const uiConfig = UIConfigManager.getInstance();
     const spacing = uiConfig.getHandCardConfig().spacing;
-    const totalWidth = (finalHandSize - 1) * spacing;
+    const totalWidth = (finalHandSize - 1)*spacing;
     const startHandX = -totalWidth / 2;
 
     // 핸드 컨테이너의 월드 좌표
-    const handWorldPos = this.handContainer.getWorldTransformMatrix();
+    const handWorldPos= this.handContainer.getWorldTransformMatrix();
     const handCenterX = handWorldPos.tx;
     const handCenterY = handWorldPos.ty;
 
     // 이 카드의 최종 로컬 및 월드 좌표
-    const finalLocalX = startHandX + (cardIndex * spacing);
+    const finalLocalX = startHandX + (cardIndex*spacing);
     const targetX = handCenterX + finalLocalX;
     const targetY = handCenterY;
 
       tweenConfig.apply(this.scene, 'cards.draw', card, {
-      x: targetX,
-      y: targetY,
+      x: targetX, y: targetY,
       onComplete: () => {
         // 카드를 핸드 컨테이너로 이동
         this.handContainer.add(card);
@@ -290,12 +284,10 @@ export default class CardHandManager {
         card.setOriginalDepth(cardIndex);
         // 핸드 컨테이너 참조 설정 (호버 시 컨테이너에서 제거하기 위해 필요)
         card.setHandContainer(this.handContainer);
-
         // 컨테이너에 추가한 후 단축키 인덱스 설정
         // hand 배열에서의 실제 인덱스를 사용
         const actualIndex = this.hand.indexOf(card);
         card.setHotkeyIndex(actualIndex);
-
         // 애니메이션 완료 후 인터랙션 활성화
         card.enableInteraction();
       }
@@ -306,19 +298,16 @@ export default class CardHandManager {
    * 기존 카드들을 새로운 finalHandSize 기준으로 재배치합니다.
    */
   private rearrangeExistingCards(finalHandSize: number): void {
-    const uiConfig = UIConfigManager.getInstance();
-    const spacing = uiConfig.getHandCardConfig().spacing;
-    const totalWidth = (finalHandSize - 1) * spacing;
-    const startX = -totalWidth / 2;
+    const uiConfig  = UIConfigManager.getInstance();
+    const spacing   = uiConfig.getHandCardConfig().spacing;
+    const totalWidth= (finalHandSize - 1)*spacing;
+    const startX    = -totalWidth/2;
 
     this.hand.forEach((card, index) => {
       const targetX = startX + (index * spacing);
       const targetY = 0;
 
-      tweenConfig.apply(this.scene, 'cards.rearrange', card, {
-        x: targetX,
-        y: targetY
-      });
+      tweenConfig.apply(this.scene, 'cards.rearrange', card, { x: targetX, y: targetY });
 
       (card as any).originalY = targetY;
       // 카드의 depth를 index 기반으로 재설정
@@ -332,19 +321,17 @@ export default class CardHandManager {
 
   public arrangeHand(): void {
     const cardCount = this.hand.length;
-    const uiConfig = UIConfigManager.getInstance();
-    const spacing = uiConfig.getHandCardConfig().spacing;
-    const totalWidth = (cardCount - 1) * spacing;
-    const startX = -totalWidth / 2;
+    const uiConfig  = UIConfigManager.getInstance();
+    const spacing   = uiConfig.getHandCardConfig().spacing;
+    const totalWidth= (cardCount - 1)*spacing;
+    const startX    = -totalWidth/2;
 
     this.hand.forEach((card, index) => {
       const targetX = startX + (index * spacing);
       const targetY = 0;
 
-      tweenConfig.apply(this.scene, 'cards.arrange', card, {
-        x: targetX, y: targetY
-      });
-
+      tweenConfig.apply(this.scene, 'cards.arrange', card, { x: targetX, y: targetY });
+      
       (card as any).originalY = targetY;
       // 카드의 depth를 index 기반으로 설정
       card.setDepth(index);
@@ -371,9 +358,8 @@ export default class CardHandManager {
     card.select();
 
     // 새로운 카드를 선택할 때만 소리 재생
-    if (isDifferentCard) {
+    if (isDifferentCard)
       this.scene.sound.play('card-click', { volume: 0.25 });
-    }
   }
   
   /**
@@ -386,9 +372,8 @@ export default class CardHandManager {
     const targetIndex = (deselectedCard as any).selectedOriginalDepth;
     const currentIndex = this.handContainer.list.indexOf(deselectedCard);
     
-    if (currentIndex === -1 || currentIndex === targetIndex) {
+    if (currentIndex === -1 || currentIndex === targetIndex)
       return;
-    }
     
     // 모든 카드를 제거하고 올바른 순서로 다시 추가
     const cards = [...this.handContainer.list] as Card[];
@@ -451,13 +436,11 @@ export default class CardHandManager {
 
     // 카드를 버린 카드 더미로 이동
     tweenConfig.apply(this.scene, 'cards.discard', card, {
-      x: targetX,
-      y: targetY,
+      x: targetX, y: targetY,
       onComplete: () => {
         card.destroy();
-        if (onComplete) {
+        if (onComplete)
           onComplete();
-        }
       }
     });
 
@@ -489,9 +472,8 @@ export default class CardHandManager {
       // 순차적으로 카드 버리기
       this.scene.time.delayedCall(index * 100, () => {
         this.discardCardWithAnimation(card);
-        if (onCardDiscarded) {
+        if (onCardDiscarded)
           onCardDiscarded(card, index);
-        }
       });
     });
 
@@ -502,9 +484,8 @@ export default class CardHandManager {
       // (적 턴으로 넘어가므로 turnController에서 관리)
       this.uiManager.setEndTurnButtonEnabled(true);
 
-      if (onComplete) {
+      if (onComplete)
         onComplete();
-      }
     });
 
     // 선택 해제

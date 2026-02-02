@@ -182,9 +182,8 @@ class GameDataManager {
     const deck: string[] = [];
     Object.keys(startDeckObj).forEach((cardId) => {
       const count = startDeckObj[cardId];
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < count; i++)
         deck.push(cardId);
-      }
     });
     return deck;
   }
